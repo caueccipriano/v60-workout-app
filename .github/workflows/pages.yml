@@ -41,30 +41,40 @@ jobs:
           const version=JSON.parse(fs.readFileSync('version.json','utf8'));
           const index=fs.readFileSync('index.html','utf8');
           if(manifest.short_name!=='Traço') throw new Error('Manifest brand mismatch');
-          if(version.name!=='Traço'||version.version!=='1.0.0') throw new Error('Version brand mismatch');
+          if(version.name!=='Traço'||version.version!=='1.0.1') throw new Error('Version brand mismatch');
           if(!index.includes('<title>Traço</title>')) throw new Error('Document title mismatch');
           for(const file of ['assets/icon.svg','assets/traco-icon-180.png','assets/traco-icon-192.png','traco-brand.js','traco-brand.css']){
             if(!fs.existsSync(file)) throw new Error(`Missing brand asset: ${file}`);
           }
           console.log('Traço brand OK');
           NODE
-      - name: Validate licensed video coverage
+      - name: Validate exact exercise media audit
         run: |
           node <<'NODE'
-          const fs = require('fs');
-          const app = fs.readFileSync('app.js','utf8');
-          const videos = fs.readFileSync('exercise-videos.js','utf8');
-          const exercisePattern = /\['([a-z0-9-]+)','[^']+','[^']+',\d+,\d+,\d+,\d+,'[^']+'\]/g;
-          const videoPattern = /^\s*'([^']+)':\{pexelsId:/gm;
-          const exerciseIds = [...new Set([...app.matchAll(exercisePattern)].map(m=>m[1]))];
-          const videoIds = [...new Set([...videos.matchAll(videoPattern)].map(m=>m[1]))];
-          const missing = exerciseIds.filter(id=>!videoIds.includes(id));
-          const extra = videoIds.filter(id=>!exerciseIds.includes(id));
-          if(exerciseIds.length!==32) throw new Error(`Expected 32 base workout exercises, found ${exerciseIds.length}`);
-          if(videoIds.length!==32) throw new Error(`Expected 32 licensed base video mappings, found ${videoIds.length}`);
-          if(missing.length) throw new Error(`Missing videos: ${missing.join(', ')}`);
-          if(extra.length) throw new Error(`Unknown video mappings: ${extra.join(', ')}`);
-          console.log(`Licensed base video coverage OK: ${videoIds.length}/${exerciseIds.length}`);
+          const fs=require('fs');
+          const app=fs.readFileSync('app.js','utf8');
+          const core=fs.readFileSync('v60-aesthetic-core.js','utf8');
+          const guides=fs.readFileSync('exercise-guides-v4.js','utf8');
+          const media=fs.readFileSync('exercise-videos.js','utf8');
+          const base=[...new Set([...app.matchAll(/\['([a-z0-9-]+)','[^']+','[^']+',\d+,\d+,\d+,\d+,'[^']+'\]/g)].map(m=>m[1]))];
+          const added=['core-crunch-seg','core-pallof-ter','core-woodchop-qui'];
+          const active=[...new Set([...base,...added])];
+          const audited=[...new Set([...media.matchAll(/^\s*'([a-z0-9-]+)':\{name:/gm)].map(m=>m[1]))];
+          if(base.length!==32) throw new Error(`Expected 32 base exercises, found ${base.length}`);
+          if(active.length!==35) throw new Error(`Expected 35 active exercise IDs, found ${active.length}`);
+          const missing=active.filter(id=>!audited.includes(id));
+          const extra=audited.filter(id=>!active.includes(id));
+          if(audited.length!==35||missing.length||extra.length) throw new Error(`Media audit mismatch. missing=${missing.join(',')} extra=${extra.join(',')}`);
+          for(const banned of ["match:'equivalent'","pexelsId:","www.pexels.com/download/video"]){
+            if(media.includes(banned)||core.includes(banned)) throw new Error(`Non-exact external media returned: ${banned}`);
+          }
+          if(!media.includes("'abdutora':{name:\"abdutora\",equipment:\"Máquina abdutora\",scene:'abductor',verified:true}")) throw new Error('Abductor exact audit missing');
+          if(!media.includes("'core-pallof-ter':{name:\"Pallof press\",equipment:\"Polia / crossover\",scene:'pallofPress',verified:true}")) throw new Error('Pallof exact audit missing');
+          if(!guides.includes("'abdutora':abductor")||!guides.includes("'abdutora-2':abductor")) throw new Error('Abductor scene mapping missing');
+          if(!core.includes("if(id==='core-pallof-ter')return v60CoreScenePallof()")) throw new Error('Pallof scene mapping missing');
+          if(!guides.includes("'elevacao-lateral-2':()=>cableLateral(true)")||!guides.includes("'elevacao-lateral-3':()=>cableLateral(true)")) throw new Error('Cable lateral variant mismatch');
+          if(!app.includes("['abdutora','abdutora','Máquina abdutora'")||!app.includes("['abdutora-2','abdutora','Máquina abdutora'")) throw new Error('Abductor equipment naming mismatch');
+          console.log('Exact exercise media audit OK: 35/35; no equivalent stock clips');
           NODE
       - name: Validate personal progress features
         run: |
