@@ -37,7 +37,9 @@ const TRACO_MEDIA_AUDIT=Object.freeze({
   'crunch-2':{name:"crunch ajoelhado na polia",equipment:"Polia alta + corda",scene:'kneelingCrunch',verified:true},
   'core-crunch-seg':{name:"crunch na polia",equipment:"Polia alta + corda",scene:'kneelingCrunch',verified:true},
   'core-pallof-ter':{name:"Pallof press",equipment:"Polia / crossover",scene:'pallofPress',verified:true},
-  'core-woodchop-qui':{name:"woodchop na polia",equipment:"Polia alta / crossover",scene:'woodchop',verified:true}
+  'core-leg-raise-ter':{name:"elevação de pernas no banco",equipment:"Banco reto",scene:'legRaiseBench',verified:true},
+  'core-woodchop-qui':{name:"woodchop na polia",equipment:"Polia alta / crossover",scene:'woodchop',verified:true},
+  'core-dead-bug-qui':{name:"dead bug",equipment:"Solo / colchonete",scene:'deadBug',verified:true}
 });
 
 function tracoMediaEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));}
@@ -46,7 +48,7 @@ function tracoNormalize(v){return String(v??'').normalize('NFC').trim().replace(
 function tracoAuditExerciseMedia(){
   const active=[...new Map(workoutPlan.flatMap(w=>w.exercises).map(ex=>[ex.id,ex])).values()];
   const failures=[];
-  if(active.length!==35)failures.push(`esperados 35 exercícios ativos; encontrados ${active.length}`);
+  if(active.length!==37)failures.push(`esperados 37 exercícios ativos; encontrados ${active.length}`);
   for(const ex of active){
     const spec=TRACO_MEDIA_AUDIT[ex.id];
     if(!spec){failures.push(`${ex.id}: sem especificação`);continue;}
