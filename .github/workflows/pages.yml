@@ -29,6 +29,7 @@ jobs:
           node --check exercise-guides.js
           node --check exercise-guides-v4.js
           node --check exercise-videos.js
+          node --check v60-personal-progress.js
       - name: Validate licensed video coverage
         run: |
           node <<'NODE'
@@ -46,6 +47,16 @@ jobs:
           if(missing.length) throw new Error(`Missing videos: ${missing.join(', ')}`);
           if(extra.length) throw new Error(`Unknown video mappings: ${extra.join(', ')}`);
           console.log(`Licensed video coverage OK: ${videoIds.length}/${exerciseIds.length}`);
+          NODE
+      - name: Validate personal progress features
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const p=fs.readFileSync('v60-personal-progress.js','utf8');
+          for(const required of ['V60_PROFILE_KEY','v60SeedExerciseSets','v60WeeklyGoalMarkup','v60OpenExtraModal','v60ProgressPlusMarkup']){
+            if(!p.includes(required)) throw new Error(`Missing personal progress feature: ${required}`);
+          }
+          console.log('Personal progress feature set OK');
           NODE
       - name: Configure Pages
         uses: actions/configure-pages@v5
