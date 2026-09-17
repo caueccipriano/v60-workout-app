@@ -1,4 +1,4 @@
-const V60_CORE_ADDED_IDS=['core-crunch-seg','core-pallof-ter','core-woodchop-qui'];
+const V60_CORE_ADDED_IDS=['core-crunch-seg','core-pallof-ter','core-leg-raise-ter','core-woodchop-qui','core-dead-bug-qui'];
 
 function v60CoreExercise(id,name,equipment,sets,min,max,rest,icon='◼️'){
   return {id,name,equipment,sets,min,max,rest,icon,core:true};
@@ -14,12 +14,18 @@ function v60InstallAestheticCorePlan(){
     seg.exercises.push(v60CoreExercise('core-crunch-seg','crunch na polia','Polia alta + corda',3,10,15,45,'◼️'));
   }
   if(ter&&!ter.exercises.some(e=>e.id==='core-pallof-ter')){
-    ter.exercises.push(v60CoreExercise('core-pallof-ter','Pallof press','Polia / crossover',3,12,15,45,'↔️'));
+    ter.exercises.push(v60CoreExercise('core-pallof-ter','Pallof press','Polia / crossover',2,12,15,45,'↔️'));
+  }
+  if(ter&&!ter.exercises.some(e=>e.id==='core-leg-raise-ter')){
+    ter.exercises.push(v60CoreExercise('core-leg-raise-ter','elevação de pernas no banco','Banco reto',2,10,15,45,'⬆️'));
   }
   const wed=qua?.exercises.find(e=>e.id==='crunch');
   if(wed)Object.assign(wed,{name:'abdominal reverso no banco',equipment:'Banco reto',sets:3,min:12,max:15,rest:45,icon:'◼️',core:true});
   if(qui&&!qui.exercises.some(e=>e.id==='core-woodchop-qui')){
     qui.exercises.push(v60CoreExercise('core-woodchop-qui','woodchop na polia','Polia alta / crossover',2,15,20,40,'↘️'));
+  }
+  if(qui&&!qui.exercises.some(e=>e.id==='core-dead-bug-qui')){
+    qui.exercises.push(v60CoreExercise('core-dead-bug-qui','dead bug','Solo / colchonete',2,10,12,40,'◼️'));
   }
   const fri=sex?.exercises.find(e=>e.id==='crunch-2');
   if(fri)Object.assign(fri,{name:'crunch ajoelhado na polia',equipment:'Polia alta + corda',sets:3,min:10,max:15,rest:45,icon:'◼️',core:true});
@@ -46,6 +52,28 @@ function v60CoreScenePallof(){
   const motion=`<path d="M 402 205 L 471 205" stroke="${L}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M 456 195 L 471 205 L 456 215" stroke="${L}" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
   return {equipment:`${tower}<text x="135" y="332" fill="rgba(250,250,250,.64)" font-family="Arial" font-size="10" font-weight="800">POLIA LATERAL</text>`,a,b,motion,note:'empurra à frente sem deixar o tronco girar'};
 }
+function v60CoreSceneLegRaise(){
+  const W='#FAFAFA',M='rgba(250,250,250,.28)',L='#C4D82E',H='rgba(196,216,46,.34)';
+  const line=(x1,y1,x2,y2,sw=5,col=W)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${sw}" stroke-linecap="round"/>`;
+  const circ=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${W}" stroke-width="4"/>`;
+  const bench=`${line(235,246,475,246,14,M)}${line(260,246,245,305,8,M)}${line(450,246,465,305,8,M)}`;
+  const torso=`${circ(292,218,10)}${line(303,221,382,238,6)}<ellipse cx="370" cy="238" rx="24" ry="13" fill="${H}"/>`;
+  const a=`${torso}${line(382,238,440,255)}${line(440,255,490,274)}${line(382,238,435,270)}${line(435,270,482,293)}`;
+  const b=`${torso}${line(382,238,414,195)}${line(414,195,429,145)}${line(382,238,431,203)}${line(431,203,450,151)}`;
+  const motion=`<path d="M 510 278 Q 532 212 462 154" stroke="${L}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M 476 157 L 462 154 L 465 169" stroke="${L}" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  return {equipment:`${bench}<text x="318" y="332" fill="rgba(250,250,250,.64)" font-family="Arial" font-size="10" font-weight="800">BANCO RETO</text>`,a,b,motion,note:'sobe as pernas sem arquear a lombar'};
+}
+function v60CoreSceneDeadBug(){
+  const W='#FAFAFA',M='rgba(250,250,250,.28)',L='#C4D82E',H='rgba(196,216,46,.34)';
+  const line=(x1,y1,x2,y2,sw=5,col=W)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${sw}" stroke-linecap="round"/>`;
+  const mat=`<rect x="225" y="260" width="280" height="14" rx="7" fill="${M}"/>`;
+  const base=`<circle cx="290" cy="226" r="10" fill="none" stroke="${W}" stroke-width="4"/>${line(301,230,383,245,6)}<ellipse cx="367" cy="245" rx="24" ry="13" fill="${H}"/>`;
+  const a=`${base}${line(340,238,315,190)}${line(383,245,411,198)}${line(383,245,420,210)}${line(340,238,320,194)}`;
+  const b=`${base}${line(340,238,288,184)}${line(383,245,455,245)}${line(383,245,414,204)}${line(340,238,325,194)}`;
+  const motion=`<path d="M 470 190 Q 500 220 508 248" stroke="${L}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M 498 235 L 508 248 L 493 249" stroke="${L}" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  return {equipment:`${mat}<text x="305" y="332" fill="rgba(250,250,250,.64)" font-family="Arial" font-size="10" font-weight="800">SOLO / COLCHONETE</text>`,a,b,motion,note:'lombar colada no chão; alterna braço e perna opostos'};
+}
+
 function v60CoreSceneWoodchop(){
   const W='#FAFAFA',M='rgba(250,250,250,.28)',L='#C4D82E',H='rgba(196,216,46,.34)';
   const line=(x1,y1,x2,y2,sw=5,c=W)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>`;
@@ -66,7 +94,9 @@ if(typeof v60V4Scene==='function'){
     if(id==='core-crunch-seg')return v60CoreBaseScene({...ex,id:'crunch-2'});
     if(id==='crunch')return v60CoreSceneReverseCrunch();
     if(id==='core-pallof-ter')return v60CoreScenePallof();
+    if(id==='core-leg-raise-ter')return v60CoreSceneLegRaise();
     if(id==='core-woodchop-qui')return v60CoreSceneWoodchop();
+    if(id==='core-dead-bug-qui')return v60CoreSceneDeadBug();
     return v60CoreBaseScene(ex);
   };
 }
@@ -112,7 +142,7 @@ const v60CoreBaseRenderWorkouts=renderWorkouts;
 renderWorkouts=function(){
   v60CoreBaseRenderWorkouts();
   const main=document.querySelector('.workouts-page');
-  if(main&&!main.querySelector('.v60-core-program-note'))main.insertAdjacentHTML('beforeend','<section class="v60-core-program-note"><b>core em todos os 5 dias</b><span>reto abdominal + infra + anti-rotação + rotação controlada · sem flexão lateral pesada</span></section>');
+  if(main&&!main.querySelector('.v60-core-program-note'))main.insertAdjacentHTML('beforeend','<section class="v60-core-program-note"><b>7 estímulos de core em 5 dias</b><span>crunch na polia + elevação de pernas + infra + anti-rotação + rotação controlada + anti-extensão · sem flexão lateral pesada</span></section>');
 };
 
 if(state.activeSession)v60SyncCoreSession();
