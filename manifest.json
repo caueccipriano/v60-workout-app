@@ -1,0 +1,12 @@
+{
+  "name": "V60 — Treino",
+  "short_name": "V60",
+  "description": "Treino de 5 dias com foco em shape V e acompanhamento de progressão.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#0a0a0f",
+  "icons": [
+    {"src":"./assets/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
