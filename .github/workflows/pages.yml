@@ -23,6 +23,30 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Validate JavaScript syntax
+        run: |
+          node --check app.js
+          node --check exercise-guides.js
+          node --check exercise-guides-v4.js
+          node --check exercise-videos.js
+      - name: Validate licensed video coverage
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const app = fs.readFileSync('app.js','utf8');
+          const videos = fs.readFileSync('exercise-videos.js','utf8');
+          const exercisePattern = /\['([a-z0-9-]+)','[^']+','[^']+',\d+,\d+,\d+,\d+,'[^']+'\]/g;
+          const videoPattern = /^\s*'([^']+)':\{pexelsId:/gm;
+          const exerciseIds = [...new Set([...app.matchAll(exercisePattern)].map(m=>m[1]))];
+          const videoIds = [...new Set([...videos.matchAll(videoPattern)].map(m=>m[1]))];
+          const missing = exerciseIds.filter(id=>!videoIds.includes(id));
+          const extra = videoIds.filter(id=>!exerciseIds.includes(id));
+          if(exerciseIds.length!==32) throw new Error(`Expected 32 workout exercises, found ${exerciseIds.length}`);
+          if(videoIds.length!==32) throw new Error(`Expected 32 licensed video mappings, found ${videoIds.length}`);
+          if(missing.length) throw new Error(`Missing videos: ${missing.join(', ')}`);
+          if(extra.length) throw new Error(`Unknown video mappings: ${extra.join(', ')}`);
+          console.log(`Licensed video coverage OK: ${videoIds.length}/${exerciseIds.length}`);
+          NODE
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
