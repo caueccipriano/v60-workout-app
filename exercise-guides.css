@@ -1,0 +1,23 @@
+.exercise-guide-preview{width:100%;display:block;border:0;background:#111;border-radius:24px;padding:0;margin:14px 0 0;overflow:hidden;text-align:left;color:#fff;box-shadow:0 12px 26px rgba(17,17,17,.10);transition:transform .14s ease}
+.exercise-guide-preview:active{transform:scale(.993)}
+.exercise-guide-preview>img{display:block;width:100%;aspect-ratio:2/1;object-fit:cover;background:var(--blue)}
+.exercise-guide-caption{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 16px 15px;background:#111}
+.exercise-guide-caption>span{min-width:0}.exercise-guide-caption b{display:block;font-size:14px}.exercise-guide-caption small{display:block;margin-top:4px;color:#A8A8A8;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exercise-guide-caption i{width:34px;height:34px;display:grid;place-items:center;flex:0 0 34px;border-radius:50%;background:var(--lime);color:#111;font-size:16px;font-style:normal;font-weight:900}
+.v60-guide-open{overflow:hidden}
+.v60-guide-backdrop{position:fixed;inset:0;z-index:180;background:rgba(17,17,17,.58);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:v60GuideFade .16s ease both}
+.v60-guide-sheet{position:fixed;left:0;right:0;bottom:0;z-index:181;width:100%;max-height:92dvh;background:#FAFAFA;border-radius:30px 30px 0 0;box-shadow:0 -24px 70px rgba(17,17,17,.24);overflow:auto;animation:v60GuideUp .22s cubic-bezier(.2,.75,.25,1) both;padding-bottom:env(safe-area-inset-bottom)}
+.v60-guide-handle{position:sticky;top:0;z-index:2;width:42px;height:5px;border-radius:999px;background:#D4D4CE;margin:9px auto 0}
+.v60-guide-close{position:absolute;right:max(18px,calc((100vw - var(--page-max))/2 + 18px));top:18px;width:40px;height:40px;border:0;border-radius:50%;background:#EFEFEA;color:#111;font-size:24px;line-height:1;display:grid;place-items:center}
+.v60-guide-content{width:min(var(--page-max),100%);margin:0 auto;padding:18px var(--side) 26px}
+.v60-guide-kicker{display:block;color:#7D7D7D;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-top:8px}
+.v60-guide-content h2{font-family:"DM Serif Display",Georgia,serif;font-size:36px;font-weight:400;line-height:.98;letter-spacing:-.025em;margin:6px 48px 4px 0}
+.v60-guide-equipment{margin:0 0 16px;color:#8A8A8A;font-size:12px}
+.v60-guide-image{display:block;width:100%;border-radius:25px;background:var(--blue);box-shadow:var(--shadow-soft)}
+.v60-guide-tags{display:flex;gap:7px;flex-wrap:wrap;margin:13px 0 0}.v60-guide-tags span{display:inline-flex;align-items:center;padding:8px 10px;border-radius:999px;background:#F0F0EA;color:#555;font-size:10px;font-weight:700}
+.v60-guide-tips{margin-top:18px;background:#111;color:#fff;border-radius:22px;padding:18px}.v60-guide-tips h3{margin:0 0 11px;font-size:13px}.v60-guide-tips ol{margin:0;padding-left:20px}.v60-guide-tips li{padding-left:3px;margin:8px 0;color:#ECECEC;font-size:12px;line-height:1.4}
+.v60-guide-error{margin-top:10px;background:var(--orange);color:#fff;border-radius:20px;padding:15px 17px}.v60-guide-error span{display:block;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;opacity:.8}.v60-guide-error p{margin:5px 0 0;font-size:12px;line-height:1.4}
+#v60GuideDone{margin-top:14px}
+@keyframes v60GuideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes v60GuideFade{from{opacity:0}to{opacity:1}}
+@media(min-width:700px){.v60-guide-sheet{left:50%;right:auto;transform:translateX(-50%);width:min(720px,100%);border-radius:30px 30px 0 0}.v60-guide-close{right:18px}}
