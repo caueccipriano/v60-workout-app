@@ -205,7 +205,7 @@ function v60V4Scene(ex){
     'crunch':kneelingCrunch,
     'supino-reto':()=>smithBench(false),
     'crucifixo-reto':()=>cableFly('horizontal'),
-    'elevacao-lateral-2':()=>cableLateral(false),
+    'elevacao-lateral-2':()=>cableLateral(true),
     'face-pull':facePull,
     'triceps-overhead-2':overheadTriceps,
     'rosca-unilateral':()=>cableCurl(true),
@@ -213,7 +213,7 @@ function v60V4Scene(ex){
     'flexora-2':seatedLegCurl,
     'leg-press-alto':()=>legPress('high'),
     'puxada-neutra':()=>pulldown('neutral'),
-    'elevacao-lateral-3':()=>cableLateral(false),
+    'elevacao-lateral-3':()=>cableLateral(true),
     'abdutora-2':abductor,
     'crunch-2':kneelingCrunch
   };
