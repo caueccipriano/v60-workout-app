@@ -1,5 +1,5 @@
-const CACHE = 'v60-v8';
-const ASSETS = ['./','./index.html','./styles.css','./exercise-guides.css','./exercise-guides-v3.css','./app.js','./exercise-guides.js','./exercise-guides-v3.js','./manifest.json','./assets/icon.svg'];
+const CACHE = 'v60-v9';
+const ASSETS = ['./','./index.html','./styles.css','./exercise-guides.css','./exercise-guides-v4.css','./app.js','./exercise-guides.js','./exercise-guides-v4.js','./manifest.json','./assets/icon.svg'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
   self.skipWaiting();
