@@ -1,8 +1,8 @@
 # Traço — Auditoria de mídia de exercícios
 
-Versão: 1.0.1  
+Versão: 1.0.2  
 Data: 2026-09-17  
-Status: **35/35 movimentos auditados**
+Status: **37/37 movimentos auditados**
 
 O Traço não exibe mais clipes `equivalent`. A demonstração ativa é vinculada ao ID do exercício e validada contra nome, equipamento, posição inicial/final e trajetória.
 
@@ -42,11 +42,15 @@ O Traço não exibe mais clipes `equivalent`. A demonstração ativa é vinculad
 | `crunch-2` | `kneelingCrunch` |
 | `core-crunch-seg` | `kneelingCrunch` |
 | `core-pallof-ter` | `pallofPress` |
+| `core-leg-raise-ter` | `legRaiseBench` |
 | `core-woodchop-qui` | `woodchop` |
+| `core-dead-bug-qui` | `deadBug` |
 
 ## Correções confirmadas
 - `abdutora` / `abdutora-2`: máquina abdutora; pernas fechadas → abertura lateral.
 - `core-pallof-ter`: polia lateral; extensão dos braços à frente sem rotação do tronco.
+- `core-leg-raise-ter`: elevação de pernas no banco com lombar controlada.
+- `core-dead-bug-qui`: anti-extensão no solo, alternando braço e perna opostos.
 - elevações laterais de quinta/sexta: padronizadas como unilateral na polia.
 - `flexora-2`: padronizada como flexora sentada.
 
