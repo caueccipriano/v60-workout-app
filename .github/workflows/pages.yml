@@ -41,7 +41,7 @@ jobs:
           const version=JSON.parse(fs.readFileSync('version.json','utf8'));
           const index=fs.readFileSync('index.html','utf8');
           if(manifest.short_name!=='Traço') throw new Error('Manifest brand mismatch');
-          if(version.name!=='Traço'||version.version!=='1.0.1') throw new Error('Version brand mismatch');
+          if(version.name!=='Traço'||version.version!=='1.0.2') throw new Error('Version brand mismatch');
           if(!index.includes('<title>Traço</title>')) throw new Error('Document title mismatch');
           for(const file of ['assets/icon.svg','assets/traco-icon-180.png','assets/traco-icon-192.png','traco-brand.js','traco-brand.css']){
             if(!fs.existsSync(file)) throw new Error(`Missing brand asset: ${file}`);
@@ -57,14 +57,14 @@ jobs:
           const guides=fs.readFileSync('exercise-guides-v4.js','utf8');
           const media=fs.readFileSync('exercise-videos.js','utf8');
           const base=[...new Set([...app.matchAll(/\['([a-z0-9-]+)','[^']+','[^']+',\d+,\d+,\d+,\d+,'[^']+'\]/g)].map(m=>m[1]))];
-          const added=['core-crunch-seg','core-pallof-ter','core-woodchop-qui'];
+          const added=['core-crunch-seg','core-pallof-ter','core-leg-raise-ter','core-woodchop-qui','core-dead-bug-qui'];
           const active=[...new Set([...base,...added])];
           const audited=[...new Set([...media.matchAll(/^\s*'([a-z0-9-]+)':\{name:/gm)].map(m=>m[1]))];
           if(base.length!==32) throw new Error(`Expected 32 base exercises, found ${base.length}`);
-          if(active.length!==35) throw new Error(`Expected 35 active exercise IDs, found ${active.length}`);
+          if(active.length!==37) throw new Error(`Expected 37 active exercise IDs, found ${active.length}`);
           const missing=active.filter(id=>!audited.includes(id));
           const extra=audited.filter(id=>!active.includes(id));
-          if(audited.length!==35||missing.length||extra.length) throw new Error(`Media audit mismatch. missing=${missing.join(',')} extra=${extra.join(',')}`);
+          if(audited.length!==37||missing.length||extra.length) throw new Error(`Media audit mismatch. missing=${missing.join(',')} extra=${extra.join(',')}`);
           for(const banned of ["match:'equivalent'","pexelsId:","www.pexels.com/download/video"]){
             if(media.includes(banned)||core.includes(banned)) throw new Error(`Non-exact external media returned: ${banned}`);
           }
@@ -72,9 +72,13 @@ jobs:
           if(!media.includes("'core-pallof-ter':{name:\"Pallof press\",equipment:\"Polia / crossover\",scene:'pallofPress',verified:true}")) throw new Error('Pallof exact audit missing');
           if(!guides.includes("'abdutora':abductor")||!guides.includes("'abdutora-2':abductor")) throw new Error('Abductor scene mapping missing');
           if(!core.includes("if(id==='core-pallof-ter')return v60CoreScenePallof()")) throw new Error('Pallof scene mapping missing');
+          if(!media.includes("'core-leg-raise-ter':{name:\"elevação de pernas no banco\",equipment:\"Banco reto\",scene:'legRaiseBench',verified:true}")) throw new Error('Leg raise exact audit missing');
+          if(!media.includes("'core-dead-bug-qui':{name:\"dead bug\",equipment:\"Solo / colchonete\",scene:'deadBug',verified:true}")) throw new Error('Dead bug exact audit missing');
+          if(!core.includes("if(id==='core-leg-raise-ter')return v60CoreSceneLegRaise()")) throw new Error('Leg raise scene mapping missing');
+          if(!core.includes("if(id==='core-dead-bug-qui')return v60CoreSceneDeadBug()")) throw new Error('Dead bug scene mapping missing');
           if(!guides.includes("'elevacao-lateral-2':()=>cableLateral(true)")||!guides.includes("'elevacao-lateral-3':()=>cableLateral(true)")) throw new Error('Cable lateral variant mismatch');
           if(!app.includes("['abdutora','abdutora','Máquina abdutora'")||!app.includes("['abdutora-2','abdutora','Máquina abdutora'")) throw new Error('Abductor equipment naming mismatch');
-          console.log('Exact exercise media audit OK: 35/35; no equivalent stock clips');
+          console.log('Exact exercise media audit OK: 37/37; no equivalent stock clips');
           NODE
       - name: Validate personal progress features
         run: |
@@ -91,13 +95,13 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const core=fs.readFileSync('v60-aesthetic-core.js','utf8');
-          const ids=['core-crunch-seg','core-pallof-ter','crunch','core-woodchop-qui','crunch-2'];
+          const ids=['core-crunch-seg','core-pallof-ter','core-leg-raise-ter','crunch','core-woodchop-qui','core-dead-bug-qui','crunch-2'];
           for(const id of ids){
             if(!core.includes(id)) throw new Error(`Missing mandatory core movement: ${id}`);
           }
           if(!core.includes("filter(x=>x.type==='cardio')")) throw new Error('Cardio-only optional extras rule missing');
           if(!core.includes('sem flexão lateral pesada')) throw new Error('Waist-aesthetics guardrail missing');
-          console.log('Mandatory aesthetic core OK: 5/5 training days');
+          console.log('Mandatory aesthetic core OK: 7 weekly stimuli across 5/5 training days');
           NODE
       - name: Validate flexible sequence and attendance bootstrap
         run: |
