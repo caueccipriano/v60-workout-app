@@ -1,5 +1,5 @@
-const CACHE = 'v60-v6';
-const ASSETS = ['./','./index.html','./styles.css','./exercise-guides.css','./exercise-guides-v2.css','./app.js','./exercise-guides.js','./exercise-guides-v2.js','./manifest.json','./assets/icon.svg'];
+const CACHE = 'v60-v7';
+const ASSETS = ['./','./index.html','./styles.css','./exercise-guides.css','./exercise-guides-v2.css','./exercise-guides-v3.css','./app.js','./exercise-guides.js','./exercise-guides-v2.js','./exercise-guides-v3.js','./manifest.json','./assets/icon.svg'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
   self.skipWaiting();
@@ -9,5 +9,5 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 self.addEventListener('fetch', event => {
-  event.respondWith(fetch(event.request).catch(() => caches.match(event.request).then(cached => cached || caches.match('./index.html'))));
+  event.respondWith(fetch(event.request,{cache:'no-store'}).catch(() => caches.match(event.request).then(cached => cached || caches.match('./index.html'))));
 });
