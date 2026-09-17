@@ -30,6 +30,7 @@ jobs:
           node --check exercise-guides-v4.js
           node --check exercise-videos.js
           node --check v60-personal-progress.js
+          node --check v60-aesthetic-core.js
       - name: Validate licensed video coverage
         run: |
           node <<'NODE'
@@ -42,11 +43,11 @@ jobs:
           const videoIds = [...new Set([...videos.matchAll(videoPattern)].map(m=>m[1]))];
           const missing = exerciseIds.filter(id=>!videoIds.includes(id));
           const extra = videoIds.filter(id=>!exerciseIds.includes(id));
-          if(exerciseIds.length!==32) throw new Error(`Expected 32 workout exercises, found ${exerciseIds.length}`);
-          if(videoIds.length!==32) throw new Error(`Expected 32 licensed video mappings, found ${videoIds.length}`);
+          if(exerciseIds.length!==32) throw new Error(`Expected 32 base workout exercises, found ${exerciseIds.length}`);
+          if(videoIds.length!==32) throw new Error(`Expected 32 licensed base video mappings, found ${videoIds.length}`);
           if(missing.length) throw new Error(`Missing videos: ${missing.join(', ')}`);
           if(extra.length) throw new Error(`Unknown video mappings: ${extra.join(', ')}`);
-          console.log(`Licensed video coverage OK: ${videoIds.length}/${exerciseIds.length}`);
+          console.log(`Licensed base video coverage OK: ${videoIds.length}/${exerciseIds.length}`);
           NODE
       - name: Validate personal progress features
         run: |
@@ -57,6 +58,19 @@ jobs:
             if(!p.includes(required)) throw new Error(`Missing personal progress feature: ${required}`);
           }
           console.log('Personal progress feature set OK');
+          NODE
+      - name: Validate mandatory aesthetic core
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const core=fs.readFileSync('v60-aesthetic-core.js','utf8');
+          const ids=['core-crunch-seg','core-pallof-ter','crunch','core-woodchop-qui','crunch-2'];
+          for(const id of ids){
+            if(!core.includes(id)) throw new Error(`Missing mandatory core movement: ${id}`);
+          }
+          if(!core.includes("filter(x=>x.type==='cardio')")) throw new Error('Cardio-only optional extras rule missing');
+          if(!core.includes('sem flexão lateral pesada')) throw new Error('Waist-aesthetics guardrail missing');
+          console.log('Mandatory aesthetic core OK: 5/5 training days');
           NODE
       - name: Configure Pages
         uses: actions/configure-pages@v5
