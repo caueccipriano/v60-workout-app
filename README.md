@@ -1,38 +1,48 @@
-# V60 — treino pessoal
+# Traço — treino e evolução
 
-PWA simples, sem dependências e sem build, feita para acompanhar a ficha de 5 dias.
+PWA pessoal de treino, progressão e consistência, feita para acompanhar o treino real sem prender a rotina aos dias da semana.
 
-## O que já funciona
-- Treino do dia e ficha completa de segunda a sexta
-- Modo Academia
-- Registro de carga, repetições e séries concluídas
-- Cronômetro da sessão e descanso automático
-- Histórico por sessão
-- Gráfico de evolução de carga por exercício
-- Regra de progressão baseada na faixa de repetições
-- Medidas corporais
-- Backup/importação em JSON
-- Instalação como PWA
-- Dados salvos localmente no navegador (localStorage)
+## Produto
+- sequência flexível A → E, baseada no último treino concluído
+- recomendação automática do próximo treino
+- registro persistente de carga e repetições
+- descanso automático e cronômetro de sessão
+- core obrigatório nos 5 treinos
+- cardio opcional e registrável
+- meta semanal e streak
+- histórico por sessão
+- evolução de carga por exercício
+- frequência e volume por semana
+- medidas corporais
+- backup/importação em JSON
+- instalação como PWA
+- vídeos licenciados + guia técnico
 
-## Rodar no computador
-Qualquer servidor estático funciona.
+## Marca
+**Traço** representa linha, definição e progresso.
 
-### Python
+O símbolo une três ideias em um único gesto:
+- um **T** abstrato;
+- uma referência sutil à barra de treino;
+- uma linha ascendente de evolução.
+
+Paleta principal: lime + preto, com azul e laranja como cores funcionais da interface.
+
+## Compatibilidade de dados
+As chaves internas `v60_*` são mantidas temporariamente para preservar histórico, cargas, presença e configurações de instalações anteriores. Isso é intencional; o produto visível já é 100% Traço.
+
+## Rodar localmente
+
 ```bash
 python -m http.server 8080
 ```
+
 Depois abra `http://localhost:8080`.
 
-### VS Code
-Use a extensão Live Server e abra `index.html`.
-
-## Publicar grátis
-Pode ser publicado no GitHub Pages, Netlify ou Vercel como site estático.
-
-## Próxima versão sugerida
-- Supabase Auth + banco
-- Sincronização celular/PC
-- Fotos de evolução
-- Notificações
-- Edição de ficha dentro do app
+## Próximo grande bloco
+- Traço Account via Supabase Auth
+- sincronização celular/PC
+- banco de histórico e evolução
+- fotos de evolução
+- notificações
+- edição de ficha e ciclos dentro do app
