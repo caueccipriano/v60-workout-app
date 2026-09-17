@@ -19,7 +19,7 @@ function v60InstallAestheticCorePlan(){
   const wed=qua?.exercises.find(e=>e.id==='crunch');
   if(wed)Object.assign(wed,{name:'abdominal reverso no banco',equipment:'Banco reto',sets:3,min:12,max:15,rest:45,icon:'◼️',core:true});
   if(qui&&!qui.exercises.some(e=>e.id==='core-woodchop-qui')){
-    qui.exercises.push(v60CoreExercise('core-woodchop-qui','woodchop na polia','Polia alta / crossover',3,12,15,45,'↘️'));
+    qui.exercises.push(v60CoreExercise('core-woodchop-qui','woodchop na polia','Polia alta / crossover',2,15,20,40,'↘️'));
   }
   const fri=sex?.exercises.find(e=>e.id==='crunch-2');
   if(fri)Object.assign(fri,{name:'crunch ajoelhado na polia',equipment:'Polia alta + corda',sets:3,min:10,max:15,rest:45,icon:'◼️',core:true});
@@ -111,14 +111,14 @@ renderSession=function(){
   v60CoreBaseRenderSession();
   const ex=state.activeSession?.exercises?.[state.currentExercise];
   const hero=document.querySelector('.exercise-hero');
-  if(ex?.core&&hero&&!hero.querySelector('.v60-core-chip'))hero.insertAdjacentHTML('beforeend','<span class="v60-core-chip">CORE FIXO</span>');
+  if(ex?.core&&hero&&!hero.querySelector('.v60-core-chip'))hero.insertAdjacentHTML('beforeend','<span class="v60-core-chip">CORE · CINTURA</span>');
 };
 
 const v60CoreBaseRenderWorkouts=renderWorkouts;
 renderWorkouts=function(){
   v60CoreBaseRenderWorkouts();
   const main=document.querySelector('.workouts-page');
-  if(main&&!main.querySelector('.v60-core-program-note'))main.insertAdjacentHTML('beforeend','<section class="v60-core-program-note"><b>core em todos os 5 dias</b><span>3 estímulos de hipertrofia + 2 de estabilidade/controle</span></section>');
+  if(main&&!main.querySelector('.v60-core-program-note'))main.insertAdjacentHTML('beforeend','<section class="v60-core-program-note"><b>core em todos os 5 dias</b><span>reto abdominal + infra + anti-rotação + rotação controlada · sem flexão lateral pesada</span></section>');
 };
 
 if(state.activeSession)v60SyncCoreSession();
