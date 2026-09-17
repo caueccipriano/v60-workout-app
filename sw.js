@@ -1,4 +1,4 @@
-const CACHE = 'v60-v3';
+const CACHE = 'v60-v4';
 const ASSETS = ['./','./index.html','./styles.css','./app.js','./manifest.json','./assets/icon.svg'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
