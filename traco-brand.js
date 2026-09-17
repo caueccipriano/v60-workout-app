@@ -1,42 +1,19 @@
-const TRACO_NAME='Traço';
-const TRACO_VERSION='1.0.0';
-
-document.title='Traço — treino e evolução';
-
-function tracoBrandMark(){
-  return '<span class="traco-mark" aria-label="Traço"><img src="./assets/icon.svg" alt="" /><b>traço</b></span>';
-}
-
-const tracoBaseRenderHome=renderHome;
-renderHome=function(){
-  tracoBaseRenderHome();
-  const head=document.querySelector('.home-head');
-  if(head&&!head.querySelector('.traco-mark')){
-    const profile=head.querySelector('.profile-btn');
-    profile?.insertAdjacentHTML('beforebegin',tracoBrandMark());
-  }
-};
-
-const tracoBaseRenderSettings=renderSettings;
-renderSettings=function(){
-  tracoBaseRenderSettings();
-  const intro=document.querySelector('.settings-intro');
-  if(intro&&!document.querySelector('.traco-identity-card')){
-    intro.insertAdjacentHTML('beforebegin',`<section class="traco-identity-card"><img src="./assets/icon.svg" alt="ícone Traço"><div><span>seu treino vive aqui.</span><b>Traço</b><small>versão ${TRACO_VERSION}</small></div></section>`);
-  }
-};
+window.TRACO_BRAND={name:'Traço',version:'1.0.0',legacyDataPrefix:'v60_'};
+document.title='Traço';
 
 exportData=function(){
+  const storage={};
+  for(let i=0;i<localStorage.length;i++){
+    const key=localStorage.key(i);
+    if(key&&(key.startsWith('v60_')||key.startsWith('traco_')))storage[key]=localStorage.getItem(key);
+  }
   const data={
-    app:TRACO_NAME,
-    version:TRACO_VERSION,
+    brand:'Traço',
+    version:'1.0.0',
     sessions:sessions(),
     body:body(),
     settings:settings(),
-    profile:typeof v60Profile==='function'?v60Profile():load('v60_profile',{}),
-    attendance:typeof v60LoadAttendance==='function'?v60LoadAttendance():load('v60_attendance_v1',[]),
-    smartSequence:typeof v60SequenceState==='function'?v60SequenceState():load('v60_smart_sequence_v1',null),
-    absDefaults:load('v60_abs_defaults',null),
+    storage,
     exportedAt:new Date().toISOString()
   };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
@@ -48,23 +25,46 @@ exportData=function(){
 };
 
 importData=function(e){
-  const f=e.target.files?.[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=()=>{
+  const file=e.target.files?.[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
     try{
-      const d=JSON.parse(r.result);
-      if(d.sessions)save(K.sessions,d.sessions);
-      if(d.body)save(K.body,d.body);
-      if(d.settings)save(K.settings,d.settings);
-      if(d.profile)save('v60_profile',d.profile);
-      if(d.attendance)save('v60_attendance_v1',d.attendance);
-      if(d.smartSequence)save('v60_smart_sequence_v1',d.smartSequence);
-      if(d.absDefaults)save('v60_abs_defaults',d.absDefaults);
-      toast('backup Traço importado');
+      const data=JSON.parse(reader.result);
+      if(data.storage&&typeof data.storage==='object'){
+        Object.entries(data.storage).forEach(([key,value])=>{
+          if((key.startsWith('v60_')||key.startsWith('traco_'))&&typeof value==='string')localStorage.setItem(key,value);
+        });
+      }else{
+        if(data.sessions)save(K.sessions,data.sessions);
+        if(data.body)save(K.body,data.body);
+        if(data.settings)save(K.settings,data.settings);
+      }
+      toast('backup do Traço importado');
       render();
-    }catch{alert('arquivo de backup inválido')}
+    }catch{
+      alert('arquivo de backup inválido');
+    }
   };
-  r.readAsText(f);
+  reader.readAsText(file);
+};
+
+const tracoBaseRenderHome=renderHome;
+renderHome=function(){
+  tracoBaseRenderHome();
+  const head=document.querySelector('.home-head');
+  if(head&&!document.querySelector('.traco-brandmark')){
+    head.insertAdjacentHTML('beforebegin','<div class="traco-brandmark">traço <small>treino & evolução</small></div>');
+  }
+};
+
+const tracoBaseRenderSettings=renderSettings;
+renderSettings=function(){
+  tracoBaseRenderSettings();
+  const intro=document.querySelector('.settings-intro');
+  if(intro&&!document.querySelector('.traco-about-card')){
+    intro.insertAdjacentHTML('afterend','<section class="traco-about-card"><img src="./assets/traco-icon-180.png" alt=""><div><span>seu app</span><b>Traço</b><small>treino · evolução · constância · versão 1.0</small></div></section>');
+  }
 };
 
 render();
