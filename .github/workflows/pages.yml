@@ -31,6 +31,7 @@ jobs:
           node --check exercise-videos.js
           node --check v60-personal-progress.js
           node --check v60-aesthetic-core.js
+          node --check v60-smart-sequence.js
       - name: Validate licensed video coverage
         run: |
           node <<'NODE'
@@ -71,6 +72,16 @@ jobs:
           if(!core.includes("filter(x=>x.type==='cardio')")) throw new Error('Cardio-only optional extras rule missing');
           if(!core.includes('sem flexão lateral pesada')) throw new Error('Waist-aesthetics guardrail missing');
           console.log('Mandatory aesthetic core OK: 5/5 training days');
+          NODE
+      - name: Validate flexible sequence and attendance bootstrap
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const s=fs.readFileSync('v60-smart-sequence.js','utf8');
+          for(const required of ["workoutId:'qua'","workoutId:'seg'","workoutId:'ter'","workoutId:'qui'","workoutId:'sex'","nextWorkoutId:'ter'","2026-09-14","2026-09-17","v60TrainingStreak","todayWorkout=function"]){
+            if(!s.includes(required)) throw new Error(`Missing smart-sequence feature: ${required}`);
+          }
+          console.log('Flexible sequence OK: A back → B chest → C legs next; attendance Mon-Thu seeded');
           NODE
       - name: Configure Pages
         uses: actions/configure-pages@v5
