@@ -1,0 +1,11 @@
+.home-head{position:relative}
+.traco-mark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:inline-flex;align-items:center;gap:7px;pointer-events:none}
+.traco-mark img{width:24px;height:24px;border-radius:7px;display:block}
+.traco-mark b{font-size:14px;letter-spacing:-.035em;text-transform:lowercase}
+.traco-identity-card{margin:0 0 18px;background:#111;color:#fff;border-radius:24px;padding:18px;display:flex;align-items:center;gap:15px}
+.traco-identity-card img{width:58px;height:58px;border-radius:16px;flex:0 0 auto}
+.traco-identity-card div{display:flex;flex-direction:column;min-width:0}
+.traco-identity-card span{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--lime);font-weight:900}
+.traco-identity-card b{font-family:"DM Serif Display",Georgia,serif;font-size:28px;line-height:1;margin:2px 0 3px;font-weight:400}
+.traco-identity-card small{font-size:10px;color:#999}
+@media(max-width:390px){.traco-mark b{display:none}.traco-mark{gap:0}}
