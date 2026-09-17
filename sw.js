@@ -1,5 +1,5 @@
-const CACHE = 'v60-v13';
-const ASSETS = ['./','./index.html','./styles.css','./exercise-guides.css','./exercise-guides-v4.css','./exercise-videos.css','./v60-personal-progress.css','./v60-aesthetic-core.css','./v60-smart-sequence.css','./app.js','./exercise-guides.js','./exercise-guides-v4.js','./exercise-videos.js','./v60-personal-progress.js','./v60-aesthetic-core.js','./v60-smart-sequence.js','./manifest.json','./assets/icon.svg'];
+const CACHE = 'traco-v1';
+const ASSETS = ['./','./index.html','./styles.css','./exercise-guides.css','./exercise-guides-v4.css','./exercise-videos.css','./v60-personal-progress.css','./v60-aesthetic-core.css','./v60-smart-sequence.css','./traco-brand.css','./app.js','./exercise-guides.js','./exercise-guides-v4.js','./exercise-videos.js','./v60-personal-progress.js','./v60-aesthetic-core.js','./v60-smart-sequence.js','./traco-brand.js','./manifest.json','./assets/icon.svg','./assets/traco-icon-180.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
   self.skipWaiting();
