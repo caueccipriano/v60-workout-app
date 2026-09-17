@@ -1,4 +1,4 @@
-name: Deploy V60 to GitHub Pages
+name: Deploy Traço to GitHub Pages
 
 on:
   push:
@@ -32,6 +32,7 @@ jobs:
           node --check v60-personal-progress.js
           node --check v60-aesthetic-core.js
           node --check v60-smart-sequence.js
+          node --check traco-brand.js
       - name: Validate licensed video coverage
         run: |
           node <<'NODE'
@@ -82,6 +83,23 @@ jobs:
             if(!s.includes(required)) throw new Error(`Missing smart-sequence feature: ${required}`);
           }
           console.log('Flexible sequence OK: A back → B chest → C legs next; attendance Mon-Thu seeded');
+          NODE
+      - name: Validate Traço brand
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const manifest=fs.readFileSync('manifest.json','utf8');
+          const index=fs.readFileSync('index.html','utf8');
+          const version=JSON.parse(fs.readFileSync('version.json','utf8'));
+          const brand=fs.readFileSync('traco-brand.js','utf8');
+          if(!manifest.includes('"short_name": "Traço"')) throw new Error('Traço PWA name missing');
+          if(!manifest.includes('traco-icon-180.png')) throw new Error('Traço iOS icon missing from manifest');
+          if(!index.includes('apple-mobile-web-app-title" content="Traço"')) throw new Error('Traço iOS title missing');
+          if(!index.includes('traco-brand.js')) throw new Error('Traço brand layer not loaded');
+          if(version.name!=='Traço'||version.version!=='1.0.0') throw new Error('Traço 1.0 version mismatch');
+          if(!brand.includes("a.download='traco-backup.json'")) throw new Error('Traço backup naming missing');
+          if(!fs.existsSync('assets/traco-icon-180.png')) throw new Error('Traço touch icon asset missing');
+          console.log('Traço brand OK: PWA, iOS, icon, backup and version');
           NODE
       - name: Configure Pages
         uses: actions/configure-pages@v5
