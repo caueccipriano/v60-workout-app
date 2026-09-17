@@ -1,0 +1,4 @@
+.v60-sequence-note{margin:0 0 16px;border-radius:20px;background:#111;color:#fff;padding:17px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.v60-sequence-note div{display:flex;flex-direction:column;gap:4px}.v60-sequence-note span{font-size:9px;text-transform:uppercase;letter-spacing:.09em;color:var(--lime);font-weight:900}.v60-sequence-note b{font-size:14px}.v60-sequence-note small{max-width:210px;text-align:right;color:#aaa;font-size:9px;line-height:1.35}
+.v60-attendance-chip{cursor:default}
+@media(max-width:430px){.v60-sequence-note{align-items:flex-start;flex-direction:column}.v60-sequence-note small{text-align:left;max-width:none}}
