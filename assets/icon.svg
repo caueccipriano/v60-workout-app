@@ -1,6 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="120" fill="#111111"/>
-  <rect x="92" y="92" width="328" height="328" rx="92" fill="#FAFAFA"/>
-  <path d="M155 170h58l43 104 43-104h58l-75 178h-52z" fill="#2138B0"/>
-  <circle cx="340" cy="165" r="38" fill="#C4D82E"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Traço">
+  <rect width="512" height="512" rx="112" fill="#B8FF00"/>
+  <g fill="#111111">
+    <rect x="70" y="190" width="48" height="132" rx="24"/>
+    <rect x="135" y="145" width="62" height="182" rx="28"/>
+    <path d="M190 211h111c10 0 19-3 28-9l69-48c18-13 43 0 43 22v122c0 17-14 31-31 31s-31-14-31-31v-63l-52 36c-10 7-22 11-34 11H190z"/>
+    <rect x="225" y="270" width="62" height="150" rx="28"/>
+    <rect x="444" y="190" width="48" height="132" rx="24"/>
+  </g>
 </svg>
