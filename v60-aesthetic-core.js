@@ -59,12 +59,6 @@ function v60CoreSceneWoodchop(){
 
 v60InstallAestheticCorePlan();
 
-if(typeof V60_LICENSED_VIDEOS!=='undefined'){
-  V60_LICENSED_VIDEOS['core-crunch-seg']={pexelsId:'36484275',match:'equivalent'};
-  V60_LICENSED_VIDEOS['core-pallof-ter']={pexelsId:'5319760',match:'equivalent'};
-  V60_LICENSED_VIDEOS['core-woodchop-qui']={pexelsId:'34491184',match:'equivalent'};
-}
-
 if(typeof v60V4Scene==='function'){
   const v60CoreBaseScene=v60V4Scene;
   v60V4Scene=function(ex){
