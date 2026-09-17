@@ -1,0 +1,7 @@
+.exercise-guide-motion,.v60-guide-motion-large{position:relative;display:block;width:100%;overflow:hidden;background:var(--blue)}
+.exercise-guide-motion{aspect-ratio:2/1}
+.v60-guide-motion-large{aspect-ratio:11/6;border-radius:25px;box-shadow:var(--shadow-soft)}
+.v60-motion-svg{display:block;width:100%;height:100%}
+.motion-loop-badge{position:absolute;left:12px;bottom:12px;display:inline-flex;align-items:center;background:rgba(17,17,17,.78);color:#fff;border-radius:999px;padding:7px 10px;font-size:9px;font-weight:800;letter-spacing:.02em;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.exercise-guide-preview>img,.v60-guide-image{display:none!important}
+@media(prefers-reduced-motion:reduce){.motion-loop-badge{display:none}}
