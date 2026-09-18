@@ -605,7 +605,7 @@ jobs:
             'abdutora-2':{provider:'youtube',id:'7pbZA7ncuq8'},
             'core-pallof-ter':{provider:'youtube',id:'SFJprbDnaS0'},
             'leg-press-alto':{provider:'youtube',id:'iQhP0kkadSI'},
-            'core-leg-raise-ter':{provider:'vimeo',id:'877885227'},
+            'core-leg-raise-ter':{provider:'youtube',id:'0tzBVqiDwSs'},
             'crunch':{provider:'youtube',id:'nCHypnGvcq4'},
             'crunch-2':{provider:'vimeo',id:'760008287'},
             'core-crunch-seg':{provider:'vimeo',id:'760008287'},
