@@ -1872,3 +1872,9 @@ html[data-design="performance"] .perf-value-panel label small{
   text-align:center!important;
   white-space:nowrap!important;
 }
+
+/* 2.4.5 — compact workout numeric values */
+html[data-design="performance"] .perf-value-panel label input{
+  font-size:22px!important;
+  letter-spacing:-.025em!important;
+}
