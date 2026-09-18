@@ -6,6 +6,8 @@
 const TRACO_GYM_UX_VERSION='2.3.0';
 const TRACO_ACHIEVEMENT='#F4C542';
 const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
+const TRACO_WORKOUT_ORDER_KEY='traco_workout_order_v1';
+const TRACO_WORKOUT_DEFAULT_ORDER=Object.fromEntries(workoutPlan.map(w=>[w.id,w.exercises.map(ex=>ex.id)]));
 
 function tracoGymEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));}
 function tracoGymCalendar(){
@@ -48,6 +50,98 @@ function tracoGymExecutionButton(ex){
     <span><b>ver execução</b><small>${offline?'guia técnico disponível offline':hasVideo?'vídeo 1:1 + guia técnico':'guia técnico do movimento'}</small></span>
     <i>↗</i>
   </button>`;
+}
+
+function tracoGymWorkoutOrders(){
+  try{return JSON.parse(localStorage.getItem(TRACO_WORKOUT_ORDER_KEY)||'{}')||{};}catch{return {};}
+}
+function tracoGymApplyExerciseOrder(workoutId,ids){
+  const workout=workoutPlan.find(w=>w.id===workoutId);if(!workout||!Array.isArray(ids))return;
+  const map=new Map(workout.exercises.map(ex=>[ex.id,ex]));
+  const ordered=ids.map(id=>map.get(id)).filter(Boolean);
+  const used=new Set(ordered.map(ex=>ex.id));
+  const missing=workout.exercises.filter(ex=>!used.has(ex.id));
+  workout.exercises.splice(0,workout.exercises.length,...ordered,...missing);
+}
+function tracoGymApplySavedExerciseOrders(){
+  const saved=tracoGymWorkoutOrders();
+  workoutPlan.forEach(w=>tracoGymApplyExerciseOrder(w.id,saved[w.id]));
+}
+function tracoGymHasCustomOrder(workoutId){
+  const saved=tracoGymWorkoutOrders()[workoutId];
+  const base=TRACO_WORKOUT_DEFAULT_ORDER[workoutId]||[];
+  return Array.isArray(saved)&&saved.length&&saved.join('|')!==base.join('|');
+}
+function tracoGymCloseOrderEditor(){
+  document.querySelector('#tracoOrderEditor')?.remove();
+  document.body.classList.remove('traco-order-open');
+}
+function tracoGymOpenOrderEditor(workoutId){
+  const workout=workoutPlan.find(w=>w.id===workoutId);if(!workout)return;
+  let ids=workout.exercises.map(ex=>ex.id);
+  const byId=()=>new Map(workout.exercises.map(ex=>[ex.id,ex]));
+
+  document.querySelector('#tracoOrderEditor')?.remove();
+  document.body.classList.add('traco-order-open');
+  document.body.insertAdjacentHTML('beforeend',`<div class="traco-order-backdrop" id="tracoOrderEditor">
+    <section class="traco-order-sheet" role="dialog" aria-modal="true" aria-label="organizar exercícios">
+      <header class="traco-order-head">
+        <div><span>ordem do treino</span><h3>organizar exercícios</h3><small>${tracoGymEsc(workout.short)}</small></div>
+        <button type="button" id="tracoOrderClose" aria-label="fechar">×</button>
+      </header>
+      <p class="traco-order-help">move com as setas. a ordem salva vira a sequência do próximo treino.</p>
+      <div class="traco-order-list" id="tracoOrderList"></div>
+      <div class="traco-order-actions">
+        <button type="button" class="traco-order-reset" id="tracoOrderReset">restaurar original</button>
+        <button type="button" class="cta-lime" id="tracoOrderSave">salvar ordem</button>
+      </div>
+    </section>
+  </div>`);
+
+  const renderRows=()=>{
+    const map=byId(),list=$('#tracoOrderList');
+    list.innerHTML=ids.map((id,i)=>{
+      const ex=map.get(id);if(!ex)return '';
+      return `<article class="traco-order-row" data-order-id="${tracoGymEsc(id)}">
+        <span class="traco-order-position">${String(i+1).padStart(2,'0')}</span>
+        <span class="traco-order-exercise"><b>${tracoGymEsc(ex.name)}</b><small>${tracoGymEsc(ex.equipment||'')}</small></span>
+        <span class="traco-order-controls">
+          <button type="button" data-order-up="${i}" aria-label="subir ${tracoGymEsc(ex.name)}" ${i===0?'disabled':''}>↑</button>
+          <button type="button" data-order-down="${i}" aria-label="descer ${tracoGymEsc(ex.name)}" ${i===ids.length-1?'disabled':''}>↓</button>
+        </span>
+      </article>`;
+    }).join('');
+    $('[data-order-up]').forEach(btn=>btn.onclick=()=>{
+      const i=Number(btn.dataset.orderUp);if(i<=0)return;
+      [ids[i-1],ids[i]]=[ids[i],ids[i-1]];haptic();renderRows();
+    });
+    $('[data-order-down]').forEach(btn=>btn.onclick=()=>{
+      const i=Number(btn.dataset.orderDown);if(i<0||i>=ids.length-1)return;
+      [ids[i],ids[i+1]]=[ids[i+1],ids[i]];haptic();renderRows();
+    });
+  };
+  renderRows();
+
+  $('#tracoOrderClose').onclick=tracoGymCloseOrderEditor;
+  $('#tracoOrderEditor').onclick=e=>{if(e.target.id==='tracoOrderEditor')tracoGymCloseOrderEditor();};
+  $('#tracoOrderReset').onclick=()=>{
+    const base=TRACO_WORKOUT_DEFAULT_ORDER[workoutId]||[];
+    const current=new Set(workout.exercises.map(ex=>ex.id));
+    ids=[...base.filter(id=>current.has(id)),...workout.exercises.map(ex=>ex.id).filter(id=>!base.includes(id))];
+    haptic();renderRows();
+  };
+  $('#tracoOrderSave').onclick=()=>{
+    const all=tracoGymWorkoutOrders();
+    const base=TRACO_WORKOUT_DEFAULT_ORDER[workoutId]||[];
+    if(ids.join('|')===base.join('|'))delete all[workoutId];else all[workoutId]=ids.slice();
+    localStorage.setItem(TRACO_WORKOUT_ORDER_KEY,JSON.stringify(all));
+    tracoGymApplyExerciseOrder(workoutId,ids);
+    const draft=load(K.draft,null);
+    tracoGymCloseOrderEditor();
+    toast(draft&&draft.workoutId===workoutId&&!draft.finishedAt?'ordem salva · vale no próximo treino':'ordem do treino salva');
+    haptic();
+    renderWorkouts();
+  };
 }
 
 /* HOME */
@@ -123,12 +217,24 @@ renderWorkouts=function(){
     const small=note.querySelector('small');if(small)small.textContent='sequência flexível: siga a recomendação ou escolha outro treino.';
   }
 
-  $$('.workout-select[data-workout]').forEach(card=>{
+  $('.workout-select[data-workout]').forEach(card=>{
     const small=card.querySelector('small'),id=card.dataset.workout;
     if(small&&!small.querySelector?.('.x')&&!small.textContent.includes('feito ')){
       small.textContent=small.textContent.replace(/ · sequência/g,'')+` · ${tracoGymLastWorkout(id)}`;
     }
   });
+
+  const selectedId=state.selectedWorkout||(typeof v60RecommendedWorkout==='function'?v60RecommendedWorkout().id:todayWorkout().id);
+  const selected=workoutPlan.find(w=>w.id===selectedId);
+  const block=main.querySelector('.selected-block');
+  if(block&&selected&&!block.querySelector('.traco-organize-exercises')){
+    const preview=block.querySelector('.exercise-preview');
+    preview?.insertAdjacentHTML('beforebegin',`<button type="button" class="traco-organize-exercises" id="tracoOrganizeExercises">
+      <span><b>organizar exercícios</b><small>${tracoGymHasCustomOrder(selected.id)?'ordem personalizada ativa':'mudar a sequência deste treino'}</small></span>
+      <i>↕</i>
+    </button>`);
+    $('#tracoOrganizeExercises').onclick=()=>tracoGymOpenOrderEditor(selected.id);
+  }
 };
 
 /* PROGRESS */
@@ -218,4 +324,5 @@ renderFinish=function(){
   localStorage.setItem(TRACO_LAST_LEVEL_KEY,String(xp.level));
 };
 
+tracoGymApplySavedExerciseOrders();
 render();
