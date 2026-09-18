@@ -56,7 +56,7 @@ function todayWorkout(){const day=new Date().getDay();return workoutPlan.find(w=
 function lastExercisePerf(exId){const ss=sessions().filter(s=>s.finishedAt).sort((a,b)=>b.startedAt-a.startedAt);for(const s of ss){const ex=s.exercises.find(e=>e.id===exId);if(ex)return ex}return null}
 function toast(msg){const t=$('#toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600)}
 function fmtClock(sec){const m=Math.floor(sec/60),s=sec%60;return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}
-function volumeOfSession(s){return s.exercises.reduce((sum,ex)=>sum+ex.sets.reduce((a,set)=>a+(set.done?Number(set.weight||0)*Number(set.reps||0):0),0),0)}
+function volumeOfSession(s){if(s?.excludeFromVolume)return 0;return s.exercises.reduce((sum,ex)=>sum+ex.sets.reduce((a,set)=>a+(set.done?Number(set.weight||0)*Number(set.reps||0):0),0),0)}
 function formatLoad(v){if(v>=1000)return `${(v/1000).toFixed(v>=10000?1:2).replace('.',',')}t`;return `${Math.round(v)}kg`}
 function weekSessions(){const now=new Date();const start=new Date(now);const diff=(start.getDay()+6)%7;start.setDate(start.getDate()-diff);start.setHours(0,0,0,0);return sessions().filter(s=>s.finishedAt&&s.startedAt>=start.getTime())}
 function calcStreak(ss=sessions()){
