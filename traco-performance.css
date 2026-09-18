@@ -232,6 +232,7 @@ html[data-theme="light"] .perf-workout-hero{background:linear-gradient(145deg,#1
 .perf-exercise-top small{display:block;color:var(--perf-orange);font:700 8px/1 var(--perf-display);letter-spacing:.1em;text-transform:uppercase}
 .perf-exercise-top h1{margin:4px 0 2px;font:700 27px/.98 var(--perf-display);letter-spacing:-.05em}
 .perf-exercise-top p{margin:0;color:var(--muted);font-size:9px}
+.perf-core-chip{display:inline-flex;margin-top:7px;border:1px solid #60341C;border-radius:6px;padding:4px 6px;color:var(--perf-orange);font:800 7px/1 var(--perf-display);letter-spacing:.09em}
 .perf-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 .perf-value-panel{border:1px solid var(--line);border-radius:12px;padding:10px 8px;background:color-mix(in srgb,var(--surface) 50%,var(--surface-soft))}
 .perf-value-panel>span{display:block;text-align:center;font:700 7px/1 var(--perf-display);letter-spacing:.11em;color:var(--muted)}
