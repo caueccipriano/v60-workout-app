@@ -86,7 +86,7 @@ function v60VideoFor(ex){return TRACO_VIDEO_LIBRARY[String(ex?.id||'')]||null;}
 function v60VideoEmbedUrl(video){
   if(!video)return '';
   if(video.provider==='youtube')return `https://www.youtube.com/embed/${encodeURIComponent(video.id)}?rel=0&modestbranding=1&playsinline=1`;
-  if(video.provider==='vimeo')return `https://player.vimeo.com/video/${encodeURIComponent(video.id)}?${video.hash?`h=${encodeURIComponent(video.hash)}&`:''}dnt=1&title=0&byline=0&portrait=0`;
+  if(video.provider==='vimeo')return `https://player.vimeo.com/video/${encodeURIComponent(video.id)}?${video.hash?`h=${encodeURIComponent(video.hash)}&`:''}title=0&byline=0&portrait=0&playsinline=1`;
   return '';
 }
 function v60VideoSourceUrl(video){
@@ -152,6 +152,9 @@ function tracoMediaPreview(ex){
   if(!video){
     return `<div class="exercise-guide-preview v60-v4-preview traco-media-preview"><div class="v60-v4-motion-wrap">${technical.html}</div><button id="openExerciseGuide" class="exercise-guide-caption" type="button"><span><b>ver guia técnico</b><small>${tracoMediaEsc(technical.cue)}</small></span><i>↗</i></button></div>`;
   }
+  if(video.provider==='vimeo'){
+    return `<div class="exercise-guide-preview v60-v4-preview traco-media-preview has-video-source"><div class="v60-v4-motion-wrap">${technical.html}<span class="v60-v4-loop-badge"><i></i> guia local</span></div><button id="openExerciseGuide" class="exercise-guide-caption" type="button"><span><b>abrir guia completo</b><small>${tracoMediaEsc(video.variant)}</small></span><i>↗</i></button></div>`;
+  }
   return `<div class="exercise-guide-preview v60-video-preview traco-media-preview has-real-video">${v60VideoIframe(ex)}<button id="openExerciseGuide" class="exercise-guide-caption" type="button"><span><b>abrir guia completo</b><small>${tracoMediaEsc(video.variant)}</small></span><i>↗</i></button></div>`;
 }
 function v60GuidePreview(ex){return tracoMediaPreview(ex);}
@@ -161,7 +164,7 @@ function v60ShowGuide(ex){
   document.body.classList.add('v60-guide-open');
   const offline=navigator.onLine===false;
   const primary=video&&!offline
-    ? `${v60VideoIframe(ex,{large:true})}<div class="v60-video-meta"><div><span>fonte</span><b>${tracoMediaEsc(video.source)}</b></div><div><span>variante validada</span><b>${tracoMediaEsc(video.variant)}</b></div></div><section class="v60-exact-reference"><div class="v60-exact-reference-head"><span>referência técnica</span><small>posição · trajetória · segurança</small></div>${media.html}</section>`
+    ? `${video.provider==='youtube'?v60VideoIframe(ex,{large:true}):`<div class="v60-v4-motion-wrap v60-v4-motion-large">${media.html}</div>`}<div class="v60-video-meta"><div><span>fonte</span><b>${tracoMediaEsc(video.source)}</b></div><div><span>variante validada</span><b>${tracoMediaEsc(video.variant)}</b></div></div><section class="v60-exact-reference"><div class="v60-exact-reference-head"><span>referência técnica</span><small>posição · trajetória · segurança</small></div>${media.html}</section>`
     : `<div class="traco-offline-guide-note">${offline?'<span>OFFLINE</span><b>guia técnico local</b><small>o vídeo 1:1 volta automaticamente quando houver internet.</small>':''}</div><div class="v60-v4-motion-wrap v60-v4-motion-large">${media.html}</div><p class="v60-v4-tech-note">${tracoMediaEsc(scene.note)}</p>`;
   const sourceLink=video&&!offline?`<a class="v60-video-source-link" href="${v60VideoSourceUrl(video)}" target="_blank" rel="noopener noreferrer">abrir fonte ↗</a>`:'';
   document.body.insertAdjacentHTML('beforeend',`<div class="v60-guide-backdrop" id="v60GuideBackdrop"></div><aside class="v60-guide-sheet ${video?'v60-video-sheet':'v60-v4-sheet'}" id="v60GuideSheet" role="dialog" aria-modal="true" aria-label="execução de ${tracoMediaEsc(ex.name)}"><div class="v60-guide-handle"></div><button class="v60-guide-close" id="v60GuideClose" aria-label="fechar">×</button><div class="v60-guide-content"><span class="v60-guide-kicker">${offline?'modo offline · execução local':video?'vídeo de execução 1:1':'guia técnico validado'}</span><h2>${tracoMediaEsc(ex.name)}</h2><p class="v60-guide-equipment">${tracoMediaEsc(ex.equipment)}</p>${primary}<div class="v60-guide-tags"><span>${tracoMediaEsc(g.focus)}</span><span>${setCount} × ${tracoMediaEsc(ex.min)}-${tracoMediaEsc(ex.max)}</span><span>${tracoMediaEsc(ex.rest)}s descanso</span></div><section class="v60-guide-tips"><h3>dicas rápidas</h3><ol>${g.tips.map(t=>`<li>${tracoMediaEsc(t)}</li>`).join('')}</ol></section><section class="v60-guide-error"><span>erro comum</span><p>${tracoMediaEsc(g.error)}</p></section><p class="v60-video-license-note">Traço Exact Media · exercício, equipamento e variante revisados manualmente${spec?.scene?` · ${tracoMediaEsc(spec.scene)}`:''}.</p>${sourceLink}<button class="cta-lime" id="v60GuideDone">voltar pro treino</button></div></aside>`);
