@@ -466,7 +466,7 @@ jobs:
           const css=fs.readFileSync('traco-gym-ux.css','utf8');
 
           for(const required of [
-            "const TRACO_GYM_UX_VERSION='2.3.14'",
+            "const TRACO_GYM_UX_VERSION='2.4.0'",
             'function tracoGymDirectStart',
             'function tracoGymOpenPreStart',
             'startSession=tracoGymDirectStart;',
