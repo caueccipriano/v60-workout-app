@@ -1506,3 +1506,40 @@ html[data-design="performance"] body:not(.traco-order-open):not(.traco-exercise-
 html[data-design="performance"] body:not(.traco-order-open):not(.traco-exercise-picker-open) .traco-exercise-picker-backdrop{
   pointer-events:none;
 }
+
+
+/* Traço 2.3.14 — definitive normal-page scroll recovery */
+html[data-design="performance"] .traco-prestart-page,
+html[data-design="performance"] .traco-prestart-page-inner{
+  position:static !important;
+  height:auto !important;
+  max-height:none !important;
+  min-height:0 !important;
+  overflow:visible !important;
+  touch-action:pan-y !important;
+}
+html[data-design="performance"] .traco-prestart-page{
+  min-height:100dvh !important;
+}
+html[data-design="performance"] .traco-prestart-page-inner{
+  padding-bottom:calc(32px + env(safe-area-inset-bottom)) !important;
+}
+html[data-design="performance"] .traco-prestart-page .traco-prestart-go{
+  position:static !important;
+  inset:auto !important;
+  left:auto !important;
+  right:auto !important;
+  top:auto !important;
+  bottom:auto !important;
+  z-index:auto !important;
+  width:100% !important;
+  max-width:none !important;
+  margin:10px 0 0 !important;
+  box-shadow:none !important;
+}
+html[data-design="performance"] body:not(.traco-order-open):not(.traco-exercise-picker-open):not(.v60-guide-open):not(.traco-editor-open){
+  overflow-y:auto !important;
+  position:static !important;
+  height:auto !important;
+  touch-action:pan-y !important;
+}
