@@ -1652,3 +1652,24 @@ html[data-design="performance"] .perf-value-panel label small{
 .traco-exercise-choice{min-height:58px}
 .traco-exercise-choice.is-current{border-color:var(--traco-action) !important;background:rgba(255,59,48,.08) !important}
 .traco-exercise-choice.is-complete{opacity:.62}
+
+
+/* TRAÇO 2.4.1 — visible workout list in the session */
+.traco-today-workout{margin:10px 0 12px;border:1px solid #34343A;border-radius:13px;background:#111113;overflow:hidden}
+.traco-today-workout>header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 13px;border-bottom:1px solid #29292D}
+.traco-today-workout>header small,.traco-today-workout>header b{display:block}
+.traco-today-workout>header small{color:var(--traco-action);font-size:7px;font-weight:900;letter-spacing:.13em}
+.traco-today-workout>header b{margin-top:4px;font-size:11px}
+.traco-today-workout>header em{font-size:8px;font-style:normal;font-weight:800;color:#92959B}
+.traco-today-workout-list{display:grid}
+.traco-today-exercise-row{width:100%;min-height:49px;padding:7px 12px;display:grid;grid-template-columns:28px minmax(0,1fr) 24px;align-items:center;gap:8px;border:0;border-bottom:1px solid #242428;background:transparent;color:var(--traco-text);text-align:left}
+.traco-today-exercise-row:last-child{border-bottom:0}
+.traco-today-exercise-row:active{background:#1A1A1D}
+.traco-today-exercise-index{font-size:9px;font-weight:900;color:#777A81}
+.traco-today-exercise-copy b{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.traco-today-exercise-copy small{display:block;margin-top:3px;font-size:8px;color:#85888F}
+.traco-today-exercise-go{text-align:right;font-size:10px;color:#777A81}
+.traco-today-exercise-row.is-current{background:rgba(255,59,48,.07)}
+.traco-today-exercise-row.is-current .traco-today-exercise-index,.traco-today-exercise-row.is-current .traco-today-exercise-go{color:var(--traco-action)}
+.traco-today-exercise-row.is-complete{opacity:.55}
+.traco-today-exercise-row.is-complete .traco-today-exercise-index{color:var(--traco-action)}
