@@ -499,13 +499,27 @@ renderSession=function(){
     </section>`:'';
 
     const exerciseDone=state.activeSession.exercises.filter(item=>(item.sets||[]).length&&(item.sets||[]).every(set=>set.done)).length;
-    progress.insertAdjacentHTML('afterend',`${firstOrder}<button type="button" class="traco-today-exercises" id="tracoTodayExercises">
-      <span><small>TREINO DE HOJE</small><b>${exerciseDone}/${state.activeSession.exercises.length} exercícios</b></span>
-      <span class="traco-today-exercises-action">ver lista <i>⌄</i></span>
-    </button>`);
+    const exerciseRows=state.activeSession.exercises.map((item,i)=>{
+      const st=tracoGymExerciseStatus(state.activeSession,item);
+      const active=item.id===ex?.id;
+      return `<button type="button" class="traco-today-exercise-row ${active?'is-current':''} ${st.complete?'is-complete':''}" data-today-exercise="${tracoGymEsc(item.id)}" ${st.complete?'disabled':''}>
+        <span class="traco-today-exercise-index">${st.complete?'✓':String(i+1).padStart(2,'0')}</span>
+        <span class="traco-today-exercise-copy"><b>${tracoGymEsc(item.name)}</b><small>${st.done}/${st.total} séries${active?' · agora':''}</small></span>
+        <span class="traco-today-exercise-go">${active?'●':'→'}</span>
+      </button>`;
+    }).join('');
+    progress.insertAdjacentHTML('afterend',`${firstOrder}<section class="traco-today-workout">
+      <header><span><small>TREINO DE HOJE</small><b>${exerciseDone}/${state.activeSession.exercises.length} exercícios</b></span><em>ordem livre</em></header>
+      <div class="traco-today-workout-list">${exerciseRows}</div>
+    </section>`);
 
     if($('#tracoInitialOrder'))$('#tracoInitialOrder').onclick=()=>tracoGymOpenSetOrderEditor(state.activeSession.workoutId,{session:state.activeSession});
-    $('#tracoTodayExercises').onclick=tracoGymOpenExercisePicker;
+    $('[data-today-exercise]').forEach(btn=>btn.onclick=()=>{
+      const id=btn.dataset.todayExercise;
+      if(!tracoGymMoveExerciseNext(state.activeSession,id))return;
+      haptic();
+      renderSession();
+    });
   }
   tracoGymRepairOverlayState();
 };
