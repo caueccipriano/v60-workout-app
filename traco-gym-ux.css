@@ -1327,3 +1327,57 @@ body.traco-exercise-picker-open{
 .traco-prestart-page .traco-prestart-go{
   position:static;
 }
+
+
+/* Traço 2.3.10 — definitive scroll + reachable start hotfix */
+html[data-design="performance"],
+html[data-design="performance"] body{
+  height:auto !important;
+  min-height:100%;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  position:static !important;
+  touch-action:pan-y !important;
+  -webkit-overflow-scrolling:touch;
+}
+html[data-design="performance"] #app,
+html[data-design="performance"] .app-shell,
+html[data-design="performance"] .main-card{
+  height:auto !important;
+  min-height:100dvh;
+  overflow:visible !important;
+  touch-action:pan-y !important;
+}
+html[data-design="performance"] body.traco-prestart-open,
+html[data-design="performance"] body.traco-order-open,
+html[data-design="performance"] body.traco-exercise-picker-open{
+  height:auto !important;
+  overflow-y:auto !important;
+  position:static !important;
+  touch-action:pan-y !important;
+}
+.traco-prestart-page{
+  height:auto !important;
+  min-height:100dvh !important;
+  overflow:visible !important;
+  touch-action:pan-y !important;
+}
+.traco-prestart-page-inner{
+  padding-bottom:calc(104px + env(safe-area-inset-bottom)) !important;
+}
+.traco-prestart-page .traco-prestart-list{
+  overflow:visible !important;
+  max-height:none !important;
+  touch-action:pan-y !important;
+}
+.traco-prestart-page .traco-prestart-go{
+  position:fixed !important;
+  left:16px;
+  right:16px;
+  bottom:calc(14px + env(safe-area-inset-bottom));
+  z-index:145;
+  width:auto !important;
+  max-width:528px;
+  margin:0 auto !important;
+  box-shadow:0 12px 38px rgba(0,0,0,.48);
+}
