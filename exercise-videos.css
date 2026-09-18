@@ -35,3 +35,88 @@
 html[data-theme="dark"] .v60-exact-reference{background:#121212;border-color:#2A2A2A}
 html[data-theme="dark"] .v60-exact-reference-head span{color:#F3F2EE}
 html[data-theme="dark"] .v60-exact-reference-head small{color:#888}
+
+
+/* Traço 2.2 — embedded exact video library */
+.v60-embed-wrap{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  overflow:hidden;
+  border-radius:12px;
+  background:#080808;
+  border:1px solid #252525;
+}
+.v60-embed-wrap.is-large{border-radius:14px}
+.v60-embed-wrap iframe{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:0;
+  background:#080808;
+}
+.v60-embed-wrap .v60-video-badge,
+.v60-embed-wrap .v60-video-source{
+  pointer-events:none;
+}
+.v60-video-preview{
+  display:block;
+  width:100%;
+  padding:0;
+  background:#0B0B0B;
+  border:1px solid var(--line);
+}
+.v60-video-preview .exercise-guide-caption{
+  width:100%;
+  border:0;
+  cursor:pointer;
+}
+.v60-video-meta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:10px 0 14px;
+}
+.v60-video-meta>div{
+  min-width:0;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px;
+  background:var(--surface-soft);
+}
+.v60-video-meta span,
+.v60-video-meta b{display:block}
+.v60-video-meta span{
+  color:var(--muted);
+  font-size:7px;
+  font-weight:800;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.v60-video-meta b{
+  margin-top:4px;
+  color:var(--text);
+  font-size:9px;
+  line-height:1.35;
+}
+.v60-video-source-link{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:42px;
+  margin:0 0 9px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  color:var(--text);
+  text-decoration:none;
+  font-size:9px;
+  font-weight:850;
+}
+.v60-video-source-link:active{background:var(--surface-soft)}
+@media(max-width:430px){
+  .v60-embed-wrap,
+  .v60-embed-wrap.is-large{aspect-ratio:16/9}
+  .v60-video-meta{grid-template-columns:1fr}
+}
