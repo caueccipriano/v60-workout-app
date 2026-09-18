@@ -472,7 +472,7 @@ jobs:
           if(ux.includes("startSession=function(workoutId){\n  tracoGymClearTransientOverlays();\n  const draft=")) throw new Error('Start flow still intercepts through pre-start screen');
 
           for(const required of [
-            'Traço 2.3.13 — direct workout entry + in-session order setup',
+            'direct workout entry + in-session order setup',
             '.traco-start-order-card',
             'overflow-y:auto !important',
             'overflow-y:visible !important',
