@@ -399,9 +399,9 @@ function tracoGymOpenExercisePicker(){
   document.body.classList.add('traco-exercise-picker-open');
   const current=session.exercises[state.currentExercise];
   document.body.insertAdjacentHTML('beforeend',`<div class="traco-exercise-picker-backdrop" id="tracoExercisePicker">
-    <section class="traco-exercise-picker-sheet" role="dialog" aria-modal="true" aria-label="trocar exercício">
+    <section class="traco-exercise-picker-sheet" role="dialog" aria-modal="true" aria-label="treino de hoje">
       <header class="traco-exercise-picker-head">
-        <div><span>treino em andamento</span><h3>trocar exercício</h3><small>escolhe qual exercício vem agora</small></div>
+        <div><span>treino em andamento</span><h3>treino de hoje</h3><small>toque no exercício que você quer fazer agora</small></div>
         <button type="button" id="tracoExercisePickerClose" aria-label="fechar">×</button>
       </header>
       <div class="traco-exercise-picker-list">
@@ -424,7 +424,7 @@ function tracoGymOpenExercisePicker(){
     const id=btn.dataset.pickExercise;
     if(!tracoGymMoveExerciseNext(session,id))return toast('esse exercício já terminou');
     tracoGymCloseExercisePicker();
-    toast('exercício trocado');
+    toast('exercício selecionado');
     haptic();
     renderSession();
   });
@@ -498,14 +498,14 @@ renderSession=function(){
       <button type="button" id="tracoInitialOrder">ajustar ordem</button>
     </section>`:'';
 
-    progress.insertAdjacentHTML('afterend',`${firstOrder}<div class="traco-session-switchers">
-      <button type="button" class="traco-switch-exercise" id="tracoSwitchExercise"><span><b>trocar exercício</b><small>escolher o que fazer agora</small></span><i>→</i></button>
-      <button type="button" class="traco-active-queue" id="tracoActiveQueue"><span><b>fila do treino</b><small>${qp.remaining} ${qp.remaining===1?'série restante':'séries restantes'}</small></span><i>↕</i></button>
-    </div>`);
+    const exerciseDone=state.activeSession.exercises.filter(item=>(item.sets||[]).length&&(item.sets||[]).every(set=>set.done)).length;
+    progress.insertAdjacentHTML('afterend',`${firstOrder}<button type="button" class="traco-today-exercises" id="tracoTodayExercises">
+      <span><small>TREINO DE HOJE</small><b>${exerciseDone}/${state.activeSession.exercises.length} exercícios</b></span>
+      <span class="traco-today-exercises-action">ver lista <i>⌄</i></span>
+    </button>`);
 
     if($('#tracoInitialOrder'))$('#tracoInitialOrder').onclick=()=>tracoGymOpenSetOrderEditor(state.activeSession.workoutId,{session:state.activeSession});
-    $('#tracoSwitchExercise').onclick=tracoGymOpenExercisePicker;
-    $('#tracoActiveQueue').onclick=()=>tracoGymOpenSetOrderEditor(state.activeSession.workoutId,{session:state.activeSession});
+    $('#tracoTodayExercises').onclick=tracoGymOpenExercisePicker;
   }
   tracoGymRepairOverlayState();
 };
