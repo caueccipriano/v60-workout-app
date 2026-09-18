@@ -448,93 +448,56 @@ renderSession=function(){
     }
   }
   tracoGymBaseSession();
-  const main=document.querySelector('.perf-session'); if(!main||!state.activeSession)return;
-  main.setAttribute('data-traco-gym-version','2.4.0');
-  const ex=state.activeSession.exercises[state.currentExercise];
-
+  const main=document.querySelector('.perf-session');if(!main||!state.activeSession)return;
+  main.setAttribute('data-traco-gym-version','2.4.1');
+  const session=state.activeSession;
+  const ex=session.exercises[state.currentExercise];
   const media=main.querySelector('.perf-media-block');
   if(media){
     media.innerHTML=`<div class="perf-media-heading"><span>execução</span><b>sem distração no treino</b></div>${typeof v60GuidePreview==='function'?v60GuidePreview(ex):''}`;
     if($('#openExerciseGuide'))$('#openExerciseGuide').onclick=()=>v60ShowGuide(ex);
   }
-
   const back=$('#sessionBack'),close=$('#cancelSession');
   if(back){back.classList.add('traco-session-nav');back.setAttribute('aria-label','voltar um exercício');back.insertAdjacentHTML('beforeend','<small>anterior</small>');}
   if(close){close.classList.add('traco-session-nav');close.setAttribute('aria-label','sair e cancelar treino');close.insertAdjacentHTML('beforeend','<small>sair</small>');}
-
   document.querySelectorAll('.perf-value-panel button').forEach(btn=>btn.classList.add('traco-gym-stepper'));
-  // Rebind steppers after the final Gym UX render. This keeps iOS/PWA taps
-  // independent from earlier render-layer handlers.
   const activeSet=ex?.sets?.[currentSetIndex(ex)];
   document.querySelectorAll('.perf-value-panel [data-adjust]').forEach(btn=>btn.onclick=()=>{
     const [kind,raw]=String(btn.dataset.adjust||'').split(':'),delta=Number(raw);
     const input=kind==='weight'?$('#weightInput'):$('#repsInput');
     if(!input||!activeSet||!Number.isFinite(delta))return;
-    const step=kind==='weight'?0.5:1;
-    const current=Number(input.value||0);
+    const step=kind==='weight'?0.5:1,current=Number(input.value||0);
     const next=Math.max(0,Math.round((current+delta)/step)*step);
     input.value=kind==='weight'?String(Number(next.toFixed(1))):String(Math.round(next));
-    activeSet[kind]=input.value;
-    save(K.draft,state.activeSession);
-    input.dispatchEvent(new Event('input',{bubbles:true}));
-    haptic();
+    activeSet[kind]=input.value;save(K.draft,session);
+    input.dispatchEvent(new Event('input',{bubbles:true}));haptic();
   });
+
   const progress=main.querySelector('.perf-session-progress');
-  // The base performance renderer may omit the progress node in some session states.
-  // Always create a stable anchor so the daily exercise navigator renders on Safari/PWA too.
-  let tracoSessionAnchor=progress;
-  if(!tracoSessionAnchor){
-    const workoutCard=main.querySelector('.perf-session-card')||main.querySelector('.perf-session-main')||main.firstElementChild;
-    if(workoutCard){
-      workoutCard.insertAdjacentHTML('afterend','<div class="perf-session-progress traco-progress-visible traco-session-progress-anchor"><span></span><small></small></div>');
-      tracoSessionAnchor=main.querySelector('.traco-session-progress-anchor');
-    }
-  }
-  if(tracoSessionAnchor){
-    const progress=tracoSessionAnchor;
+  const consoleCard=main.querySelector('.perf-exercise-console');
+  if(progress&&consoleCard){
+    const doneExercises=session.exercises.filter(item=>tracoGymExerciseStatus(session,item).complete).length;
     progress.classList.add('traco-progress-visible');
-    const qp=tracoGymQueueProgress(state.activeSession);
-    const bar=progress.querySelector('span');if(bar)bar.style.width=(qp.total?Math.round(qp.done/qp.total*100):0)+'%';
-    const label=progress.querySelector('small');if(label)label.textContent=`série ${Math.min(qp.done+1,qp.total)}/${qp.total} · exercício ${state.currentExercise+1}/${state.activeSession.exercises.length}`;
-
-    const pending=tracoGymEnsureSessionQueue(state.activeSession)
-      .filter(token=>!tracoGymSetForToken(state.activeSession,token).set?.done)
-      .slice(0,4)
-      .map(token=>{
-        const item=tracoGymSetForToken(state.activeSession,token);
-        return item.ex?`${item.ex.name} · S${item.setIndex+1}`:'';
-      }).filter(Boolean);
-
-    const firstOrder=qp.done===0?`<section class="traco-start-order-card">
-      <div><span>antes da primeira série</span><b>ordem de hoje</b><small>${pending.join(' → ')}</small></div>
-      <button type="button" id="tracoInitialOrder">ajustar ordem</button>
-    </section>`:'';
-
-    const exerciseDone=state.activeSession.exercises.filter(item=>(item.sets||[]).length&&(item.sets||[]).every(set=>set.done)).length;
-    const exerciseRows=state.activeSession.exercises.map((item,i)=>{
-      const st=tracoGymExerciseStatus(state.activeSession,item);
-      const active=item.id===ex?.id;
-      return `<button type="button" class="traco-today-exercise-row ${active?'is-current':''} ${st.complete?'is-complete':''}" data-today-exercise="${tracoGymEsc(item.id)}" ${st.complete?'disabled':''}>
-        <span class="traco-today-exercise-index">${st.complete?'✓':String(i+1).padStart(2,'0')}</span>
-        <span class="traco-today-exercise-copy"><b>${tracoGymEsc(item.name)}</b><small>${st.done}/${st.total} séries${active?' · agora':''}</small></span>
-        <span class="traco-today-exercise-go">${active?'●':'→'}</span>
+    const label=progress.querySelector('small');if(label)label.textContent=`${doneExercises} / ${session.exercises.length} exercícios`;
+    const rows=session.exercises.map((item,i)=>{
+      const st=tracoGymExerciseStatus(session,item),active=item.id===ex?.id;
+      const detail=`${st.total} ${st.total===1?'série':'séries'} · ${st.done}/${st.total} concluídas`;
+      return `<button type="button" class="traco-v241-exercise ${active?'is-current':''} ${st.complete?'is-complete':''}" data-today-exercise="${tracoGymEsc(item.id)}" ${st.complete?'disabled':''}>
+        <span class="traco-v241-grip">⠿</span><span class="traco-v241-number">${String(i+1).padStart(2,'0')}</span>
+        <span class="traco-v241-copy"><b>${tracoGymEsc(item.name)}</b><small>${detail}</small><em>${tracoGymEsc(item.equipment||'exercício')}</em></span>
+        <span class="traco-v241-state">${st.complete?'✓':active?'●':'›'}</span>
       </button>`;
     }).join('');
-    main.querySelectorAll('.traco-start-order-card,.traco-today-workout').forEach(node=>node.remove());
-    const exerciseConsole=main.querySelector('.perf-exercise-console');
-    const navigatorHTML=`${firstOrder}<section class="traco-today-workout">
-      <header><span><small>TREINO DE HOJE</small><b>${exerciseDone}/${state.activeSession.exercises.length} exercícios</b></span><em>ordem livre</em></header>
-      <div class="traco-today-workout-list">${exerciseRows}</div>
-    </section>`;
-    if(exerciseConsole)exerciseConsole.insertAdjacentHTML('afterend',navigatorHTML);
-    else progress.insertAdjacentHTML('afterend',navigatorHTML);
-
-    if($('#tracoInitialOrder'))$('#tracoInitialOrder').onclick=()=>tracoGymOpenSetOrderEditor(state.activeSession.workoutId,{session:state.activeSession});
+    main.querySelectorAll('.traco-v241-workout-list,.traco-today-workout,.traco-start-order-card').forEach(n=>n.remove());
+    consoleCard.insertAdjacentHTML('afterend',`<section class="traco-v241-workout-list">
+      <header><div><small>TREINO EM ANDAMENTO</small><h2>lista de exercícios</h2><p>toque em qualquer exercício para fazer agora</p></div><button type="button" id="tracoV241EditOrder">editar ordem</button></header>
+      <div class="traco-v241-progress"><b>${doneExercises}/${session.exercises.length}</b><span>exercícios concluídos</span></div>
+      <div class="traco-v241-rows">${rows}</div>
+    </section>`);
+    const edit=$('#tracoV241EditOrder');if(edit)edit.onclick=()=>tracoGymOpenSetOrderEditor(session.workoutId,{session});
     document.querySelectorAll('[data-today-exercise]').forEach(btn=>btn.onclick=()=>{
-      const id=btn.dataset.todayExercise;
-      if(!tracoGymMoveExerciseNext(state.activeSession,id))return;
-      haptic();
-      renderSession();
+      if(!tracoGymMoveExerciseNext(session,btn.dataset.todayExercise))return;
+      haptic();renderSession();
     });
   }
   tracoGymRepairOverlayState();
