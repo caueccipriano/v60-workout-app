@@ -1,4 +1,4 @@
-const CACHE = 'traco-v37';
+const CACHE = 'traco-v38';
 const ASSETS = [
   './','./index.html','./manifest.json',
   './styles.css','./exercise-guides.css','./exercise-guides-v4.css','./exercise-videos.css',
