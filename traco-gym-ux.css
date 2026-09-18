@@ -1381,3 +1381,87 @@ html[data-design="performance"] body.traco-exercise-picker-open{
   margin:0 auto !important;
   box-shadow:0 12px 38px rgba(0,0,0,.48);
 }
+
+
+/* Traço 2.3.12 — direct workout entry + in-session order setup */
+html[data-design="performance"],
+html[data-design="performance"] body,
+html[data-design="performance"] #app,
+html[data-design="performance"] .app-shell,
+html[data-design="performance"] .main-card{
+  overflow-x:hidden !important;
+}
+html[data-design="performance"],
+html[data-design="performance"] body{
+  height:auto !important;
+  min-height:100% !important;
+  overflow-y:auto !important;
+  position:static !important;
+  touch-action:pan-y !important;
+  -webkit-overflow-scrolling:touch;
+}
+html[data-design="performance"] #app,
+html[data-design="performance"] .app-shell,
+html[data-design="performance"] .main-card{
+  height:auto !important;
+  min-height:100dvh !important;
+  overflow-y:visible !important;
+  touch-action:pan-y !important;
+}
+.traco-start-order-card{
+  margin:8px 0 12px;
+  padding:12px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:12px;
+  border:1px solid #463A18;
+  border-radius:13px;
+  background:linear-gradient(145deg,#1B180E,#111113);
+}
+.traco-start-order-card>div{min-width:0}
+.traco-start-order-card span,
+.traco-start-order-card b,
+.traco-start-order-card small{display:block}
+.traco-start-order-card span{
+  color:var(--traco-achievement);
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.traco-start-order-card b{
+  margin-top:3px;
+  color:var(--traco-text);
+  font-size:12px;
+}
+.traco-start-order-card small{
+  margin-top:5px;
+  color:var(--traco-muted-strong);
+  font-size:8px;
+  line-height:1.45;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+.traco-start-order-card button{
+  min-width:108px;
+  min-height:48px;
+  padding:0 12px;
+  border:1px solid #6B5B1E;
+  border-radius:10px;
+  background:var(--traco-achievement);
+  color:#111;
+  font-size:9px;
+  font-weight:900;
+}
+.traco-start-order-card button:active{
+  transform:scale(.98);
+}
+@media(max-width:370px){
+  .traco-start-order-card{
+    grid-template-columns:1fr;
+  }
+  .traco-start-order-card button{
+    width:100%;
+  }
+}
