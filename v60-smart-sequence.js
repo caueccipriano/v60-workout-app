@@ -1,6 +1,7 @@
 const V60_SMART_SEQUENCE_KEY='v60_smart_sequence_v1';
 const V60_ATTENDANCE_KEY='v60_attendance_v1';
 const V60_SMART_MIGRATION_KEY='v60_smart_sequence_bootstrap_20260917';
+const V60_REPORTED_HISTORY_KEY='v60_reported_history_bootstrap_20260917_v1';
 
 // A→E follows recovery better than weekday locking.
 // Confirmed current anchor: back (A) → chest (B) → legs (C next).
@@ -30,6 +31,90 @@ function v60BootstrapAttendance(){
   if(!seq)save(V60_SMART_SEQUENCE_KEY,{nextWorkoutId:'ter',updatedAt:Date.now(),anchor:'back-chest-legs'});
   save(V60_SMART_MIGRATION_KEY,true);
 }
+function v60BootstrapReportedHistory(){
+  if(load(V60_REPORTED_HISTORY_KEY,false))return;
+
+  const reported=[
+    {
+      date:'2026-09-14',workoutId:'seg',
+      loads:{
+        'supino-inclinado':10,'desenvolvimento':10,'elevacao-lateral':10,
+        'crucifixo-baixo-alto':10,'triceps-pushdown':30,'triceps-overhead':20
+      },
+      sets:{
+        'supino-inclinado':3,'desenvolvimento':3,'elevacao-lateral':3,
+        'crucifixo-baixo-alto':3,'triceps-pushdown':3,'triceps-overhead':3
+      },
+      reps:{'supino-inclinado':10}
+    },
+    {
+      date:'2026-09-15',workoutId:'ter',
+      loads:{
+        'leg-press':80,'agachamento-smith':30,'extensora':20,'flexora':25,
+        'abdutora':35,'adutora-historico':35,'panturrilha':60
+      }
+    },
+    {
+      date:'2026-09-16',workoutId:'qua',
+      loads:{
+        'puxada-aberta':30,'remada-baixa':30,'pullover':25,
+        'crucifixo-inverso':10,'rosca-polia':20,'rosca-martelo':20
+      }
+    },
+    {
+      date:'2026-09-17',workoutId:'qui',
+      loads:{
+        'supino-reto':20,'elevacao-lateral-2':10,'face-pull':10,
+        'triceps-overhead-2':10,'rosca-unilateral':5
+      }
+    }
+  ];
+
+  const all=sessions();
+  for(const row of reported){
+    const startedAt=new Date(row.date+'T12:00:00').getTime();
+    if(all.some(x=>x.manualHistoryKey===row.date||(
+      x.workoutId===row.workoutId&&v60DateKey(x.startedAt)===row.date
+    )))continue;
+
+    const plan=workoutPlan.find(w=>w.id===row.workoutId);
+    const exercises=Object.entries(row.loads).map(([id,weight])=>{
+      const base=plan?.exercises?.find(ex=>ex.id===id);
+      const custom=id==='adutora-historico'
+        ? {id,name:'adutora',equipment:'Máquina adutora',icon:'↔️',min:'',max:'',rest:60}
+        : base;
+      const count=Math.max(1,Number(row.sets?.[id])||1);
+      const knownReps=row.reps?.[id];
+      return {
+        ...(custom||{id,name:id,equipment:'',icon:'',min:'',max:'',rest:60}),
+        reportedSetCount:row.sets?.[id]||null,
+        sets:Array.from({length:count},(_,i)=>({
+          n:i+1,weight:String(weight),reps:knownReps?String(knownReps):'',
+          done:true,reported:true,repsKnown:Boolean(knownReps)
+        }))
+      };
+    });
+
+    all.push({
+      id:'reported-'+row.date+'-'+row.workoutId,
+      manualHistoryKey:row.date,
+      source:'user-reported-2026-09-17',
+      manualConfirmed:true,
+      excludeFromVolume:true,
+      workoutId:row.workoutId,
+      wName:plan?.name||row.workoutId,
+      startedAt,
+      finishedAt:startedAt+1,
+      duration:0,
+      exercises,
+      extras:[],
+      prs:[]
+    });
+  }
+  save(K.sessions,all);
+  save(V60_REPORTED_HISTORY_KEY,true);
+}
+
 function v60AllAttendanceDates(){
   const dates=new Set(v60LoadAttendance().map(x=>x.date));
   sessions().filter(s=>s.finishedAt).forEach(s=>dates.add(v60DateKey(s.startedAt)));
@@ -76,6 +161,7 @@ function v60SetRecommended(workoutId){
 }
 
 v60BootstrapAttendance();
+v60BootstrapReportedHistory();
 
 // Replace calendar-day prescription with the current A→E recommendation.
 todayWorkout=function(){return v60RecommendedWorkout();};
