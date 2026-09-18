@@ -42,19 +42,65 @@ const TRACO_MEDIA_AUDIT=Object.freeze({
   'core-dead-bug-qui':{name:"dead bug",equipment:"Solo / colchonete",scene:'deadBug',verified:true}
 });
 
-const V60_EXACT_VIDEOS=Object.freeze({
-  'desenvolvimento':{pexelsId:'4367541'},
-  'triceps-pushdown':{pexelsId:'5319433'},
-  'leg-press':{pexelsId:'36457367'},
-  'agachamento-smith':{pexelsId:'6892543'},
-  'extensora':{pexelsId:'36539451'},
-  'puxada-aberta':{pexelsId:'5983521'},
-  'remada-baixa':{pexelsId:'4367642'}
+const TRACO_VIDEO_LIBRARY=Object.freeze({
+  'supino-inclinado':{provider:'youtube',id:'R84DD4unAyI',source:'Idris',variant:'Smith incline 30–45°'},
+  'desenvolvimento':{provider:'youtube',id:'FRxZ6wr5bpA',source:'Muscle & Strength',variant:'seated dumbbell press'},
+  'elevacao-lateral':{provider:'youtube',id:'Fv-eAW1uKDI',source:'Muscle & Strength',variant:'single-arm low cable lateral raise'},
+  'crucifixo-baixo-alto':{provider:'youtube',id:'8YjdqeIXPUQ',source:'Muscle & Strength',variant:'standing low-to-high cable fly'},
+  'triceps-pushdown':{provider:'youtube',id:'LzwgB15UdO8',source:'Muscle & Strength',variant:'rope triceps pushdown'},
+  'triceps-overhead':{provider:'youtube',id:'NRENeEgaIgA',source:'Muscle & Strength',variant:'high-pulley overhead rope extension'},
+  'leg-press':{provider:'youtube',id:'sEM_zo9w2ss',source:'Muscle & Strength',variant:'45° leg press'},
+  'agachamento-smith':{provider:'youtube',id:'BtfMX4WqUBo',source:'Muscle & Strength',variant:'Smith machine squat'},
+  'extensora':{provider:'youtube',id:'0fl1RRgJ83I',source:'Muscle & Strength',variant:'seated leg extension'},
+  'flexora':{provider:'youtube',id:'3BWiLFc8Dbg',source:'Muscle & Strength',variant:'seated leg curl'},
+  'abdutora':{provider:'youtube',id:'7pbZA7ncuq8',source:'Muscle & Strength',variant:'hip abduction machine'},
+  'panturrilha':{provider:'youtube',id:'RcKQbiL-ZOc',source:'Muscle & Strength',variant:'45° leg press calf raise'},
+  'puxada-aberta':{provider:'youtube',id:'Mdp7kuhZD_M',source:'Muscle & Strength',variant:'wide-grip lat pulldown'},
+  'remada-baixa':{provider:'vimeo',id:'756788734',hash:'145dc3923d',source:'Muscle & Strength',variant:'seated cable row'},
+  'pullover':{provider:'youtube',id:'gDtXrJWPdlY',source:'Muscle & Strength',variant:'straight-arm lat pulldown'},
+  'crucifixo-inverso':{provider:'youtube',id:'Baavi8rJWBI',source:'Muscle & Strength',variant:'bent-over low-pulley rear-delt fly'},
+  'rosca-polia':{provider:'youtube',id:'_hRnRorKRWs',source:'Live Lean TV',variant:'standing low-pulley straight-bar cable curl'},
+  'rosca-martelo':{provider:'youtube',id:'zC3nLlEvin4',source:'ScottHermanFitness',variant:'standing dumbbell hammer curl'},
+  'crunch':{provider:'youtube',id:'nCHypnGvcq4',source:'YST Exercises',variant:'reverse crunch on flat bench'},
+  'supino-reto':{provider:'vimeo',id:'756783677',hash:'b20676578f',source:'Muscle & Strength',variant:'Smith machine flat bench press'},
+  'crucifixo-reto':{provider:'youtube',id:'OPYrUGZL8nU',source:'Muscle & Strength',variant:'standing mid-chest cable fly'},
+  'elevacao-lateral-2':{provider:'youtube',id:'Fv-eAW1uKDI',source:'Muscle & Strength',variant:'single-arm low cable lateral raise'},
+  'face-pull':{provider:'youtube',id:'7ZvpXA_mFpQ',source:'Muscle & Strength',variant:'cable face pull with rope'},
+  'triceps-overhead-2':{provider:'youtube',id:'NRENeEgaIgA',source:'Muscle & Strength',variant:'high-pulley overhead rope extension'},
+  'rosca-unilateral':{provider:'youtube',id:'Qbk5A7lWVOE',source:'Mountain Dog / John Meadows',variant:'one-arm low cable curl'},
+  'rdl':{provider:'vimeo',id:'756793204',hash:'c832d55911',source:'Muscle & Strength',variant:'Smith machine stiff-leg deadlift / RDL'},
+  'flexora-2':{provider:'youtube',id:'3BWiLFc8Dbg',source:'Muscle & Strength',variant:'seated leg curl'},
+  'leg-press-alto':{provider:'youtube',id:'iQhP0kkadSI',source:'SATS Nordic',variant:'high-feet leg press'},
+  'puxada-neutra':{provider:'youtube',id:'M3scNzLIJHg',source:'Telmo Barriuso',variant:'close neutral-grip lat pulldown'},
+  'elevacao-lateral-3':{provider:'youtube',id:'Fv-eAW1uKDI',source:'Muscle & Strength',variant:'single-arm low cable lateral raise'},
+  'abdutora-2':{provider:'youtube',id:'7pbZA7ncuq8',source:'Muscle & Strength',variant:'hip abduction machine'},
+  'crunch-2':{provider:'youtube',id:'0KEP6A1deBE',source:'Travis Tarrant',variant:'kneeling rope cable crunch'},
+  'core-crunch-seg':{provider:'youtube',id:'0KEP6A1deBE',source:'Travis Tarrant',variant:'kneeling rope cable crunch'},
+  'core-pallof-ter':{provider:'youtube',id:'SFJprbDnaS0',source:'Muscle & Strength',variant:'standing Pallof press at chest height'},
+  'core-leg-raise-ter':{provider:'youtube',id:'_B8CJEYd5mI',source:'Live Lean TV',variant:'lying leg raise on flat bench'},
+  'core-woodchop-qui':{provider:'youtube',id:'0VWnOjUO7ks',source:'Muscle & Strength',variant:'high-cable wood chop'},
+  'core-dead-bug-qui':{provider:'youtube',id:'eEhoSeBFoBk',source:'Muscle & Strength',variant:'dead bug on floor'}
 });
-function v60VideoFor(ex){return V60_EXACT_VIDEOS[String(ex?.id||'')]||null;}
-function v60VideoSrc(video){return video?`https://www.pexels.com/download/video/${video.pexelsId}/`:'';}
-function v60VideoFailed(el){const wrap=el?.closest('.v60-real-video-wrap');if(wrap)wrap.classList.add('is-fallback');}
-function v60VideoLoaded(el){const wrap=el?.closest('.v60-real-video-wrap');if(wrap)wrap.classList.add('is-ready');el?.play?.().catch(()=>{});}
+
+function v60VideoFor(ex){return TRACO_VIDEO_LIBRARY[String(ex?.id||'')]||null;}
+function v60VideoEmbedUrl(video){
+  if(!video)return '';
+  if(video.provider==='youtube')return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(video.id)}?rel=0&modestbranding=1&playsinline=1`;
+  if(video.provider==='vimeo')return `https://player.vimeo.com/video/${encodeURIComponent(video.id)}?${video.hash?`h=${encodeURIComponent(video.hash)}&`:''}dnt=1&title=0&byline=0&portrait=0`;
+  return '';
+}
+function v60VideoSourceUrl(video){
+  if(!video)return '';
+  if(video.provider==='youtube')return `https://www.youtube.com/watch?v=${encodeURIComponent(video.id)}`;
+  if(video.provider==='vimeo')return `https://vimeo.com/${encodeURIComponent(video.id)}`;
+  return '';
+}
+function v60VideoIframe(ex,{large=false}={}){
+  const video=v60VideoFor(ex);
+  if(!video)return '';
+  const title=`${ex.name} — ${video.variant}`;
+  return `<div class="v60-embed-wrap ${large?'is-large':''}"><iframe src="${v60VideoEmbedUrl(video)}" title="${tracoMediaEsc(title)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><span class="v60-video-badge"><i></i>vídeo 1:1</span><span class="v60-video-source">${tracoMediaEsc(video.source)}</span></div>`;
+}
 function tracoMediaEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));}
 function tracoMediaSetCount(ex){if(Array.isArray(ex?.sets))return ex.sets.length;const n=Number(ex?.sets);return Number.isFinite(n)&&n>0?n:0;}
 function tracoNormalize(v){return String(v??'').normalize('NFC').trim().replace(/\s+/g,' ');}
@@ -91,22 +137,18 @@ function tracoMediaRender(ex,large=false){
     };
   }
 }
-function v60RealVideo(ex,{large=false,controls=false}={}){
+function v60RealVideo(ex,{large=false}={}){
   const video=v60VideoFor(ex),technical=tracoMediaRender(ex,large);
   if(!video)return `<div class="v60-real-video-wrap is-fallback technical-only"><div class="v60-video-fallback">${technical.html}</div><span class="v60-video-badge technical"><i></i>guia técnico</span></div>`;
-  return `<div class="v60-real-video-wrap ${large?'is-large':''}">
-    <video class="v60-real-video" src="${v60VideoSrc(video)}" muted playsinline autoplay loop preload="metadata" ${controls?'controls':''} onloadeddata="v60VideoLoaded(this)" onerror="v60VideoFailed(this)" aria-label="vídeo real de ${tracoMediaEsc(ex.name)}"></video>
-    <div class="v60-video-fallback">${technical.html}</div>
-    <span class="v60-video-badge"><i></i>vídeo real · execução exata</span>
-    <span class="v60-video-source">Pexels · ID ${video.pexelsId}</span>
-  </div>`;
+  return v60VideoIframe(ex,{large});
 }
 function tracoMediaPreview(ex){
-  const media=tracoMediaRender(ex,false),video=v60VideoFor(ex);
-  if(video){
-    return `<button class="exercise-guide-preview v60-video-preview traco-media-preview has-real-video" data-media-exercise="${tracoMediaEsc(ex.id)}" id="openExerciseGuide" type="button" aria-label="ver execução em vídeo de ${tracoMediaEsc(ex.name)}">${v60RealVideo(ex)}<span class="exercise-guide-caption"><span><b>ver execução em vídeo</b><small>vídeo real validado + guia técnico</small></span><i>↗</i></span></button>`;
+  const video=v60VideoFor(ex);
+  const technical=tracoMediaRender(ex,false);
+  if(!video){
+    return `<div class="exercise-guide-preview v60-v4-preview traco-media-preview"><div class="v60-v4-motion-wrap">${technical.html}</div><button id="openExerciseGuide" class="exercise-guide-caption" type="button"><span><b>ver guia técnico</b><small>${tracoMediaEsc(technical.cue)}</small></span><i>↗</i></button></div>`;
   }
-  return `<button class="exercise-guide-preview v60-v4-preview traco-media-preview ${media.ok?'is-rendered':'is-fallback'}" data-media-exercise="${tracoMediaEsc(ex.id)}" id="openExerciseGuide" type="button" aria-label="ver execução de ${tracoMediaEsc(ex.name)}"><div class="v60-v4-motion-wrap">${media.html}<span class="v60-v4-loop-badge"><i></i> ${media.ok?'guia animado':'instruções'}</span></div><span class="exercise-guide-caption"><span><b>ver guia técnico</b><small>${tracoMediaEsc(media.cue)}</small></span><i>↗</i></span></button>`;
+  return `<div class="exercise-guide-preview v60-video-preview traco-media-preview has-real-video">${v60VideoIframe(ex)}<button id="openExerciseGuide" class="exercise-guide-caption" type="button"><span><b>abrir guia completo</b><small>${tracoMediaEsc(video.variant)}</small></span><i>↗</i></button></div>`;
 }
 function v60GuidePreview(ex){return tracoMediaPreview(ex);}
 function v60ShowGuide(ex){
@@ -114,9 +156,10 @@ function v60ShowGuide(ex){
   const g=v60GuideFor(ex),scene=v60V4Scene(ex),setCount=tracoMediaSetCount(ex),spec=TRACO_MEDIA_AUDIT[ex.id],media=tracoMediaRender(ex,true),video=v60VideoFor(ex);
   document.body.classList.add('v60-guide-open');
   const primary=video
-    ? `${v60RealVideo(ex,{large:true,controls:true})}<p class="v60-video-match-copy">Vídeo real restaurado porque exercício, equipamento e padrão de execução foram validados como correspondência exata.</p><section class="v60-exact-reference"><div class="v60-exact-reference-head"><span>guia técnico</span><small>posição · trajetória · referência</small></div>${media.html}</section>`
-    : `<div class="v60-v4-motion-wrap v60-v4-motion-large">${media.html}<span class="v60-v4-loop-badge"><i></i> ${media.ok?'início ↔ fim':'instruções'}</span></div><p class="v60-v4-tech-note">${tracoMediaEsc(scene.note)}</p>`;
-  document.body.insertAdjacentHTML('beforeend',`<div class="v60-guide-backdrop" id="v60GuideBackdrop"></div><aside class="v60-guide-sheet ${video?'v60-video-sheet':'v60-v4-sheet'}" id="v60GuideSheet" role="dialog" aria-modal="true" aria-label="execução de ${tracoMediaEsc(ex.name)}"><div class="v60-guide-handle"></div><button class="v60-guide-close" id="v60GuideClose" aria-label="fechar">×</button><div class="v60-guide-content"><span class="v60-guide-kicker">${video?'execução em vídeo':'guia técnico validado'}</span><h2>${tracoMediaEsc(ex.name)}</h2><p class="v60-guide-equipment">${tracoMediaEsc(ex.equipment)}</p>${primary}<div class="v60-guide-tags"><span>${tracoMediaEsc(g.focus)}</span><span>${setCount} × ${tracoMediaEsc(ex.min)}-${tracoMediaEsc(ex.max)}</span><span>${tracoMediaEsc(ex.rest)}s descanso</span></div><section class="v60-guide-tips"><h3>dicas rápidas</h3><ol>${g.tips.map(t=>`<li>${tracoMediaEsc(t)}</li>`).join('')}</ol></section><section class="v60-guide-error"><span>erro comum</span><p>${tracoMediaEsc(g.error)}</p></section><p class="v60-video-license-note">${video?`Vídeo demonstrativo sob Licença Pexels · ID ${video.pexelsId}. `:''}Traço Exact Media · exercício, equipamento e trajetória auditados${spec?.scene?` · ${tracoMediaEsc(spec.scene)}`:''}.</p><button class="cta-lime" id="v60GuideDone">voltar pro treino</button></div></aside>`);
+    ? `${v60VideoIframe(ex,{large:true})}<div class="v60-video-meta"><div><span>fonte</span><b>${tracoMediaEsc(video.source)}</b></div><div><span>variante validada</span><b>${tracoMediaEsc(video.variant)}</b></div></div><section class="v60-exact-reference"><div class="v60-exact-reference-head"><span>referência técnica</span><small>posição · trajetória · segurança</small></div>${media.html}</section>`
+    : `<div class="v60-v4-motion-wrap v60-v4-motion-large">${media.html}</div><p class="v60-v4-tech-note">${tracoMediaEsc(scene.note)}</p>`;
+  const sourceLink=video?`<a class="v60-video-source-link" href="${v60VideoSourceUrl(video)}" target="_blank" rel="noopener noreferrer">abrir fonte ↗</a>`:'';
+  document.body.insertAdjacentHTML('beforeend',`<div class="v60-guide-backdrop" id="v60GuideBackdrop"></div><aside class="v60-guide-sheet ${video?'v60-video-sheet':'v60-v4-sheet'}" id="v60GuideSheet" role="dialog" aria-modal="true" aria-label="execução de ${tracoMediaEsc(ex.name)}"><div class="v60-guide-handle"></div><button class="v60-guide-close" id="v60GuideClose" aria-label="fechar">×</button><div class="v60-guide-content"><span class="v60-guide-kicker">${video?'vídeo de execução 1:1':'guia técnico validado'}</span><h2>${tracoMediaEsc(ex.name)}</h2><p class="v60-guide-equipment">${tracoMediaEsc(ex.equipment)}</p>${primary}<div class="v60-guide-tags"><span>${tracoMediaEsc(g.focus)}</span><span>${setCount} × ${tracoMediaEsc(ex.min)}-${tracoMediaEsc(ex.max)}</span><span>${tracoMediaEsc(ex.rest)}s descanso</span></div><section class="v60-guide-tips"><h3>dicas rápidas</h3><ol>${g.tips.map(t=>`<li>${tracoMediaEsc(t)}</li>`).join('')}</ol></section><section class="v60-guide-error"><span>erro comum</span><p>${tracoMediaEsc(g.error)}</p></section><p class="v60-video-license-note">Traço Exact Media · exercício, equipamento e variante revisados manualmente${spec?.scene?` · ${tracoMediaEsc(spec.scene)}`:''}.</p>${sourceLink}<button class="cta-lime" id="v60GuideDone">voltar pro treino</button></div></aside>`);
   $('#v60GuideBackdrop').onclick=v60CloseGuide;$('#v60GuideClose').onclick=v60CloseGuide;$('#v60GuideDone').onclick=v60CloseGuide;
 }
 function tracoAuditRenderedMedia(){
@@ -128,11 +171,12 @@ function tracoAuditRenderedMedia(){
   }
   return {ok:failed.length===0,total:active.length,rendered:active.length-failed.length,failed};
 }
+window.TRACO_VIDEO_LIBRARY=TRACO_VIDEO_LIBRARY;
 window.TRACO_MEDIA_AUDIT=TRACO_MEDIA_AUDIT;
 window.TRACO_MEDIA_AUDIT_RESULT=tracoAuditExerciseMedia();
 window.TRACO_MEDIA_RENDER_AUDIT_RESULT=tracoAuditRenderedMedia();
-window.TRACO_EXACT_VIDEO_IDS=Object.keys(V60_EXACT_VIDEOS);
-window.V60_LICENSED_VIDEO_IDS=Object.keys(V60_EXACT_VIDEOS);
+window.TRACO_EXACT_VIDEO_IDS=Object.keys(TRACO_VIDEO_LIBRARY);
+window.V60_LICENSED_VIDEO_IDS=Object.keys(TRACO_VIDEO_LIBRARY);
 if(!window.TRACO_MEDIA_AUDIT_RESULT.ok)console.error('Traço media audit failed',window.TRACO_MEDIA_AUDIT_RESULT.failures);
 if(!window.TRACO_MEDIA_RENDER_AUDIT_RESULT.ok)console.error('Traço media render audit failed',window.TRACO_MEDIA_RENDER_AUDIT_RESULT.failed);
 if(typeof state!=='undefined'&&state.page==='session')renderSession();
