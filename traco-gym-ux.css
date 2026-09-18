@@ -1199,3 +1199,37 @@ body.traco-exercise-picker-open{
   -webkit-overflow-scrolling:touch;
   touch-action:pan-y !important;
 }
+
+
+/* Traço iPhone hotfix — pre-start must never trap scrolling */
+.traco-prestart-backdrop{
+  display:block !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  touch-action:pan-y !important;
+  padding-top:max(12px,env(safe-area-inset-top)) !important;
+}
+.traco-prestart-sheet{
+  width:min(560px,100%) !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  margin:0 auto !important;
+  overflow:visible !important;
+  display:block !important;
+}
+.traco-prestart-list{
+  max-height:none !important;
+  min-height:0 !important;
+  overflow:visible !important;
+}
+.traco-prestart-organize,
+.traco-prestart-go{
+  position:static !important;
+  display:flex;
+}
+.traco-prestart-go{
+  display:block;
+  box-shadow:none !important;
+}
