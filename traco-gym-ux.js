@@ -348,6 +348,69 @@ renderHome=function(){
   }
 };
 
+function tracoGymExerciseStatus(session,ex){
+  const done=(ex.sets||[]).filter(set=>set.done).length;
+  const total=(ex.sets||[]).length;
+  return {done,total,complete:total>0&&done>=total,remaining:Math.max(0,total-done)};
+}
+function tracoGymMoveExerciseNext(session,exerciseId){
+  const queue=tracoGymEnsureSessionQueue(session).slice();
+  const doneTokens=queue.filter(token=>tracoGymSetForToken(session,token).set?.done);
+  const remaining=queue.filter(token=>!tracoGymSetForToken(session,token).set?.done);
+  const chosen=remaining.filter(token=>tracoGymQueueParts(token).exerciseId===exerciseId);
+  const other=remaining.filter(token=>tracoGymQueueParts(token).exerciseId!==exerciseId);
+  if(!chosen.length)return false;
+  session.tracoSetQueue=[...doneTokens,...chosen,...other];
+  save(K.draft,session);
+  tracoGymSyncQueueCursor(session);
+  return true;
+}
+function tracoGymCloseExercisePicker(){
+  $('#tracoExercisePicker')?.remove();
+  document.body.classList.remove('traco-exercise-picker-open');
+  tracoGymRepairOverlayState();
+}
+function tracoGymOpenExercisePicker(){
+  const session=state.activeSession;if(!session)return;
+  $('#tracoExercisePicker')?.remove();
+  document.body.classList.add('traco-exercise-picker-open');
+  const current=session.exercises[state.currentExercise];
+  document.body.insertAdjacentHTML('beforeend',`<div class="traco-exercise-picker-backdrop" id="tracoExercisePicker">
+    <section class="traco-exercise-picker-sheet" role="dialog" aria-modal="true" aria-label="trocar exercício">
+      <header class="traco-exercise-picker-head">
+        <div><span>treino em andamento</span><h3>trocar exercício</h3><small>escolhe qual exercício vem agora</small></div>
+        <button type="button" id="tracoExercisePickerClose" aria-label="fechar">×</button>
+      </header>
+      <div class="traco-exercise-picker-list">
+        ${session.exercises.map((ex,i)=>{
+          const st=tracoGymExerciseStatus(session,ex);
+          const active=ex.id===current?.id;
+          return `<button type="button" class="traco-exercise-choice ${active?'is-current':''} ${st.complete?'is-complete':''}" data-pick-exercise="${tracoGymEsc(ex.id)}" ${st.complete?'disabled':''}>
+            <span class="traco-exercise-choice-index">${String(i+1).padStart(2,'0')}</span>
+            <span class="traco-exercise-choice-copy"><b>${tracoGymEsc(ex.name)}</b><small>${st.complete?'concluído':`${st.remaining} de ${st.total} séries restantes`}</small></span>
+            <span class="traco-exercise-choice-state">${st.complete?'✓':active?'agora':'→'}</span>
+          </button>`;
+        }).join('')}
+      </div>
+      <button type="button" class="traco-exercise-picker-queue" id="tracoExercisePickerQueue">organizar fila completa ↕</button>
+    </section>
+  </div>`);
+  $('#tracoExercisePickerClose').onclick=tracoGymCloseExercisePicker;
+  $('#tracoExercisePicker').onclick=e=>{if(e.target.id==='tracoExercisePicker')tracoGymCloseExercisePicker();};
+  $('[data-pick-exercise]').forEach(btn=>btn.onclick=()=>{
+    const id=btn.dataset.pickExercise;
+    if(!tracoGymMoveExerciseNext(session,id))return toast('esse exercício já terminou');
+    tracoGymCloseExercisePicker();
+    toast('exercício trocado');
+    haptic();
+    renderSession();
+  });
+  $('#tracoExercisePickerQueue').onclick=()=>{
+    tracoGymCloseExercisePicker();
+    tracoGymOpenSetOrderEditor(session.workoutId,{session});
+  };
+}
+
 /* ACTIVE WORKOUT */
 const tracoGymBaseSession=renderSession;
 renderSession=function(){
@@ -373,7 +436,11 @@ renderSession=function(){
     const qp=tracoGymQueueProgress(state.activeSession);
     const bar=progress.querySelector('span');if(bar)bar.style.width=(qp.total?Math.round(qp.done/qp.total*100):0)+'%';
     const label=progress.querySelector('small');if(label)label.textContent=`série ${Math.min(qp.done+1,qp.total)}/${qp.total} · exercício ${state.currentExercise+1}/${state.activeSession.exercises.length}`;
-    progress.insertAdjacentHTML('afterend',`<button type="button" class="traco-active-queue" id="tracoActiveQueue"><span><b>fila do treino</b><small>${qp.remaining} ${qp.remaining===1?'série restante':'séries restantes'}</small></span><i>↕</i></button>`);
+    progress.insertAdjacentHTML('afterend',`<div class="traco-session-switchers">
+      <button type="button" class="traco-switch-exercise" id="tracoSwitchExercise"><span><b>trocar exercício</b><small>escolher o que fazer agora</small></span><i>→</i></button>
+      <button type="button" class="traco-active-queue" id="tracoActiveQueue"><span><b>fila do treino</b><small>${qp.remaining} ${qp.remaining===1?'série restante':'séries restantes'}</small></span><i>↕</i></button>
+    </div>`);
+    $('#tracoSwitchExercise').onclick=tracoGymOpenExercisePicker;
     $('#tracoActiveQueue').onclick=()=>tracoGymOpenSetOrderEditor(state.activeSession.workoutId,{session:state.activeSession});
   }
 };
