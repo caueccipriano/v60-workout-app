@@ -457,7 +457,7 @@ jobs:
           if(!brand.includes("version:'2.4.0'")||!brand.includes('versão 2.4.0')) throw new Error('Canonical brand version is not 2.4.0');
           if(!version.includes('"version":"2.4.0"')) throw new Error('version.json is not 2.4.0');
           if(!css.includes('light theme contrast audit')) throw new Error('Missing full light theme contrast audit');
-          if(!ux.includes('traco-session-progress-anchor')) throw new Error('Missing Safari-safe workout list anchor');
+          if(!ux.includes("const progress=main.querySelector('.perf-session-progress');")||!ux.includes("const consoleCard=main.querySelector('.perf-exercise-console');")) throw new Error('Missing stable active-workout mount anchors');
           if(!css.includes('light-mode workout value contrast')) throw new Error('Missing light mode workout value contrast');
           for(const required of ['traco-today-workout','traco-v241-workout-list','data-today-exercise','st.done','st.total']){ if(!ux.includes(required)&&!css.includes(required)) throw new Error(`Missing visible workout list: ${required}`); }
           if(!ux.includes("document.body.classList.toggle('traco-exercise-picker-open',hasPicker)")) throw new Error('Exercise picker missing overlay recovery');
