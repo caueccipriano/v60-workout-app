@@ -279,9 +279,9 @@ jobs:
           const fs=require('fs');
           const media=fs.readFileSync('exercise-videos.js','utf8');
           const app=fs.readFileSync('app.js','utf8');
-          const base=[...new Set([...app.matchAll(/\\['([a-z0-9-]+)','[^']+','[^']+',\\d+,\\d+,\\d+,\\d+,'[^']+'\\]/g)].map(m=>m[1]))];
+          const base=[...new Set([...app.matchAll(/\['([a-z0-9-]+)','[^']+','[^']+',\d+,\d+,\d+,\d+,'[^']+'\]/g)].map(m=>m[1]))];
           const active=[...new Set([...base,'core-crunch-seg','core-pallof-ter','core-leg-raise-ter','core-woodchop-qui','core-dead-bug-qui'])];
-          const videos=[...new Set([...media.matchAll(/^\\s*'([a-z0-9-]+)':\\{provider:/gm)].map(m=>m[1]))];
+          const videos=[...new Set([...media.matchAll(/^\s*'([a-z0-9-]+)':\{provider:/gm)].map(m=>m[1]))];
           const missing=active.filter(id=>!videos.includes(id));
           const extra=videos.filter(id=>!active.includes(id));
           if(active.length!==37||videos.length!==37||missing.length||extra.length) throw new Error(`Video coverage failed: active=${active.length} videos=${videos.length} missing=${missing} extra=${extra}`);
