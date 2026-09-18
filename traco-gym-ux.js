@@ -474,31 +474,21 @@ renderSession=function(){
   });
 
   const progress=main.querySelector('.perf-session-progress');
-  const consoleCard=main.querySelector('.perf-exercise-console');
-  if(progress&&consoleCard){
+  const nativeList=main.querySelector('#perfNativeExerciseList');
+  if(progress){
     const doneExercises=session.exercises.filter(item=>tracoGymExerciseStatus(session,item).complete).length;
     progress.classList.add('traco-progress-visible');
     const label=progress.querySelector('small');if(label)label.textContent=`${doneExercises} / ${session.exercises.length} exercícios`;
-    const rows=session.exercises.map((item,i)=>{
-      const st=tracoGymExerciseStatus(session,item),active=item.id===ex?.id;
-      const detail=`${st.total} ${st.total===1?'série':'séries'} · ${st.done}/${st.total} concluídas`;
-      return `<button type="button" class="traco-v241-exercise ${active?'is-current':''} ${st.complete?'is-complete':''}" data-today-exercise="${tracoGymEsc(item.id)}" ${st.complete?'disabled':''}>
-        <span class="traco-v241-grip">⠿</span><span class="traco-v241-number">${String(i+1).padStart(2,'0')}</span>
-        <span class="traco-v241-copy"><b>${tracoGymEsc(item.name)}</b><small>${detail}</small><em>${tracoGymEsc(item.equipment||'exercício')}</em></span>
-        <span class="traco-v241-state">${st.complete?'✓':active?'●':'›'}</span>
-      </button>`;
-    }).join('');
-    main.querySelectorAll('.traco-v241-workout-list,.traco-today-workout,.traco-start-order-card').forEach(n=>n.remove());
-    consoleCard.insertAdjacentHTML('afterend',`<section class="traco-v241-workout-list">
-      <header><div><small>TREINO EM ANDAMENTO</small><h2>lista de exercícios</h2><p>toque em qualquer exercício para fazer agora</p></div><button type="button" id="tracoV241EditOrder">editar ordem</button></header>
-      <div class="traco-v241-progress"><b>${doneExercises}/${session.exercises.length}</b><span>exercícios concluídos</span></div>
-      <div class="traco-v241-rows">${rows}</div>
-    </section>`);
-    const edit=$('#tracoV241EditOrder');if(edit)edit.onclick=()=>tracoGymOpenSetOrderEditor(session.workoutId,{session});
-    document.querySelectorAll('[data-today-exercise]').forEach(btn=>btn.onclick=()=>{
-      if(!tracoGymMoveExerciseNext(session,btn.dataset.todayExercise))return;
+  }
+  if(nativeList){
+    nativeList.querySelectorAll('[data-native-exercise-index]').forEach(btn=>btn.onclick=()=>{
+      const next=Number(btn.dataset.nativeExerciseIndex),item=session.exercises[next];
+      if(!item||!tracoGymMoveExerciseNext(session,item.id))return;
       haptic();renderSession();
     });
+    const header=nativeList.querySelector('header');
+    if(header&&!nativeList.querySelector('#tracoV241EditOrder'))header.insertAdjacentHTML('beforeend','<button type="button" id="tracoV241EditOrder">editar ordem</button>');
+    const edit=$('#tracoV241EditOrder');if(edit)edit.onclick=()=>tracoGymOpenSetOrderEditor(session.workoutId,{session});
   }
   tracoGymRepairOverlayState();
 };
