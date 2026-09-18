@@ -226,7 +226,7 @@ function tracoGymOpenSetOrderEditor(workoutId,{session=null}={}){
     tracoGymCloseOrderEditor();
     toast('ordem das séries salva');
     haptic();
-    if($('#tracoPreStart'))tracoGymRefreshPreStart(workoutId);else renderWorkouts();
+    if(tracoGymPreStartWorkoutId===workoutId)tracoGymOpenPreStart(workoutId);else renderWorkouts();
   };
 }
 
@@ -246,6 +246,8 @@ currentSetIndex=function(ex){
 };
 
 let tracoGymStartBypass=false;
+let tracoGymPreStartWorkoutId=null;
+let tracoGymPreStartReturnPage='home';
 
 function tracoGymPreStartQueue(workoutId){
   const workout=workoutPlan.find(w=>w.id===workoutId);if(!workout)return [];
@@ -277,56 +279,48 @@ function tracoGymRefreshPreStart(workoutId){
   if(badge)badge.hidden=!tracoGymHasCustomSetOrder(workoutId);
 }
 function tracoGymClosePreStart(){
-  $('#tracoPreStart')?.remove();
-  document.body.classList.remove('traco-prestart-open');
-  tracoGymRepairOverlayState();
+  tracoGymPreStartWorkoutId=null;
+  state.page=tracoGymPreStartReturnPage||'home';
+  render();
 }
 function tracoGymOpenPreStart(workoutId){
-  const workout=workoutPlan.find(w=>w.id===workoutId);if(!workout)return;
+  const workout=workoutPlan.find(w=>w.id===workoutId);
+  if(!workout)return;
   tracoGymClearTransientOverlays();
-  try{
-    const item=typeof v60SequenceItem==='function'?v60SequenceItem(workoutId):null;
-    const queueCount=tracoGymPreStartQueue(workoutId).length;
-    const rows=tracoGymPreStartRows(workoutId);
-    const custom=tracoGymHasCustomSetOrder(workoutId);
+  tracoGymPreStartWorkoutId=workoutId;
+  tracoGymPreStartReturnPage=state.page||'home';
+  const item=typeof v60SequenceItem==='function'?v60SequenceItem(workoutId):null;
+  const queueCount=tracoGymPreStartQueue(workoutId).length;
+  const custom=tracoGymHasCustomSetOrder(workoutId);
 
-    document.body.insertAdjacentHTML('beforeend',`<div class="traco-prestart-backdrop" id="tracoPreStart">
-      <section class="traco-prestart-sheet" role="dialog" aria-modal="true" aria-label="preparar treino">
-        <header class="traco-prestart-head">
-          <div><span>antes de começar</span><h3>Treino ${tracoGymEsc(item?.letter||'')} · ${tracoGymEsc(workout.short)}</h3><small id="tracoPreStartCount">${queueCount} séries · ${workout.exercises.length} exercícios</small></div>
-          <button type="button" id="tracoPreStartClose" aria-label="fechar">×</button>
-        </header>
-        <div class="traco-prestart-tip"><b>ordem de hoje</b><small>confere as primeiras séries. quer mudar? organiza agora — ou durante o treino em “fila do treino”.</small></div>
-        <div class="traco-prestart-custom" id="tracoPreStartCustom" ${custom?'':'hidden'}>✓ ordem personalizada ativa</div>
-        <div class="traco-prestart-list" id="tracoPreStartList">${rows}</div>
-        <button type="button" class="traco-prestart-organize" id="tracoPreStartOrganize">
-          <span><b>ajustar ordem das séries</b><small>mover qualquer série antes de começar</small></span><i>↕</i>
-        </button>
-        <button type="button" class="cta-lime traco-prestart-go" id="tracoPreStartGo">começar assim</button>
-      </section>
-    </div>`);
-    document.body.classList.add('traco-prestart-open');
+  shell(`
+    <section class="traco-prestart-page-inner">
+      <header class="traco-prestart-head">
+        <button type="button" class="traco-prestart-back" id="tracoPreStartClose" aria-label="voltar">←</button>
+        <div><span>antes de começar</span><h3>Treino ${tracoGymEsc(item?.letter||'')} · ${tracoGymEsc(workout.short)}</h3><small id="tracoPreStartCount">${queueCount} séries · ${workout.exercises.length} exercícios</small></div>
+      </header>
+      <div class="traco-prestart-tip"><b>ordem de hoje</b><small>confere as primeiras séries. quer mudar? organiza agora — ou durante o treino em “fila do treino”.</small></div>
+      <div class="traco-prestart-custom" id="tracoPreStartCustom" ${custom?'':'hidden'}>✓ ordem personalizada ativa</div>
+      <div class="traco-prestart-list" id="tracoPreStartList">${tracoGymPreStartRows(workoutId)}</div>
+      <button type="button" class="traco-prestart-organize" id="tracoPreStartOrganize">
+        <span><b>ajustar ordem das séries</b><small>mover qualquer série antes de começar</small></span><i>↕</i>
+      </button>
+      <button type="button" class="cta-lime traco-prestart-go" id="tracoPreStartGo">começar assim</button>
+    </section>
+  `,{showNav:false,classes:'traco-prestart-page'});
 
-    $('#tracoPreStartClose').onclick=tracoGymClosePreStart;
-    $('#tracoPreStart').onclick=e=>{if(e.target.id==='tracoPreStart')tracoGymClosePreStart();};
-    $('#tracoPreStartOrganize').onclick=()=>tracoGymOpenSetOrderEditor(workoutId);
-    $('#tracoPreStartGo').onclick=()=>{
-      try{
-        tracoGymClosePreStart();
-        tracoGymClearTransientOverlays();
-        tracoGymBaseStartSession(workoutId);
-      }catch(error){
-        console.error('Traço direct start failed',error);
-        tracoGymClearTransientOverlays();
-        toast('não consegui abrir o treino · tenta de novo');
-      }
-    };
-  }catch(error){
-    console.error('Traço pre-start failed',error);
-    tracoGymClearTransientOverlays();
-    toast('abrindo o treino direto');
-    tracoGymBaseStartSession(workoutId);
-  }
+  $('#tracoPreStartClose').onclick=tracoGymClosePreStart;
+  $('#tracoPreStartOrganize').onclick=()=>tracoGymOpenSetOrderEditor(workoutId);
+  $('#tracoPreStartGo').onclick=()=>{
+    try{
+      tracoGymPreStartWorkoutId=null;
+      tracoGymClearTransientOverlays();
+      tracoGymBaseStartSession(workoutId);
+    }catch(error){
+      console.error('Traço direct start failed',error);
+      toast('não consegui abrir o treino · tenta de novo');
+    }
+  };
 }
 
 const tracoGymBaseStartSession=startSession;
@@ -338,7 +332,6 @@ startSession=function(workoutId){
   }
   try{
     tracoGymOpenPreStart(workoutId);
-    if(!document.querySelector('#tracoPreStart'))throw new Error('pre-start não abriu');
   }catch(error){
     console.error('Traço start flow failed',error);
     tracoGymClearTransientOverlays();
