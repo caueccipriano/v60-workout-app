@@ -99,13 +99,6 @@ function v60VideoIframe(ex,{large=false}={}){
   const video=v60VideoFor(ex);
   if(!video||navigator.onLine===false)return '';
   const title=`${ex.name} — ${video.variant}`;
-  // Vimeo can reject third-party embeds on iOS/PWA because of the video's own
-  // privacy/domain policy. In that case an iframe only shows a dead privacy panel.
-  // Keep those exercises useful in-app with the audited local technical guide.
-  if(video.provider==='vimeo'){
-    const technical=tracoMediaRender(ex,large);
-    return `<div class="v60-real-video-wrap is-fallback technical-only"><div class="v60-video-fallback">${technical.html}</div><span class="v60-video-badge technical"><i></i>guia técnico</span><a class="v60-video-source-link" href="${v60VideoSourceUrl(video)}" target="_blank" rel="noopener noreferrer">ver vídeo original ↗</a></div>`;
-  }
   return `<div class="v60-embed-wrap ${large?'is-large':''}"><iframe src="${v60VideoEmbedUrl(video)}" title="${tracoMediaEsc(title)}" loading="eager" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><span class="v60-video-badge"><i></i>vídeo 1:1</span><span class="v60-video-source">${tracoMediaEsc(video.source)}</span></div>`;
 }
 function tracoMediaEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));}
