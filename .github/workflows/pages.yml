@@ -42,7 +42,7 @@ jobs:
           const version=JSON.parse(fs.readFileSync('version.json','utf8'));
           const index=fs.readFileSync('index.html','utf8');
           if(manifest.short_name!=='Traço') throw new Error('Manifest brand mismatch');
-          if(version.name!=='Traço'||version.version!=='2.2.1') throw new Error('Version brand mismatch');
+          if(version.name!=='Traço'||version.version!=='2.2.2') throw new Error('Version brand mismatch');
           if(!index.includes('<title>Traço</title>')) throw new Error('Document title mismatch');
           for(const file of ['assets/icon.svg','assets/traco-icon-180.png','assets/traco-icon-192.png','assets/traco-icon-512.png','traco-brand.js','traco-brand.css','traco-theme.css','traco-performance.js','traco-performance.css']){
             if(!fs.existsSync(file)) throw new Error(`Missing brand asset: ${file}`);
@@ -68,11 +68,11 @@ jobs:
           ]){
             if(!css.includes(required)) throw new Error(`Missing theme/body-layout rule: ${required}`);
           }
-          for(const required of ['TRACO_THEME_KEY','tracoSetTheme','data-traco-theme="dark"','version:\'2.2.1\'']){
+          for(const required of ['TRACO_THEME_KEY','tracoSetTheme','data-traco-theme="dark"','version:\'2.2.2\'']){
             if(!brand.includes(required)) throw new Error(`Missing persistent theme feature: ${required}`);
           }
-          if(!index.includes("localStorage.getItem('traco_theme')")||!index.includes('traco-theme.css?v=221')||!index.includes('traco-performance.css?v=221')) throw new Error('First-paint theme bootstrap missing');
-          if(!sw.includes("'./traco-theme.css'")||!sw.includes("'./traco-performance.css'")||!sw.includes("'./traco-performance.js'")||!sw.includes("const CACHE = 'traco-v12'")) throw new Error('Theme cache integration missing');
+          if(!index.includes("localStorage.getItem('traco_theme')")||!index.includes('traco-theme.css?v=222')||!index.includes('traco-performance.css?v=222')) throw new Error('First-paint theme bootstrap missing');
+          if(!sw.includes("'./traco-theme.css'")||!sw.includes("'./traco-performance.css'")||!sw.includes("'./traco-performance.js'")||!sw.includes("const CACHE = 'traco-v13'")) throw new Error('Theme cache integration missing');
           if(!guides.includes("dark?'#FF3B30':'#E9342C'")) throw new Error('Exercise guide dark palette missing');
           if(!core.includes("dark?'#FF3B30':'#E9342C'")) throw new Error('Core guide dark palette missing');
           console.log('Dark theme + body mobile layout OK: black/red, persistent, first-paint safe');
@@ -207,7 +207,7 @@ jobs:
           ]){
             if(!css.includes(required)) throw new Error(`Missing Performance Console style: ${required}`);
           }
-          if(!index.includes('traco-performance.js?v=221')||!index.includes('traco-performance.css?v=221')) throw new Error('Performance assets not loaded');
+          if(!index.includes('traco-performance.js?v=222')||!index.includes('traco-performance.css?v=222')) throw new Error('Performance assets not loaded');
           if(!sw.includes("'./traco-performance.js'")||!sw.includes("'./traco-performance.css'")) throw new Error('Performance assets not cached');
           if(manifest.theme_color!=='#090909') throw new Error('PWA theme is not Performance Console');
           console.log('Traço 2.0 Performance Console OK; exact media entrypoint preserved');
@@ -270,8 +270,31 @@ jobs:
           if(!theme.includes('--lime:#FF3B30')) throw new Error('Redline theme color missing');
           if(!perf.includes('Traço 2.1 — compact body mobile')||!perf.includes('grid-template-columns:minmax(0,1fr) minmax(0,1fr)')) throw new Error('compact body mobile 2-column missing');
           if(!media.includes('const TRACO_VIDEO_LIBRARY')) throw new Error('Exact real video map missing');
-          if(!index.includes('exercise-videos.css?v=221')) throw new Error('Real video CSS missing from app');
+          if(!index.includes('exercise-videos.css?v=222')) throw new Error('Real video CSS missing from app');
           console.log('Traço 2.1 Redline OK');
+          NODE
+      - name: Validate measurement centering
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const app=fs.readFileSync('app.js','utf8');
+          const css=fs.readFileSync('traco-theme.css','utf8');
+          for(const required of [
+            'placeholder="—"',
+            'class="${val?\'\':\'is-empty\'}"',
+            "$('[data-edit-body]').forEach"
+          ]){
+            if(!app.includes(required)) throw new Error(`Missing body-centering feature: ${required}`);
+          }
+          for(const required of [
+            'Traço 2.2.2 — measurement optical centering',
+            '.measure-form .unit-input input::placeholder',
+            'top:50% !important',
+            '.body-stats>div.is-empty .measure-value'
+          ]){
+            if(!css.includes(required)) throw new Error(`Missing body-centering CSS: ${required}`);
+          }
+          console.log('Measurement centering OK');
           NODE
       - name: Validate offline-ready PWA
         run: |
@@ -283,7 +306,7 @@ jobs:
           const css=fs.readFileSync('exercise-videos.css','utf8');
 
           for(const required of [
-            "const CACHE = 'traco-v12'",
+            "const CACHE = 'traco-v13'",
             "ignoreSearch:true",
             "caches.match('./index.html',{ignoreSearch:true})",
             "cache.addAll(ASSETS)",
@@ -306,7 +329,7 @@ jobs:
 
           if(!css.includes('.traco-offline-pill')||!css.includes('.traco-offline-guide-note')) throw new Error('Offline UI missing');
           if(!media.includes('TRACO_MEDIA_AUDIT_RESULT=tracoAuditExerciseMedia()')||!media.includes('TRACO_MEDIA_RENDER_AUDIT_RESULT=tracoAuditRenderedMedia()')) throw new Error('Offline local technical-guide audit missing');
-          if(!index.includes('exercise-videos.js?v=221')||!index.includes('traco-performance.js?v=221')) throw new Error('Offline release cache-bust missing');
+          if(!index.includes('exercise-videos.js?v=222')||!index.includes('traco-performance.js?v=222')) throw new Error('Offline release cache-bust missing');
 
           console.log('Offline-ready PWA OK: app shell + local data + technical execution fallback');
           NODE
