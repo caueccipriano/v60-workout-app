@@ -1749,3 +1749,17 @@ html[data-theme="light"] .perf-more .traco-more-hero,html[data-theme="light"] .p
 html[data-theme="light"] .perf-more .traco-more-hero b,html[data-theme="light"] .perf-more [class*="hero"] b{color:#fff!important;-webkit-text-fill-color:#fff!important}
 html[data-theme="light"] .perf-more .traco-more-hero p,html[data-theme="light"] .perf-more [class*="hero"] p{color:#b8b89b!important;-webkit-text-fill-color:#b8b89b!important}
 html[data-theme="light"] .perf-workouts .workout-select:not(.selected) b,html[data-theme="light"] .perf-workouts .workout-select:not(.selected) i{color:#111113!important;-webkit-text-fill-color:#111113!important}
+
+/* 2.4.2 — native list fallback lives in the base session renderer */
+.perf-native-exercise-list{margin:18px 0;padding:16px;border:1px solid #303035;border-radius:18px;background:#111113;color:#f7f7f4}
+.perf-native-exercise-list header{margin-bottom:12px}.perf-native-exercise-list header small{color:var(--traco-action);font-size:8px;font-weight:900;letter-spacing:.14em}
+.perf-native-exercise-list header h2{margin:5px 0 3px;font:800 27px/1.05 var(--traco-display,serif);letter-spacing:-.035em}.perf-native-exercise-list header p{margin:0;color:#92959b;font-size:9px}
+.perf-native-exercise-rows{display:grid;gap:7px}.perf-native-exercise-row{width:100%;display:grid;grid-template-columns:30px minmax(0,1fr) 28px;align-items:center;gap:9px;padding:11px;border:1px solid #303035;border-radius:12px;background:#18181a;color:#f7f7f4;text-align:left}
+.perf-native-exercise-number{font:900 10px/1 var(--traco-numbers);color:#9a9da3}.perf-native-exercise-row b{display:block;font-size:12px}.perf-native-exercise-row small{display:block;margin-top:4px;color:#8d9096;font-size:8px}.perf-native-exercise-row i{font-style:normal;font-size:16px;text-align:center}
+.perf-native-exercise-row.is-current{border-color:var(--traco-action);box-shadow:inset 3px 0 0 var(--traco-action)}.perf-native-exercise-row.is-current i{color:var(--traco-action)}.perf-native-exercise-row.is-complete{opacity:.58}
+html[data-theme="light"] .perf-native-exercise-list{background:#F0EFEB;border-color:#D1CEC7;color:#111113}
+html[data-theme="light"] .perf-native-exercise-row{background:#F8F7F3;border-color:#D7D4CD;color:#111113}
+html[data-theme="light"] .perf-native-exercise-row b{color:#111113!important;-webkit-text-fill-color:#111113!important}
+html[data-theme="light"] .perf-native-exercise-row small{color:#696c72!important;-webkit-text-fill-color:#696c72!important}
+html[data-theme="light"] .perf-more .traco-about-card,html[data-theme="light"] .perf-more .traco-about-card *{color:#111113!important;-webkit-text-fill-color:#111113!important}
+html[data-theme="light"] .perf-more .traco-about-card .traco-about-mark,html[data-theme="light"] .perf-more .traco-about-card [class*="icon"]{color:var(--traco-action)!important;-webkit-text-fill-color:var(--traco-action)!important}
