@@ -9,6 +9,20 @@ const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
 const TRACO_SET_ORDER_KEY='traco_set_order_v1';
 const TRACO_LEGACY_WORKOUT_ORDER_KEY='traco_workout_order_v1';
 
+function tracoGymRepairOverlayState(){
+  const hasPre=Boolean(document.querySelector('#tracoPreStart'));
+  const hasOrder=Boolean(document.querySelector('#tracoOrderEditor'));
+  document.body.classList.toggle('traco-prestart-open',hasPre);
+  document.body.classList.toggle('traco-order-open',hasOrder);
+}
+function tracoGymClearTransientOverlays(){
+  document.querySelector('#tracoPreStart')?.remove();
+  document.querySelector('#tracoOrderEditor')?.remove();
+  document.body.classList.remove('traco-prestart-open','traco-order-open');
+}
+window.addEventListener('pageshow',()=>setTimeout(tracoGymRepairOverlayState,0));
+
+
 function tracoGymQueueToken(exerciseId,setIndex){return `${exerciseId}::${setIndex}`;}
 function tracoGymQueueParts(token){
   const cut=String(token).lastIndexOf('::');
