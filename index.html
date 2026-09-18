@@ -3,23 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#FAFAFA" />
+  <meta name="theme-color" content="#090909" />
   <meta name="color-scheme" content="light dark" />
   <meta name="application-name" content="Traço" />
   <meta name="description" content="Traço — treino, progressão, constância e evolução corporal." />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Traço" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <script>
     (()=>{try{
-      const theme=localStorage.getItem('traco_theme')==='dark'?'dark':'light';
+      const perfKey='traco_performance_console_v1';
+      let theme=localStorage.getItem('traco_theme');
+      if(!localStorage.getItem(perfKey)){
+        theme='dark';
+        localStorage.setItem('traco_theme','dark');
+        localStorage.setItem(perfKey,'1');
+      }
+      theme=theme==='light'?'light':'dark';
       document.documentElement.dataset.theme=theme;
+      document.documentElement.dataset.design='performance';
       document.documentElement.style.colorScheme=theme;
       const color=document.querySelector('meta[name="theme-color"]');
-      if(color)color.content=theme==='dark'?'#080808':'#FAFAFA';
+      if(color)color.content=theme==='dark'?'#090909':'#F6F5F0';
       const status=document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
       if(status)status.content=theme==='dark'?'black-translucent':'default';
     }catch{}})();
@@ -28,25 +36,27 @@
   <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/traco-icon-180.png" />
   <title>Traço</title>
-  <link rel="stylesheet" href="./styles.css?v=130" />
-  <link rel="stylesheet" href="./exercise-guides.css?v=130" />
-  <link rel="stylesheet" href="./exercise-guides-v4.css?v=130" />
-  <link rel="stylesheet" href="./v60-personal-progress.css?v=130" />
-  <link rel="stylesheet" href="./v60-aesthetic-core.css?v=130" />
-  <link rel="stylesheet" href="./v60-smart-sequence.css?v=130" />
-  <link rel="stylesheet" href="./traco-brand.css?v=130" />
-  <link rel="stylesheet" href="./traco-theme.css?v=130" />
+  <link rel="stylesheet" href="./styles.css?v=200" />
+  <link rel="stylesheet" href="./exercise-guides.css?v=200" />
+  <link rel="stylesheet" href="./exercise-guides-v4.css?v=200" />
+  <link rel="stylesheet" href="./v60-personal-progress.css?v=200" />
+  <link rel="stylesheet" href="./v60-aesthetic-core.css?v=200" />
+  <link rel="stylesheet" href="./v60-smart-sequence.css?v=200" />
+  <link rel="stylesheet" href="./traco-brand.css?v=200" />
+  <link rel="stylesheet" href="./traco-theme.css?v=200" />
+  <link rel="stylesheet" href="./traco-performance.css?v=200" />
 </head>
 <body>
   <div id="app"></div>
   <div id="toast" class="toast" aria-live="polite"></div>
-  <script src="./app.js?v=130" defer></script>
-  <script src="./exercise-guides.js?v=130" defer></script>
-  <script src="./exercise-guides-v4.js?v=130" defer></script>
-  <script src="./v60-personal-progress.js?v=130" defer></script>
-  <script src="./v60-aesthetic-core.js?v=130" defer></script>
-  <script src="./v60-smart-sequence.js?v=130" defer></script>
-  <script src="./exercise-videos.js?v=130" defer></script>
-  <script src="./traco-brand.js?v=130" defer></script>
+  <script src="./app.js?v=200" defer></script>
+  <script src="./exercise-guides.js?v=200" defer></script>
+  <script src="./exercise-guides-v4.js?v=200" defer></script>
+  <script src="./v60-personal-progress.js?v=200" defer></script>
+  <script src="./v60-aesthetic-core.js?v=200" defer></script>
+  <script src="./v60-smart-sequence.js?v=200" defer></script>
+  <script src="./exercise-videos.js?v=200" defer></script>
+  <script src="./traco-brand.js?v=200" defer></script>
+  <script src="./traco-performance.js?v=200" defer></script>
 </body>
 </html>
