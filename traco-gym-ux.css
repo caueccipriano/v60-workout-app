@@ -962,3 +962,198 @@ body.traco-order-open{
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
 }
+
+
+/* Traço 2.3.4 — active workout exercise switcher */
+.traco-session-switchers{
+  display:grid;
+  grid-template-columns:1.12fr .88fr;
+  gap:8px;
+  margin:8px 0 12px;
+}
+.traco-switch-exercise,
+.traco-active-queue{
+  min-width:0;
+  margin:0 !important;
+}
+.traco-switch-exercise{
+  width:100%;
+  min-height:54px;
+  padding:9px 11px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  border:1px solid #5A2522;
+  border-radius:11px;
+  background:#21100F;
+  color:var(--traco-text);
+  text-align:left;
+}
+.traco-switch-exercise:active{
+  background:#2B1311;
+  transform:scale(.99);
+}
+.traco-switch-exercise span{min-width:0}
+.traco-switch-exercise b,
+.traco-switch-exercise small{display:block}
+.traco-switch-exercise b{
+  color:var(--traco-action);
+  font-size:10px;
+}
+.traco-switch-exercise small{
+  margin-top:3px;
+  color:var(--traco-muted);
+  font-size:8px;
+  line-height:1.3;
+}
+.traco-switch-exercise i{
+  flex:none;
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  border-radius:8px;
+  background:var(--traco-action);
+  color:#090909;
+  font:900 15px/1 var(--traco-numbers);
+  font-style:normal;
+}
+
+body.traco-exercise-picker-open{overflow:hidden}
+.traco-exercise-picker-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:920;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  background:rgba(0,0,0,.76);
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
+}
+.traco-exercise-picker-sheet{
+  width:min(560px,100%);
+  max-height:min(88dvh,820px);
+  display:flex;
+  flex-direction:column;
+  border:1px solid #333339;
+  border-bottom:0;
+  border-radius:22px 22px 0 0;
+  background:#101011;
+  color:var(--traco-text);
+  overflow:hidden;
+  padding-bottom:max(14px,env(safe-area-inset-bottom));
+  animation:tracoOrderIn .2s ease-out;
+}
+.traco-exercise-picker-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  padding:18px 16px 11px;
+}
+.traco-exercise-picker-head>div>span{
+  display:block;
+  color:var(--traco-action);
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.traco-exercise-picker-head h3{
+  margin:3px 0 2px;
+  font-family:var(--traco-editorial);
+  font-size:28px;
+  font-weight:400;
+  letter-spacing:-.035em;
+}
+.traco-exercise-picker-head small{
+  color:var(--traco-muted);
+  font-size:9px;
+}
+.traco-exercise-picker-head>button{
+  flex:none;
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  border:1px solid #35353A;
+  border-radius:12px;
+  background:#171719;
+  color:var(--traco-text);
+  font-size:24px;
+}
+.traco-exercise-picker-list{
+  min-height:0;
+  overflow:auto;
+  padding:0 12px 8px;
+  -webkit-overflow-scrolling:touch;
+}
+.traco-exercise-choice{
+  width:100%;
+  min-height:62px;
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr) auto;
+  align-items:center;
+  gap:9px;
+  padding:9px 10px;
+  border:0;
+  border-bottom:1px solid #29292E;
+  background:transparent;
+  color:var(--traco-text);
+  text-align:left;
+}
+.traco-exercise-choice:last-child{border-bottom:0}
+.traco-exercise-choice:not(:disabled):active{background:#19191C}
+.traco-exercise-choice.is-current{
+  background:#1D100F;
+  border-radius:10px;
+  border-bottom-color:transparent;
+}
+.traco-exercise-choice.is-complete{opacity:.48}
+.traco-exercise-choice-index{
+  font:700 10px/1 var(--traco-numbers);
+  color:#757980;
+  text-align:center;
+}
+.traco-exercise-choice-copy{min-width:0}
+.traco-exercise-choice-copy b,
+.traco-exercise-choice-copy small{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.traco-exercise-choice-copy b{font-size:11px}
+.traco-exercise-choice-copy small{
+  margin-top:4px;
+  color:var(--traco-muted);
+  font-size:8px;
+}
+.traco-exercise-choice-state{
+  flex:none;
+  min-width:42px;
+  text-align:right;
+  color:var(--traco-action);
+  font-size:8px;
+  font-weight:900;
+}
+.traco-exercise-choice.is-complete .traco-exercise-choice-state{
+  color:var(--traco-achievement);
+}
+.traco-exercise-picker-queue{
+  min-height:50px;
+  margin:8px 12px 0;
+  border:1px solid #39393F;
+  border-radius:11px;
+  background:#18181B;
+  color:var(--traco-muted-strong);
+  font-size:9px;
+  font-weight:850;
+}
+@media(max-width:370px){
+  .traco-session-switchers{grid-template-columns:1fr}
+  .traco-switch-exercise,
+  .traco-active-queue{min-height:52px}
+}
