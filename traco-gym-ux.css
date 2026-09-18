@@ -1714,3 +1714,38 @@ html[data-theme="light"] .traco-today-exercise-row{color:#111113;border-color:#D
 html[data-theme="light"] .traco-today-exercise-copy b{color:#111113 !important;-webkit-text-fill-color:#111113 !important}
 html[data-theme="light"] .traco-today-exercise-copy small{color:#6C6F75 !important;-webkit-text-fill-color:#6C6F75 !important}
 html[data-theme="light"] .traco-today-exercise-row.is-current{background:rgba(255,59,48,.08)}
+
+
+/* Traço 2.4.1 — exercise-list-first active workout */
+.traco-v241-workout-list{margin:18px 0 14px;color:var(--traco-text)}
+.traco-v241-workout-list>header{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin:0 0 12px}
+.traco-v241-workout-list>header small{display:block;color:var(--traco-action);font-size:8px;font-weight:900;letter-spacing:.14em}
+.traco-v241-workout-list>header h2{margin:5px 0 2px;font:800 27px/1.05 var(--traco-display,serif);letter-spacing:-.035em}
+.traco-v241-workout-list>header p{margin:0;color:#85888f;font-size:9px}
+#tracoV241EditOrder{flex:0 0 auto;border:1px solid #39393e;border-radius:11px;background:transparent;color:inherit;padding:10px 12px;font-size:9px;font-weight:900}
+.traco-v241-progress{display:flex;align-items:baseline;gap:7px;padding:10px 12px;margin-bottom:7px;border:1px solid #303035;border-radius:11px;background:#141416}
+.traco-v241-progress b{font-size:15px}.traco-v241-progress span{color:#898c92;font-size:9px}
+.traco-v241-rows{display:grid;gap:7px}
+.traco-v241-exercise{width:100%;min-height:70px;display:grid;grid-template-columns:18px 28px minmax(0,1fr) 30px;align-items:center;gap:8px;padding:10px 11px;border:1px solid #303035;border-radius:12px;background:#141416;color:var(--traco-text);text-align:left}
+.traco-v241-exercise:active{transform:scale(.992)}
+.traco-v241-grip{color:#62656b;font-size:17px;line-height:1}
+.traco-v241-number{font:900 10px/1 var(--traco-numbers);color:#a0a3a9}
+.traco-v241-copy{min-width:0}.traco-v241-copy b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}.traco-v241-copy small,.traco-v241-copy em{display:block;margin-top:3px;color:#8c8f96;font-size:8px;font-style:normal}
+.traco-v241-state{display:grid;place-items:center;width:28px;height:28px;border:1px solid #4a4a50;border-radius:50%;font-size:16px;color:#b0b2b7}
+.traco-v241-exercise.is-current{border-color:var(--traco-action);box-shadow:inset 3px 0 0 var(--traco-action)}
+.traco-v241-exercise.is-current .traco-v241-state{border-color:var(--traco-action);color:var(--traco-action)}
+.traco-v241-exercise.is-complete{opacity:.58}.traco-v241-exercise.is-complete .traco-v241-state{background:var(--traco-action);border-color:var(--traco-action);color:#111}
+
+/* 2.4.1 light theme: explicit contrast, including dark surfaces */
+html[data-theme="light"] .traco-v241-workout-list{color:#111113}
+html[data-theme="light"] .traco-v241-progress,html[data-theme="light"] .traco-v241-exercise{background:#F2F1ED;border-color:#D3D0C9;color:#111113}
+html[data-theme="light"] .traco-v241-copy b{color:#111113!important;-webkit-text-fill-color:#111113!important}
+html[data-theme="light"] .traco-v241-copy small,html[data-theme="light"] .traco-v241-copy em,html[data-theme="light"] .traco-v241-progress span{color:#6d7076!important;-webkit-text-fill-color:#6d7076!important}
+html[data-theme="light"] #tracoV241EditOrder{border-color:#D0CDC6;color:#111113;background:#F8F7F3}
+html[data-theme="light"] .perf-progress .level-card>div:last-child,html[data-theme="light"] .perf-progress [class*="xp"]{color:#111113!important;-webkit-text-fill-color:#111113!important}
+html[data-theme="light"] .perf-more .traco-about-card b{color:#111113!important;-webkit-text-fill-color:#111113!important}
+html[data-theme="light"] .perf-more .traco-about-card small{color:#777a80!important;-webkit-text-fill-color:#777a80!important}
+html[data-theme="light"] .perf-more .traco-more-hero,html[data-theme="light"] .perf-more [class*="hero"]{color:#fff}
+html[data-theme="light"] .perf-more .traco-more-hero b,html[data-theme="light"] .perf-more [class*="hero"] b{color:#fff!important;-webkit-text-fill-color:#fff!important}
+html[data-theme="light"] .perf-more .traco-more-hero p,html[data-theme="light"] .perf-more [class*="hero"] p{color:#b8b89b!important;-webkit-text-fill-color:#b8b89b!important}
+html[data-theme="light"] .perf-workouts .workout-select:not(.selected) b,html[data-theme="light"] .perf-workouts .workout-select:not(.selected) i{color:#111113!important;-webkit-text-fill-color:#111113!important}
