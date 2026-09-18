@@ -1776,3 +1776,24 @@ html[data-theme="light"] .perf-more .traco-about-card small{color:#73767c!import
 html[data-theme="light"] .perf-workouts .workout-select:not(.selected) b,html[data-theme="light"] .perf-workouts .workout-select:not(.selected) i{color:#111113!important;-webkit-text-fill-color:#111113!important}
 html[data-theme="light"] .perf-workouts .workout-select:not(.selected) small{color:#777a80!important;-webkit-text-fill-color:#777a80!important}
 html[data-theme="light"] .perf-value-panel input{color:#111113!important;-webkit-text-fill-color:#111113!important;opacity:1!important}
+
+/* 2.4.2 — iPhone numeric field alignment */
+html[data-design="performance"] .perf-value-panel>div{align-items:center!important}
+html[data-design="performance"] .perf-value-panel input{
+  box-sizing:border-box!important;
+  display:block!important;
+  width:100%!important;
+  height:48px!important;
+  min-height:48px!important;
+  margin:0!important;
+  padding:0 2px!important;
+  border:0!important;
+  text-align:center!important;
+  text-indent:0!important;
+  line-height:48px!important;
+  font-variant-numeric:tabular-nums!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+}
+html[data-design="performance"] .perf-value-panel input::-webkit-outer-spin-button,
+html[data-design="performance"] .perf-value-panel input::-webkit-inner-spin-button{-webkit-appearance:none!important;margin:0!important}
