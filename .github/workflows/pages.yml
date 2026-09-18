@@ -428,19 +428,19 @@ jobs:
             'tracoGymOpenExercisePicker',
             'tracoGymMoveExerciseNext',
             'tracoGymExerciseStatus',
-            'trocar exercício',
-            'escolhe qual exercício vem agora',
+            'treino de hoje',
+            'toque no exercício que você quer fazer agora',
             'organizar fila completa',
-            "id=\"tracoSwitchExercise\"",
-            "$('#tracoSwitchExercise').onclick=tracoGymOpenExercisePicker",
+            "id=\"tracoTodayExercises\"",
+            "$('#tracoTodayExercises').onclick=tracoGymOpenExercisePicker",
             'session.tracoSetQueue=[...doneTokens,...chosen,...other]'
           ]){
             if(!ux.includes(required)) throw new Error(`Missing active exercise switcher feature: ${required}`);
           }
 
           for(const required of [
-            '.traco-session-switchers',
-            '.traco-switch-exercise',
+            '.traco-today-exercises',
+            '.traco-today-exercises-action',
             '.traco-exercise-picker-backdrop',
             '.traco-exercise-picker-sheet',
             '.traco-exercise-choice',
