@@ -813,3 +813,44 @@ html[data-theme="dark"] .measure-form .unit-input::before{
   text-align:center;
   width:100%;
 }
+
+
+/* Traço 2.2.2 — measurement optical centering */
+.measure-form .unit-input::before{
+  display:none !important;
+}
+.measure-form .unit-input input{
+  text-align:center;
+  padding-left:42px;
+  padding-right:42px;
+}
+.measure-form .unit-input input::placeholder{
+  color:var(--muted);
+  opacity:1;
+  text-align:center;
+}
+.measure-form .unit-input span{
+  top:50% !important;
+  bottom:auto !important;
+  transform:translateY(-50%);
+  line-height:1;
+}
+.measure-form input[type="date"]{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  text-align-last:center;
+  line-height:normal;
+}
+.measure-form input[type="date"]::-webkit-date-and-time-value{
+  width:100%;
+  text-align:center;
+}
+.body-stats>div.is-empty .measure-value{
+  width:100%;
+  justify-content:center;
+}
+.body-stats>div.is-empty p{
+  text-align:center;
+}
