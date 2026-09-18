@@ -3,7 +3,7 @@
  * Final UX layer: gym-first, fast touch targets, achievement color, clearer copy.
  * Internal v60_* storage keys remain for backwards compatibility.
  */
-const TRACO_GYM_UX_VERSION='2.3.14';
+const TRACO_GYM_UX_VERSION='2.4.0';
 const TRACO_ACHIEVEMENT='#F4C542';
 const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
 const TRACO_SET_ORDER_KEY='traco_set_order_v1';
@@ -449,7 +449,7 @@ renderSession=function(){
   }
   tracoGymBaseSession();
   const main=document.querySelector('.perf-session'); if(!main||!state.activeSession)return;
-  main.setAttribute('data-traco-gym-version','254');
+  main.setAttribute('data-traco-gym-version','2.4.0');
   const ex=state.activeSession.exercises[state.currentExercise];
 
   const media=main.querySelector('.perf-media-block');
@@ -520,10 +520,14 @@ renderSession=function(){
         <span class="traco-today-exercise-go">${active?'●':'→'}</span>
       </button>`;
     }).join('');
-    progress.insertAdjacentHTML('afterend',`${firstOrder}<section class="traco-today-workout">
+    main.querySelectorAll('.traco-start-order-card,.traco-today-workout').forEach(node=>node.remove());
+    const exerciseConsole=main.querySelector('.perf-exercise-console');
+    const navigatorHTML=`${firstOrder}<section class="traco-today-workout">
       <header><span><small>TREINO DE HOJE</small><b>${exerciseDone}/${state.activeSession.exercises.length} exercícios</b></span><em>ordem livre</em></header>
       <div class="traco-today-workout-list">${exerciseRows}</div>
-    </section>`);
+    </section>`;
+    if(exerciseConsole)exerciseConsole.insertAdjacentHTML('afterend',navigatorHTML);
+    else progress.insertAdjacentHTML('afterend',navigatorHTML);
 
     if($('#tracoInitialOrder'))$('#tracoInitialOrder').onclick=()=>tracoGymOpenSetOrderEditor(state.activeSession.workoutId,{session:state.activeSession});
     $('[data-today-exercise]').forEach(btn=>btn.onclick=()=>{
