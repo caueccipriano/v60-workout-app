@@ -462,11 +462,11 @@ renderSession=function(){
   if(back){back.classList.add('traco-session-nav');back.setAttribute('aria-label','voltar um exercício');back.insertAdjacentHTML('beforeend','<small>anterior</small>');}
   if(close){close.classList.add('traco-session-nav');close.setAttribute('aria-label','sair e cancelar treino');close.insertAdjacentHTML('beforeend','<small>sair</small>');}
 
-  $('.perf-value-panel button').forEach(btn=>btn.classList.add('traco-gym-stepper'));
+  document.querySelectorAll('.perf-value-panel button').forEach(btn=>btn.classList.add('traco-gym-stepper'));
   // Rebind steppers after the final Gym UX render. This keeps iOS/PWA taps
   // independent from earlier render-layer handlers.
   const activeSet=ex?.sets?.[currentSetIndex(ex)];
-  $('.perf-value-panel [data-adjust]').forEach(btn=>btn.onclick=()=>{
+  document.querySelectorAll('.perf-value-panel [data-adjust]').forEach(btn=>btn.onclick=()=>{
     const [kind,raw]=String(btn.dataset.adjust||'').split(':'),delta=Number(raw);
     const input=kind==='weight'?$('#weightInput'):$('#repsInput');
     if(!input||!activeSet||!Number.isFinite(delta))return;
@@ -530,7 +530,7 @@ renderSession=function(){
     else progress.insertAdjacentHTML('afterend',navigatorHTML);
 
     if($('#tracoInitialOrder'))$('#tracoInitialOrder').onclick=()=>tracoGymOpenSetOrderEditor(state.activeSession.workoutId,{session:state.activeSession});
-    $('[data-today-exercise]').forEach(btn=>btn.onclick=()=>{
+    document.querySelectorAll('[data-today-exercise]').forEach(btn=>btn.onclick=()=>{
       const id=btn.dataset.todayExercise;
       if(!tracoGymMoveExerciseNext(state.activeSession,id))return;
       haptic();
