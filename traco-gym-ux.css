@@ -1157,3 +1157,45 @@ body.traco-exercise-picker-open{overflow:hidden}
   .traco-switch-exercise,
   .traco-active-queue{min-height:52px}
 }
+
+
+/* Traço 2.3.6 — definitive iOS/PWA scroll safety */
+html[data-design="performance"],
+html[data-design="performance"] body{
+  min-height:100%;
+  overflow-x:hidden;
+  overflow-y:auto !important;
+  touch-action:pan-y !important;
+}
+body.traco-prestart-open,
+body.traco-order-open,
+body.traco-exercise-picker-open{
+  overflow-y:auto !important;
+  position:static !important;
+  height:auto !important;
+  touch-action:pan-y !important;
+}
+.traco-prestart-backdrop,
+.traco-order-backdrop,
+.traco-exercise-picker-backdrop{
+  position:fixed;
+  inset:0;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  touch-action:pan-y !important;
+}
+.traco-prestart-sheet,
+.traco-order-sheet,
+.traco-exercise-picker-sheet{
+  max-height:calc(100dvh - max(8px,env(safe-area-inset-top))) !important;
+  touch-action:pan-y !important;
+}
+.traco-prestart-list,
+.traco-order-list,
+.traco-exercise-picker-list{
+  min-height:0;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y !important;
+}
