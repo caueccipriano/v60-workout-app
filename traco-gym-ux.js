@@ -3,7 +3,7 @@
  * Final UX layer: gym-first, fast touch targets, achievement color, clearer copy.
  * Internal v60_* storage keys remain for backwards compatibility.
  */
-const TRACO_GYM_UX_VERSION='2.3.9';
+const TRACO_GYM_UX_VERSION='2.3.12';
 const TRACO_ACHIEVEMENT='#F4C542';
 const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
 const TRACO_SET_ORDER_KEY='traco_set_order_v1';
@@ -35,6 +35,8 @@ function tracoGymClearTransientOverlays(){
   document.querySelector('#tracoOrderEditor')?.remove();
   document.querySelector('#tracoExercisePicker')?.remove();
   document.body.classList.remove('traco-prestart-open','traco-order-open','traco-exercise-picker-open');
+  if(!document.querySelector('#v60GuideSheet')&&!document.querySelector('#v60GuideBackdrop'))document.body.classList.remove('v60-guide-open');
+  if(!document.querySelector('#tracoSessionEditor')&&!document.querySelector('#tracoBodyEditor'))document.body.classList.remove('traco-editor-open');
   for(const el of [document.documentElement,document.body]){
     el.style.removeProperty('overflow');
     el.style.removeProperty('overflow-y');
@@ -326,18 +328,8 @@ function tracoGymOpenPreStart(workoutId){
 const tracoGymBaseStartSession=startSession;
 startSession=function(workoutId){
   tracoGymClearTransientOverlays();
-  const draft=load(K.draft,null);
-  if(tracoGymStartBypass||(draft&&draft.workoutId===workoutId&&!draft.finishedAt)){
-    return tracoGymBaseStartSession(workoutId);
-  }
-  try{
-    tracoGymOpenPreStart(workoutId);
-  }catch(error){
-    console.error('Traço start flow failed',error);
-    tracoGymClearTransientOverlays();
-    toast('abrindo o treino direto');
-    return tracoGymBaseStartSession(workoutId);
-  }
+  tracoGymPreStartWorkoutId=null;
+  return tracoGymBaseStartSession(workoutId);
 };
 
 /* HOME */
