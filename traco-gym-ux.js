@@ -3,7 +3,7 @@
  * Final UX layer: gym-first, fast touch targets, achievement color, clearer copy.
  * Internal v60_* storage keys remain for backwards compatibility.
  */
-const TRACO_GYM_UX_VERSION='2.3.4';
+const TRACO_GYM_UX_VERSION='2.3.6';
 const TRACO_ACHIEVEMENT='#F4C542';
 const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
 const TRACO_SET_ORDER_KEY='traco_set_order_v1';
@@ -29,11 +29,13 @@ function tracoGymClearTransientOverlays(){
   document.querySelector('#tracoOrderEditor')?.remove();
   document.querySelector('#tracoExercisePicker')?.remove();
   document.body.classList.remove('traco-prestart-open','traco-order-open','traco-exercise-picker-open');
-  document.body.style.overflow='';
-  document.body.style.position='';
-  document.body.style.touchAction='';
-  document.documentElement.style.overflow='';
-  document.documentElement.style.touchAction='';
+  for(const el of [document.documentElement,document.body]){
+    el.style.removeProperty('overflow');
+    el.style.removeProperty('overflow-y');
+    el.style.removeProperty('position');
+    el.style.removeProperty('height');
+    el.style.removeProperty('touch-action');
+  }
 }
 window.addEventListener('pageshow',()=>setTimeout(tracoGymRepairOverlayState,0));
 
@@ -318,12 +320,20 @@ function tracoGymOpenPreStart(workoutId){
 
 const tracoGymBaseStartSession=startSession;
 startSession=function(workoutId){
-  tracoGymRepairOverlayState();
+  tracoGymClearTransientOverlays();
   const draft=load(K.draft,null);
   if(tracoGymStartBypass||(draft&&draft.workoutId===workoutId&&!draft.finishedAt)){
     return tracoGymBaseStartSession(workoutId);
   }
-  tracoGymOpenPreStart(workoutId);
+  try{
+    tracoGymOpenPreStart(workoutId);
+    if(!document.querySelector('#tracoPreStart'))throw new Error('pre-start não abriu');
+  }catch(error){
+    console.error('Traço start flow failed',error);
+    tracoGymClearTransientOverlays();
+    toast('abrindo o treino direto');
+    return tracoGymBaseStartSession(workoutId);
+  }
 };
 
 /* HOME */
@@ -583,4 +593,5 @@ renderFinish=function(){
 };
 
 tracoGymRepairOverlayState();
+tracoGymClearTransientOverlays();
 render();
