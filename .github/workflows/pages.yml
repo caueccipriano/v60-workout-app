@@ -41,7 +41,7 @@ jobs:
           const version=JSON.parse(fs.readFileSync('version.json','utf8'));
           const index=fs.readFileSync('index.html','utf8');
           if(manifest.short_name!=='Traço') throw new Error('Manifest brand mismatch');
-          if(version.name!=='Traço'||version.version!=='1.2.0') throw new Error('Version brand mismatch');
+          if(version.name!=='Traço'||version.version!=='1.3.0') throw new Error('Version brand mismatch');
           if(!index.includes('<title>Traço</title>')) throw new Error('Document title mismatch');
           for(const file of ['assets/icon.svg','assets/traco-icon-180.png','assets/traco-icon-192.png','traco-brand.js','traco-brand.css','traco-theme.css']){
             if(!fs.existsSync(file)) throw new Error(`Missing brand asset: ${file}`);
@@ -67,11 +67,11 @@ jobs:
           ]){
             if(!css.includes(required)) throw new Error(`Missing theme/body-layout rule: ${required}`);
           }
-          for(const required of ['TRACO_THEME_KEY','tracoSetTheme','data-traco-theme="dark"','version:\'1.2.0\'']){
+          for(const required of ['TRACO_THEME_KEY','tracoSetTheme','data-traco-theme="dark"','version:\'1.3.0\'']){
             if(!brand.includes(required)) throw new Error(`Missing persistent theme feature: ${required}`);
           }
-          if(!index.includes("localStorage.getItem('traco_theme')")||!index.includes('traco-theme.css?v=120')) throw new Error('First-paint theme bootstrap missing');
-          if(!sw.includes("'./traco-theme.css'")||!sw.includes("const CACHE = 'traco-v6'")) throw new Error('Theme cache integration missing');
+          if(!index.includes("localStorage.getItem('traco_theme')")||!index.includes('traco-theme.css?v=130')) throw new Error('First-paint theme bootstrap missing');
+          if(!sw.includes("'./traco-theme.css'")||!sw.includes("const CACHE = 'traco-v7'")) throw new Error('Theme cache integration missing');
           if(!guides.includes("dark?'#FF6B21':'#C4D82E'")) throw new Error('Exercise guide dark palette missing');
           if(!core.includes("dark?'#FF6B21':'#C4D82E'")) throw new Error('Core guide dark palette missing');
           console.log('Dark theme + body mobile layout OK: black/orange, persistent, first-paint safe');
@@ -145,6 +145,32 @@ jobs:
           if(!app.includes("confirm('excluir este treino do histórico?")||!app.includes("confirm('excluir esta medição?")) throw new Error('Destructive edit confirmation missing');
           if(!app.includes('tracoRecomputePRs();tracoSyncAttendance')) throw new Error('Workout edit/delete recalculation missing');
           console.log('Editable data OK: sessions + sets + measurements + delete + recalculation');
+          NODE
+      - name: Validate data safety guards
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const app=fs.readFileSync('app.js','utf8');
+          const smart=fs.readFileSync('v60-smart-sequence.js','utf8');
+          const css=fs.readFileSync('traco-theme.css','utf8');
+          for(const required of [
+            'tracoHasDuplicateSession',
+            'Já existe este treino nessa data',
+            'tracoOfferUndo',
+            'treino salvo como parcial',
+            'partialEdited',
+            "draft.excludeFromVolume=incomplete",
+            "confirm('excluir este treino do histórico?')",
+            "confirm('excluir esta medição?')"
+          ]){
+            if(!app.includes(required)) throw new Error(`Missing data safety guard: ${required}`);
+          }
+          if(!smart.includes('const finished=activeId&&sessions().some')) throw new Error('Sequence may advance after canceled finish');
+          if(!smart.includes('if(!finished)return')) throw new Error('Sequence completion guard missing');
+          if(!css.includes('.traco-undo-bar')||!css.includes('desfazer')===false) {
+            if(!css.includes('.traco-undo-bar')) throw new Error('Undo snackbar style missing');
+          }
+          console.log('Data safety OK: partial edits + undo + duplicate guard + safe sequence');
           NODE
       - name: Validate exact exercise media audit
         run: |
