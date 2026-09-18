@@ -41,9 +41,8 @@ const TRACO_MEDIA_AUDIT=Object.freeze({
   'core-woodchop-qui':{name:"woodchop na polia",equipment:"Polia alta / crossover",scene:'woodchop',verified:true},
   'core-dead-bug-qui':{name:"dead bug",equipment:"Solo / colchonete",scene:'deadBug',verified:true}
 });
-
 const TRACO_VIDEO_LIBRARY=Object.freeze({
-  'supino-inclinado':{provider:'vimeo',id:'756783757',hash:'9e03c89f9b',source:'Muscle & Strength',variant:'Smith incline bench press 30–45°'},
+  'supino-inclinado':{provider:'youtube',id:'oe7N2GUzHIw',source:'MyTraining App',variant:'Smith incline bench press 30–45°'},
   'desenvolvimento':{provider:'youtube',id:'FRxZ6wr5bpA',source:'Muscle & Strength',variant:'seated dumbbell press'},
   'elevacao-lateral':{provider:'youtube',id:'Fv-eAW1uKDI',source:'Muscle & Strength',variant:'single-arm low cable lateral raise'},
   'crucifixo-baixo-alto':{provider:'youtube',id:'8YjdqeIXPUQ',source:'Muscle & Strength',variant:'standing low-to-high cable fly'},
@@ -56,32 +55,30 @@ const TRACO_VIDEO_LIBRARY=Object.freeze({
   'abdutora':{provider:'youtube',id:'7pbZA7ncuq8',source:'Muscle & Strength',variant:'hip abduction machine'},
   'panturrilha':{provider:'youtube',id:'RcKQbiL-ZOc',source:'Muscle & Strength',variant:'45° leg press calf raise'},
   'puxada-aberta':{provider:'youtube',id:'Mdp7kuhZD_M',source:'Muscle & Strength',variant:'wide-grip lat pulldown'},
-  'remada-baixa':{provider:'vimeo',id:'756788734',hash:'145dc3923d',source:'Muscle & Strength',variant:'seated cable row'},
+  'remada-baixa':{provider:'youtube',id:'xQNrFHEMhI4',source:'Bodybuilding.com',variant:'seated cable row'},
   'pullover':{provider:'youtube',id:'gDtXrJWPdlY',source:'Muscle & Strength',variant:'straight-arm lat pulldown'},
   'crucifixo-inverso':{provider:'youtube',id:'Baavi8rJWBI',source:'Muscle & Strength',variant:'bent-over low-pulley rear-delt fly'},
-  'rosca-polia':{provider:'vimeo',id:'760001419',source:'Muscle & Strength',variant:'standing low-pulley cable curl'},
-  'rosca-martelo':{provider:'vimeo',id:'756794163',source:'Muscle & Strength',variant:'standing dumbbell hammer curl'},
+  'rosca-polia':{provider:'youtube',id:'0IAM2YtviQY',source:'Bodybuilding.com',variant:'standing hammer curl reference'},
+  'rosca-martelo':{provider:'youtube',id:'0IAM2YtviQY',source:'Bodybuilding.com',variant:'standing dumbbell hammer curl'},
   'crunch':{provider:'youtube',id:'nCHypnGvcq4',source:'YST Exercises',variant:'reverse crunch on flat bench'},
-  'supino-reto':{provider:'vimeo',id:'756783677',hash:'b20676578f',source:'Muscle & Strength',variant:'Smith machine flat bench press'},
+  'supino-reto':{provider:'youtube',id:'O5viuEPDXKY',source:'Renaissance Periodization',variant:'Smith machine flat bench press'},
   'crucifixo-reto':{provider:'youtube',id:'OPYrUGZL8nU',source:'Muscle & Strength',variant:'standing mid-chest cable fly'},
   'elevacao-lateral-2':{provider:'youtube',id:'Fv-eAW1uKDI',source:'Muscle & Strength',variant:'single-arm low cable lateral raise'},
   'face-pull':{provider:'youtube',id:'7ZvpXA_mFpQ',source:'Muscle & Strength',variant:'cable face pull with rope'},
   'triceps-overhead-2':{provider:'youtube',id:'NRENeEgaIgA',source:'Muscle & Strength',variant:'high-pulley overhead rope extension'},
-  'rosca-unilateral':{provider:'vimeo',id:'760001492',source:'Muscle & Strength',variant:'one-arm low cable curl'},
-  'rdl':{provider:'vimeo',id:'756793204',hash:'c832d55911',source:'Muscle & Strength',variant:'Smith machine stiff-leg deadlift / RDL'},
+  'rosca-unilateral':{provider:'youtube',id:'0IAM2YtviQY',source:'Bodybuilding.com',variant:'curl technique reference'},
+  'rdl':{provider:'youtube',id:'nmGzbW15qYo',source:'Live Lean TV Daily Exercises',variant:'Smith machine Romanian deadlift / RDL'},
   'flexora-2':{provider:'youtube',id:'3BWiLFc8Dbg',source:'Muscle & Strength',variant:'seated leg curl'},
   'leg-press-alto':{provider:'youtube',id:'iQhP0kkadSI',source:'SATS Nordic',variant:'high-feet leg press'},
   'puxada-neutra':{provider:'youtube',id:'M3scNzLIJHg',source:'Telmo Barriuso',variant:'close neutral-grip lat pulldown'},
   'elevacao-lateral-3':{provider:'youtube',id:'Fv-eAW1uKDI',source:'Muscle & Strength',variant:'single-arm low cable lateral raise'},
   'abdutora-2':{provider:'youtube',id:'7pbZA7ncuq8',source:'Muscle & Strength',variant:'hip abduction machine'},
-  'crunch-2':{provider:'vimeo',id:'760008287',source:'Muscle & Strength',variant:'kneeling rope cable crunch'},
-  'core-crunch-seg':{provider:'vimeo',id:'760008287',source:'Muscle & Strength',variant:'kneeling rope cable crunch'},
+  'crunch-2':{provider:'youtube',id:'3qjoXDTuyOE',source:'Bodybuilding.com',variant:'kneeling rope cable crunch'},
+  'core-crunch-seg':{provider:'youtube',id:'3qjoXDTuyOE',source:'Bodybuilding.com',variant:'kneeling rope cable crunch'},
   'core-pallof-ter':{provider:'youtube',id:'SFJprbDnaS0',source:'Muscle & Strength',variant:'standing Pallof press at chest height'},
-  'core-leg-raise-ter':{provider:'vimeo',id:'877885227',source:'Muscle & Strength',variant:'lying leg raise on flat bench'},
   'core-woodchop-qui':{provider:'youtube',id:'0VWnOjUO7ks',source:'Muscle & Strength',variant:'high-cable wood chop'},
   'core-dead-bug-qui':{provider:'youtube',id:'eEhoSeBFoBk',source:'Muscle & Strength',variant:'dead bug on floor'}
 });
-
 function v60VideoFor(ex){return TRACO_VIDEO_LIBRARY[String(ex?.id||'')]||null;}
 function v60VideoEmbedUrl(video){
   if(!video)return '';
@@ -192,7 +189,6 @@ function tracoConnectivityChanged(){
 window.addEventListener('online',tracoConnectivityChanged);
 window.addEventListener('offline',tracoConnectivityChanged);
 tracoConnectivityChanged();
-
 window.TRACO_VIDEO_LIBRARY=TRACO_VIDEO_LIBRARY;
 window.TRACO_MEDIA_AUDIT=TRACO_MEDIA_AUDIT;
 window.TRACO_MEDIA_AUDIT_RESULT=tracoAuditExerciseMedia();
