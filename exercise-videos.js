@@ -97,7 +97,7 @@ function v60VideoSourceUrl(video){
 }
 function v60VideoIframe(ex,{large=false}={}){
   const video=v60VideoFor(ex);
-  if(!video)return '';
+  if(!video||navigator.onLine===false)return '';
   const title=`${ex.name} — ${video.variant}`;
   return `<div class="v60-embed-wrap ${large?'is-large':''}"><iframe src="${v60VideoEmbedUrl(video)}" title="${tracoMediaEsc(title)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><span class="v60-video-badge"><i></i>vídeo 1:1</span><span class="v60-video-source">${tracoMediaEsc(video.source)}</span></div>`;
 }
@@ -145,6 +145,10 @@ function v60RealVideo(ex,{large=false}={}){
 function tracoMediaPreview(ex){
   const video=v60VideoFor(ex);
   const technical=tracoMediaRender(ex,false);
+  const offline=navigator.onLine===false;
+  if(offline){
+    return `<div class="exercise-guide-preview v60-v4-preview traco-media-preview is-offline"><div class="v60-v4-motion-wrap">${technical.html}<span class="v60-v4-loop-badge"><i></i> offline · guia local</span></div><button id="openExerciseGuide" class="exercise-guide-caption" type="button"><span><b>execução disponível offline</b><small>guia técnico do mesmo exercício</small></span><i>↗</i></button></div>`;
+  }
   if(!video){
     return `<div class="exercise-guide-preview v60-v4-preview traco-media-preview"><div class="v60-v4-motion-wrap">${technical.html}</div><button id="openExerciseGuide" class="exercise-guide-caption" type="button"><span><b>ver guia técnico</b><small>${tracoMediaEsc(technical.cue)}</small></span><i>↗</i></button></div>`;
   }
@@ -155,11 +159,12 @@ function v60ShowGuide(ex){
   v60CloseGuide();
   const g=v60GuideFor(ex),scene=v60V4Scene(ex),setCount=tracoMediaSetCount(ex),spec=TRACO_MEDIA_AUDIT[ex.id],media=tracoMediaRender(ex,true),video=v60VideoFor(ex);
   document.body.classList.add('v60-guide-open');
-  const primary=video
+  const offline=navigator.onLine===false;
+  const primary=video&&!offline
     ? `${v60VideoIframe(ex,{large:true})}<div class="v60-video-meta"><div><span>fonte</span><b>${tracoMediaEsc(video.source)}</b></div><div><span>variante validada</span><b>${tracoMediaEsc(video.variant)}</b></div></div><section class="v60-exact-reference"><div class="v60-exact-reference-head"><span>referência técnica</span><small>posição · trajetória · segurança</small></div>${media.html}</section>`
-    : `<div class="v60-v4-motion-wrap v60-v4-motion-large">${media.html}</div><p class="v60-v4-tech-note">${tracoMediaEsc(scene.note)}</p>`;
-  const sourceLink=video?`<a class="v60-video-source-link" href="${v60VideoSourceUrl(video)}" target="_blank" rel="noopener noreferrer">abrir fonte ↗</a>`:'';
-  document.body.insertAdjacentHTML('beforeend',`<div class="v60-guide-backdrop" id="v60GuideBackdrop"></div><aside class="v60-guide-sheet ${video?'v60-video-sheet':'v60-v4-sheet'}" id="v60GuideSheet" role="dialog" aria-modal="true" aria-label="execução de ${tracoMediaEsc(ex.name)}"><div class="v60-guide-handle"></div><button class="v60-guide-close" id="v60GuideClose" aria-label="fechar">×</button><div class="v60-guide-content"><span class="v60-guide-kicker">${video?'vídeo de execução 1:1':'guia técnico validado'}</span><h2>${tracoMediaEsc(ex.name)}</h2><p class="v60-guide-equipment">${tracoMediaEsc(ex.equipment)}</p>${primary}<div class="v60-guide-tags"><span>${tracoMediaEsc(g.focus)}</span><span>${setCount} × ${tracoMediaEsc(ex.min)}-${tracoMediaEsc(ex.max)}</span><span>${tracoMediaEsc(ex.rest)}s descanso</span></div><section class="v60-guide-tips"><h3>dicas rápidas</h3><ol>${g.tips.map(t=>`<li>${tracoMediaEsc(t)}</li>`).join('')}</ol></section><section class="v60-guide-error"><span>erro comum</span><p>${tracoMediaEsc(g.error)}</p></section><p class="v60-video-license-note">Traço Exact Media · exercício, equipamento e variante revisados manualmente${spec?.scene?` · ${tracoMediaEsc(spec.scene)}`:''}.</p>${sourceLink}<button class="cta-lime" id="v60GuideDone">voltar pro treino</button></div></aside>`);
+    : `<div class="traco-offline-guide-note">${offline?'<span>OFFLINE</span><b>guia técnico local</b><small>o vídeo 1:1 volta automaticamente quando houver internet.</small>':''}</div><div class="v60-v4-motion-wrap v60-v4-motion-large">${media.html}</div><p class="v60-v4-tech-note">${tracoMediaEsc(scene.note)}</p>`;
+  const sourceLink=video&&!offline?`<a class="v60-video-source-link" href="${v60VideoSourceUrl(video)}" target="_blank" rel="noopener noreferrer">abrir fonte ↗</a>`:'';
+  document.body.insertAdjacentHTML('beforeend',`<div class="v60-guide-backdrop" id="v60GuideBackdrop"></div><aside class="v60-guide-sheet ${video?'v60-video-sheet':'v60-v4-sheet'}" id="v60GuideSheet" role="dialog" aria-modal="true" aria-label="execução de ${tracoMediaEsc(ex.name)}"><div class="v60-guide-handle"></div><button class="v60-guide-close" id="v60GuideClose" aria-label="fechar">×</button><div class="v60-guide-content"><span class="v60-guide-kicker">${offline?'modo offline · execução local':video?'vídeo de execução 1:1':'guia técnico validado'}</span><h2>${tracoMediaEsc(ex.name)}</h2><p class="v60-guide-equipment">${tracoMediaEsc(ex.equipment)}</p>${primary}<div class="v60-guide-tags"><span>${tracoMediaEsc(g.focus)}</span><span>${setCount} × ${tracoMediaEsc(ex.min)}-${tracoMediaEsc(ex.max)}</span><span>${tracoMediaEsc(ex.rest)}s descanso</span></div><section class="v60-guide-tips"><h3>dicas rápidas</h3><ol>${g.tips.map(t=>`<li>${tracoMediaEsc(t)}</li>`).join('')}</ol></section><section class="v60-guide-error"><span>erro comum</span><p>${tracoMediaEsc(g.error)}</p></section><p class="v60-video-license-note">Traço Exact Media · exercício, equipamento e variante revisados manualmente${spec?.scene?` · ${tracoMediaEsc(spec.scene)}`:''}.</p>${sourceLink}<button class="cta-lime" id="v60GuideDone">voltar pro treino</button></div></aside>`);
   $('#v60GuideBackdrop').onclick=v60CloseGuide;$('#v60GuideClose').onclick=v60CloseGuide;$('#v60GuideDone').onclick=v60CloseGuide;
 }
 function tracoAuditRenderedMedia(){
@@ -171,6 +176,20 @@ function tracoAuditRenderedMedia(){
   }
   return {ok:failed.length===0,total:active.length,rendered:active.length-failed.length,failed};
 }
+function tracoConnectivityChanged(){
+  document.documentElement.classList.toggle('traco-is-offline',navigator.onLine===false);
+  const old=document.querySelector('#tracoOfflinePill');
+  if(navigator.onLine===false){
+    if(!old)document.body.insertAdjacentHTML('beforeend','<div class="traco-offline-pill" id="tracoOfflinePill"><i></i><span>offline</span><small>treino salvo neste aparelho</small></div>');
+  }else{
+    old?.remove();
+  }
+  if(typeof state!=='undefined'&&state.page==='session')renderSession();
+}
+window.addEventListener('online',tracoConnectivityChanged);
+window.addEventListener('offline',tracoConnectivityChanged);
+tracoConnectivityChanged();
+
 window.TRACO_VIDEO_LIBRARY=TRACO_VIDEO_LIBRARY;
 window.TRACO_MEDIA_AUDIT=TRACO_MEDIA_AUDIT;
 window.TRACO_MEDIA_AUDIT_RESULT=tracoAuditExerciseMedia();
