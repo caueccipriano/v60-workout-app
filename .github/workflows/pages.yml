@@ -449,7 +449,7 @@ jobs:
             if(!css.includes(required)) throw new Error(`Missing active exercise switcher style: ${required}`);
           }
 
-          for(const required of ['traco-today-workout','traco-today-workout-list','data-today-exercise','0/']){ if(!ux.includes(required)&&!css.includes(required)) throw new Error(`Missing visible workout list: ${required}`); }
+          for(const required of ['traco-today-workout','traco-today-workout-list','data-today-exercise','st.done','st.total']){ if(!ux.includes(required)&&!css.includes(required)) throw new Error(`Missing visible workout list: ${required}`); }
           if(!ux.includes("document.body.classList.toggle('traco-exercise-picker-open',hasPicker)")) throw new Error('Exercise picker missing overlay recovery');
           console.log('Active exercise switcher OK: choose exercise -> move next set -> render current screen');
           NODE
