@@ -98,7 +98,7 @@ renderSession=function(){
     </header>
     <div class="perf-session-progress"><span style="width:${progress}%"></span><small>${state.currentExercise+1}/${s.exercises.length} exercícios</small></div>
     <section class="perf-exercise-console">
-      <div class="perf-exercise-top"><span class="perf-exercise-index">0${state.currentExercise+1}</span><div><small>${tracoPerfEsc(ex.equipment)}</small><h1>${tracoPerfEsc(ex.name)}</h1><p>série ${si+1} de ${ex.sets.length}</p></div></div>
+      <div class="perf-exercise-top"><span class="perf-exercise-index">0${state.currentExercise+1}</span><div><small>${tracoPerfEsc(ex.equipment)}</small><h1>${tracoPerfEsc(ex.name)}</h1><p>série ${si+1} de ${ex.sets.length}</p>${ex.core?'<span class="perf-core-chip">CORE · CINTURA</span>':''}</div></div>
       <div class="perf-inputs">
         <div class="perf-value-panel"><span>CARGA</span><div><button type="button" data-adjust="weight:-2.5">−</button><label><input id="weightInput" type="number" inputmode="decimal" step="0.5" value="${tracoPerfEsc(set.weight)}" placeholder="0"><small>kg</small></label><button type="button" data-adjust="weight:2.5">+</button></div></div>
         <div class="perf-value-panel"><span>REPETIÇÕES</span><div><button type="button" data-adjust="reps:-1">−</button><label><input id="repsInput" type="number" inputmode="numeric" value="${tracoPerfEsc(set.reps)}" placeholder="0"><small>reps</small></label><button type="button" data-adjust="reps:1">+</button></div></div>
