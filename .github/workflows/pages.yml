@@ -42,9 +42,9 @@ jobs:
           const version=JSON.parse(fs.readFileSync('version.json','utf8'));
           const index=fs.readFileSync('index.html','utf8');
           if(manifest.short_name!=='Traço') throw new Error('Manifest brand mismatch');
-          if(version.name!=='Traço'||version.version!=='2.0.1') throw new Error('Version brand mismatch');
+          if(version.name!=='Traço'||version.version!=='2.1.0') throw new Error('Version brand mismatch');
           if(!index.includes('<title>Traço</title>')) throw new Error('Document title mismatch');
-          for(const file of ['assets/icon.svg','assets/traco-icon-180.png','assets/traco-icon-192.png','traco-brand.js','traco-brand.css','traco-theme.css','traco-performance.js','traco-performance.css']){
+          for(const file of ['assets/icon.svg','assets/traco-icon-180.png','assets/traco-icon-192.png','assets/traco-icon-512.png','traco-brand.js','traco-brand.css','traco-theme.css','traco-performance.js','traco-performance.css']){
             if(!fs.existsSync(file)) throw new Error(`Missing brand asset: ${file}`);
           }
           console.log('Traço brand OK');
@@ -61,21 +61,21 @@ jobs:
           const core=fs.readFileSync('v60-aesthetic-core.js','utf8');
           for(const required of [
             ':root[data-theme="dark"]',
-            '--lime:#FF6B21',
+            '--lime:#FF3B30',
             '.measure-form .form-grid>label:first-child',
             'grid-template-columns:minmax(0,1fr) minmax(0,1fr)',
             '.traco-theme-option.is-active'
           ]){
             if(!css.includes(required)) throw new Error(`Missing theme/body-layout rule: ${required}`);
           }
-          for(const required of ['TRACO_THEME_KEY','tracoSetTheme','data-traco-theme="dark"','version:\'2.0.1\'']){
+          for(const required of ['TRACO_THEME_KEY','tracoSetTheme','data-traco-theme="dark"','version:\'2.1.0\'']){
             if(!brand.includes(required)) throw new Error(`Missing persistent theme feature: ${required}`);
           }
-          if(!index.includes("localStorage.getItem('traco_theme')")||!index.includes('traco-theme.css?v=201')||!index.includes('traco-performance.css?v=201')) throw new Error('First-paint theme bootstrap missing');
-          if(!sw.includes("'./traco-theme.css'")||!sw.includes("'./traco-performance.css'")||!sw.includes("'./traco-performance.js'")||!sw.includes("const CACHE = 'traco-v9'")) throw new Error('Theme cache integration missing');
-          if(!guides.includes("dark?'#FF6B21':'#C4D82E'")) throw new Error('Exercise guide dark palette missing');
-          if(!core.includes("dark?'#FF6B21':'#C4D82E'")) throw new Error('Core guide dark palette missing');
-          console.log('Dark theme + body mobile layout OK: black/orange, persistent, first-paint safe');
+          if(!index.includes("localStorage.getItem('traco_theme')")||!index.includes('traco-theme.css?v=210')||!index.includes('traco-performance.css?v=210')) throw new Error('First-paint theme bootstrap missing');
+          if(!sw.includes("'./traco-theme.css'")||!sw.includes("'./traco-performance.css'")||!sw.includes("'./traco-performance.js'")||!sw.includes("const CACHE = 'traco-v10'")) throw new Error('Theme cache integration missing');
+          if(!guides.includes("dark?'#FF3B30':'#C4D82E'")) throw new Error('Exercise guide dark palette missing');
+          if(!core.includes("dark?'#FF3B30':'#C4D82E'")) throw new Error('Core guide dark palette missing');
+          console.log('Dark theme + body mobile layout OK: black/red, persistent, first-paint safe');
           NODE
       - name: Validate reported history and progress polish
         run: |
@@ -199,7 +199,7 @@ jobs:
           }
           for(const required of [
             'TRAÇO 2.0 — PERFORMANCE CONSOLE',
-            '--perf-orange:#FF6B21',
+            '--perf-orange:#FF3B30',
             '.perf-workout-hero',
             '.perf-exercise-console',
             '.perf-media-block',
@@ -207,7 +207,7 @@ jobs:
           ]){
             if(!css.includes(required)) throw new Error(`Missing Performance Console style: ${required}`);
           }
-          if(!index.includes('traco-performance.js?v=201')||!index.includes('traco-performance.css?v=201')) throw new Error('Performance assets not loaded');
+          if(!index.includes('traco-performance.js?v=210')||!index.includes('traco-performance.css?v=210')) throw new Error('Performance assets not loaded');
           if(!sw.includes("'./traco-performance.js'")||!sw.includes("'./traco-performance.css'")) throw new Error('Performance assets not cached');
           if(manifest.theme_color!=='#090909') throw new Error('PWA theme is not Performance Console');
           console.log('Traço 2.0 Performance Console OK; exact media entrypoint preserved');
@@ -258,6 +258,21 @@ jobs:
 
           console.log('Editor reliability OK: save + add/remove series + steppers + iPhone no-zoom + media fallback');
           NODE
+      - name: Validate Redline identity and compact body
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const perf=fs.readFileSync('traco-performance.css','utf8');
+          const theme=fs.readFileSync('traco-theme.css','utf8');
+          const media=fs.readFileSync('exercise-videos.js','utf8');
+          const index=fs.readFileSync('index.html','utf8');
+          if(!perf.includes('--perf-orange:#FF3B30')) throw new Error('Redline primary color missing');
+          if(!theme.includes('--lime:#FF3B30')) throw new Error('Redline theme color missing');
+          if(!perf.includes('Traço 2.1 — compact body mobile')||!perf.includes('grid-template-columns:minmax(0,1fr) minmax(0,1fr)')) throw new Error('compact body mobile 2-column missing');
+          if(!media.includes('const V60_EXACT_VIDEOS')) throw new Error('Exact real video map missing');
+          if(!index.includes('exercise-videos.css?v=210')) throw new Error('Real video CSS missing from app');
+          console.log('Traço 2.1 Redline OK');
+          NODE
       - name: Validate exact exercise media audit
         run: |
           node <<'NODE'
@@ -275,8 +290,12 @@ jobs:
           const missing=active.filter(id=>!audited.includes(id));
           const extra=audited.filter(id=>!active.includes(id));
           if(audited.length!==37||missing.length||extra.length) throw new Error(`Media audit mismatch. missing=${missing.join(',')} extra=${extra.join(',')}`);
-          for(const banned of ["match:'equivalent'","pexelsId:","www.pexels.com/download/video"]){
-            if(media.includes(banned)||core.includes(banned)) throw new Error(`Non-exact external media returned: ${banned}`);
+          if(media.includes("match:'equivalent'")) throw new Error('Equivalent video policy returned');
+          for(const forbidden of ["'abdutora':{pexelsId","'abdutora-2':{pexelsId","'core-pallof-ter':{pexelsId"]){
+            if(media.includes(forbidden)) throw new Error(`Forbidden inaccurate real video returned: ${forbidden}`);
+          }
+          for(const exact of ['desenvolvimento','triceps-pushdown','leg-press','agachamento-smith','extensora','puxada-aberta','remada-baixa']){
+            if(!media.includes(`'${exact}':{pexelsId:`)) throw new Error(`Validated real video missing: ${exact}`);
           }
           if(!media.includes("'abdutora':{name:\"abdutora\",equipment:\"Máquina abdutora\",scene:'abductor',verified:true}")) throw new Error('Abductor exact audit missing');
           if(!media.includes("'core-pallof-ter':{name:\"Pallof press\",equipment:\"Polia / crossover\",scene:'pallofPress',verified:true}")) throw new Error('Pallof exact audit missing');
