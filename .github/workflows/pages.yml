@@ -288,7 +288,7 @@ jobs:
             if(!app.includes(required)) throw new Error(`Missing body-centering feature: ${required}`);
           }
           for(const required of [
-            'Traço 2.3.0 — measurement optical centering',
+            'measurement optical centering',
             '.measure-form .unit-input input::placeholder',
             'top:50% !important',
             '.body-stats>div.is-empty .measure-value'
