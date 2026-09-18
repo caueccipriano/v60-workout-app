@@ -33,6 +33,7 @@ jobs:
           node --check v60-aesthetic-core.js
           node --check v60-smart-sequence.js
           node --check traco-brand.js
+          node --check traco-performance.js
       - name: Validate Traço branding
         run: |
           node <<'NODE'
@@ -41,9 +42,9 @@ jobs:
           const version=JSON.parse(fs.readFileSync('version.json','utf8'));
           const index=fs.readFileSync('index.html','utf8');
           if(manifest.short_name!=='Traço') throw new Error('Manifest brand mismatch');
-          if(version.name!=='Traço'||version.version!=='1.3.0') throw new Error('Version brand mismatch');
+          if(version.name!=='Traço'||version.version!=='2.0.0') throw new Error('Version brand mismatch');
           if(!index.includes('<title>Traço</title>')) throw new Error('Document title mismatch');
-          for(const file of ['assets/icon.svg','assets/traco-icon-180.png','assets/traco-icon-192.png','traco-brand.js','traco-brand.css','traco-theme.css']){
+          for(const file of ['assets/icon.svg','assets/traco-icon-180.png','assets/traco-icon-192.png','traco-brand.js','traco-brand.css','traco-theme.css','traco-performance.js','traco-performance.css']){
             if(!fs.existsSync(file)) throw new Error(`Missing brand asset: ${file}`);
           }
           console.log('Traço brand OK');
@@ -67,11 +68,11 @@ jobs:
           ]){
             if(!css.includes(required)) throw new Error(`Missing theme/body-layout rule: ${required}`);
           }
-          for(const required of ['TRACO_THEME_KEY','tracoSetTheme','data-traco-theme="dark"','version:\'1.3.0\'']){
+          for(const required of ['TRACO_THEME_KEY','tracoSetTheme','data-traco-theme="dark"','version:\'2.0.0\'']){
             if(!brand.includes(required)) throw new Error(`Missing persistent theme feature: ${required}`);
           }
-          if(!index.includes("localStorage.getItem('traco_theme')")||!index.includes('traco-theme.css?v=130')) throw new Error('First-paint theme bootstrap missing');
-          if(!sw.includes("'./traco-theme.css'")||!sw.includes("const CACHE = 'traco-v7'")) throw new Error('Theme cache integration missing');
+          if(!index.includes("localStorage.getItem('traco_theme')")||!index.includes('traco-theme.css?v=200')||!index.includes('traco-performance.css?v=200')) throw new Error('First-paint theme bootstrap missing');
+          if(!sw.includes("'./traco-theme.css'")||!sw.includes("'./traco-performance.css'")||!sw.includes("'./traco-performance.js'")||!sw.includes("const CACHE = 'traco-v8'")) throw new Error('Theme cache integration missing');
           if(!guides.includes("dark?'#FF6B21':'#C4D82E'")) throw new Error('Exercise guide dark palette missing');
           if(!core.includes("dark?'#FF6B21':'#C4D82E'")) throw new Error('Core guide dark palette missing');
           console.log('Dark theme + body mobile layout OK: black/orange, persistent, first-paint safe');
@@ -171,6 +172,45 @@ jobs:
             if(!css.includes('.traco-undo-bar')) throw new Error('Undo snackbar style missing');
           }
           console.log('Data safety OK: partial edits + undo + duplicate guard + safe sequence');
+          NODE
+      - name: Validate Performance Console 2.0
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const js=fs.readFileSync('traco-performance.js','utf8');
+          const css=fs.readFileSync('traco-performance.css','utf8');
+          const index=fs.readFileSync('index.html','utf8');
+          const sw=fs.readFileSync('sw.js','utf8');
+          const manifest=JSON.parse(fs.readFileSync('manifest.json','utf8'));
+          for(const required of [
+            'TRACO_PERF_MIGRATION',
+            "document.documentElement.dataset.design='performance'",
+            "['home','home','início']",
+            "['progress','chart','evolução']",
+            "['workouts','dumbbell','treino']",
+            'perf-workout-hero',
+            'perf-exercise-console',
+            'perf-media-block',
+            'v60GuidePreview(ex)',
+            "$('#openExerciseGuide')",
+            'v60ShowGuide(ex)'
+          ]){
+            if(!js.includes(required)) throw new Error(`Missing Performance Console feature: ${required}`);
+          }
+          for(const required of [
+            'TRAÇO 2.0 — PERFORMANCE CONSOLE',
+            '--perf-orange:#FF6B21',
+            '.perf-workout-hero',
+            '.perf-exercise-console',
+            '.perf-media-block',
+            '.perf-bottom-nav'
+          ]){
+            if(!css.includes(required)) throw new Error(`Missing Performance Console style: ${required}`);
+          }
+          if(!index.includes('traco-performance.js?v=200')||!index.includes('traco-performance.css?v=200')) throw new Error('Performance assets not loaded');
+          if(!sw.includes("'./traco-performance.js'")||!sw.includes("'./traco-performance.css'")) throw new Error('Performance assets not cached');
+          if(manifest.theme_color!=='#090909') throw new Error('PWA theme is not Performance Console');
+          console.log('Traço 2.0 Performance Console OK; exact media entrypoint preserved');
           NODE
       - name: Validate exact exercise media audit
         run: |
