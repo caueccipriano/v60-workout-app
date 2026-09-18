@@ -1532,3 +1532,40 @@ html[data-design="performance"] body:not(.traco-order-open):not(.traco-exercise-
   height:auto !important;
   touch-action:pan-y !important;
 }
+
+
+/* TRAÇO 2.3.2 — iOS workout value visibility */
+html[data-design="performance"] .perf-value-panel label{
+  min-width:0;
+  width:100%;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:baseline;
+  justify-content:stretch;
+  gap:4px;
+}
+html[data-design="performance"] .perf-value-panel input{
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  padding:0 !important;
+  margin:0 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  -webkit-text-fill-color:var(--traco-text) !important;
+  color:var(--traco-text) !important;
+  caret-color:var(--traco-action);
+  text-align:center !important;
+  font-size:28px !important;
+  line-height:52px !important;
+}
+html[data-design="performance"] .perf-value-panel input::placeholder{
+  opacity:1 !important;
+  color:var(--traco-muted-strong) !important;
+  -webkit-text-fill-color:var(--traco-muted-strong) !important;
+}
+html[data-design="performance"] .perf-value-panel label small{
+  display:block !important;
+  min-width:max-content;
+  color:var(--traco-muted-strong) !important;
+}
