@@ -73,8 +73,8 @@ jobs:
           }
           if(!index.includes("localStorage.getItem('traco_theme')")||!index.includes('traco-theme.css?v=210')||!index.includes('traco-performance.css?v=210')) throw new Error('First-paint theme bootstrap missing');
           if(!sw.includes("'./traco-theme.css'")||!sw.includes("'./traco-performance.css'")||!sw.includes("'./traco-performance.js'")||!sw.includes("const CACHE = 'traco-v10'")) throw new Error('Theme cache integration missing');
-          if(!guides.includes("dark?'#FF3B30':'#C4D82E'")) throw new Error('Exercise guide dark palette missing');
-          if(!core.includes("dark?'#FF3B30':'#C4D82E'")) throw new Error('Core guide dark palette missing');
+          if(!guides.includes("dark?'#FF3B30':'#E9342C'")) throw new Error('Exercise guide dark palette missing');
+          if(!core.includes("dark?'#FF3B30':'#E9342C'")) throw new Error('Core guide dark palette missing');
           console.log('Dark theme + body mobile layout OK: black/red, persistent, first-paint safe');
           NODE
       - name: Validate reported history and progress polish
