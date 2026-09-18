@@ -881,3 +881,55 @@ body.traco-prestart-open{overflow:hidden}
   font-size:8px;
   font-weight:800;
 }
+
+
+/* Traço 2.3.4 — iPhone modal scroll hotfix */
+body.traco-prestart-open,
+body.traco-order-open{
+  overflow:auto !important;
+  touch-action:auto !important;
+}
+.traco-prestart-backdrop,
+.traco-order-backdrop{
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.traco-prestart-sheet{
+  display:flex;
+  flex-direction:column;
+  height:min(90dvh,760px);
+  max-height:calc(100dvh - max(8px,env(safe-area-inset-top)));
+  overflow:hidden !important;
+}
+.traco-prestart-list{
+  flex:1 1 auto;
+  min-height:120px;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch;
+}
+.traco-prestart-organize,
+.traco-prestart-go{
+  flex:0 0 auto;
+}
+.traco-prestart-go{
+  position:sticky;
+  bottom:0;
+  z-index:3;
+  box-shadow:0 -10px 24px rgba(15,15,16,.82);
+}
+.traco-order-sheet{
+  max-height:calc(100dvh - max(8px,env(safe-area-inset-top)));
+}
+.traco-order-list{
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch;
+}
+@media(max-height:700px){
+  .traco-prestart-sheet{
+    height:94dvh;
+  }
+  .traco-prestart-tip{
+    margin-top:9px;
+  }
+}
