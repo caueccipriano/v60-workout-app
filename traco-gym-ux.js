@@ -13,14 +13,20 @@ function tracoGymRepairOverlayState(){
   const hasPre=Boolean(document.querySelector('#tracoPreStart'));
   const hasOrder=Boolean(document.querySelector('#tracoOrderEditor'));
   const hasPicker=Boolean(document.querySelector('#tracoExercisePicker'));
+  const hasGuide=Boolean(document.querySelector('#v60GuideSheet')||document.querySelector('#v60GuideBackdrop'));
+  const hasEditor=Boolean(document.querySelector('#tracoSessionEditor')||document.querySelector('#tracoBodyEditor'));
   document.body.classList.toggle('traco-prestart-open',hasPre);
   document.body.classList.toggle('traco-order-open',hasOrder);
   document.body.classList.toggle('traco-exercise-picker-open',hasPicker);
-  if(!hasPre&&!hasOrder&&!hasPicker){
+  if(!hasGuide)document.body.classList.remove('v60-guide-open');
+  if(!hasEditor)document.body.classList.remove('traco-editor-open');
+  if(!hasPre&&!hasOrder&&!hasPicker&&!hasGuide&&!hasEditor){
     document.body.style.overflow='';
     document.body.style.position='';
+    document.body.style.height='';
     document.body.style.touchAction='';
     document.documentElement.style.overflow='';
+    document.documentElement.style.height='';
     document.documentElement.style.touchAction='';
   }
 }
