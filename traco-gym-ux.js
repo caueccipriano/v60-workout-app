@@ -445,16 +445,26 @@ renderSession=function(){
     const qp=tracoGymQueueProgress(state.activeSession);
     const bar=progress.querySelector('span');if(bar)bar.style.width=(qp.total?Math.round(qp.done/qp.total*100):0)+'%';
     const label=progress.querySelector('small');if(label)label.textContent=`série ${Math.min(qp.done+1,qp.total)}/${qp.total} · exercício ${state.currentExercise+1}/${state.activeSession.exercises.length}`;
-    if(!main.querySelector('#tracoAdjustWorkout')){
-      progress.insertAdjacentHTML('afterend',`<button type="button" class="traco-adjust-workout" id="tracoAdjustWorkout">
-        <span><b>ajustar treino</b><small>trocar exercício ou mudar a ordem das séries</small></span><i>↕</i>
-      </button>`);
-      $('#tracoAdjustWorkout').onclick=tracoGymOpenExercisePicker;
-    }
-    progress.insertAdjacentHTML('afterend',`<div class="traco-session-switchers">
+
+    const pending=tracoGymEnsureSessionQueue(state.activeSession)
+      .filter(token=>!tracoGymSetForToken(state.activeSession,token).set?.done)
+      .slice(0,4)
+      .map(token=>{
+        const item=tracoGymSetForToken(state.activeSession,token);
+        return item.ex?`${item.ex.name} · S${item.setIndex+1}`:'';
+      }).filter(Boolean);
+
+    const firstOrder=qp.done===0?`<section class="traco-start-order-card">
+      <div><span>antes da primeira série</span><b>ordem de hoje</b><small>${pending.join(' → ')}</small></div>
+      <button type="button" id="tracoInitialOrder">ajustar ordem</button>
+    </section>`:'';
+
+    progress.insertAdjacentHTML('afterend',`${firstOrder}<div class="traco-session-switchers">
       <button type="button" class="traco-switch-exercise" id="tracoSwitchExercise"><span><b>trocar exercício</b><small>escolher o que fazer agora</small></span><i>→</i></button>
       <button type="button" class="traco-active-queue" id="tracoActiveQueue"><span><b>fila do treino</b><small>${qp.remaining} ${qp.remaining===1?'série restante':'séries restantes'}</small></span><i>↕</i></button>
     </div>`);
+
+    if($('#tracoInitialOrder'))$('#tracoInitialOrder').onclick=()=>tracoGymOpenSetOrderEditor(state.activeSession.workoutId,{session:state.activeSession});
     $('#tracoSwitchExercise').onclick=tracoGymOpenExercisePicker;
     $('#tracoActiveQueue').onclick=()=>tracoGymOpenSetOrderEditor(state.activeSession.workoutId,{session:state.activeSession});
   }
