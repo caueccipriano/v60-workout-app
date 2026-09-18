@@ -3,7 +3,7 @@
  * Final UX layer: gym-first, fast touch targets, achievement color, clearer copy.
  * Internal v60_* storage keys remain for backwards compatibility.
  */
-const TRACO_GYM_UX_VERSION='2.3.12';
+const TRACO_GYM_UX_VERSION='2.3.13';
 const TRACO_ACHIEVEMENT='#F4C542';
 const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
 const TRACO_SET_ORDER_KEY='traco_set_order_v1';
@@ -326,11 +326,19 @@ function tracoGymOpenPreStart(workoutId){
 }
 
 const tracoGymBaseStartSession=startSession;
-startSession=function(workoutId){
+function tracoGymDirectStart(workoutId){
   tracoGymClearTransientOverlays();
   tracoGymPreStartWorkoutId=null;
-  return tracoGymBaseStartSession(workoutId);
-};
+  try{
+    return tracoGymBaseStartSession(workoutId);
+  }catch(error){
+    console.error('Traço workout start failed',error);
+    toast('não consegui abrir o treino · tenta de novo');
+    tracoGymRepairOverlayState();
+    return null;
+  }
+}
+startSession=tracoGymDirectStart;
 
 /* HOME */
 const tracoGymBaseHome=renderHome;
@@ -338,6 +346,10 @@ renderHome=function(){
   tracoGymBaseHome();
   const main=document.querySelector('.perf-home'); if(!main)return;
   const xp=xpStats();
+  const homeWorkout=typeof v60RecommendedWorkout==='function'?v60RecommendedWorkout():todayWorkout();
+  const draft=load(K.draft,null);
+  if($('#startToday'))$('#startToday').onclick=()=>tracoGymDirectStart(homeWorkout.id);
+  if($('#resumeWorkout')&&draft)$('#resumeWorkout').onclick=()=>tracoGymDirectStart(draft.workoutId);
 
   const metricCards=[...main.querySelectorAll('.perf-metrics article')];
   if(metricCards[0])metricCards[0].classList.add('traco-achievement-card');
@@ -487,6 +499,9 @@ const tracoGymBaseWorkouts=renderWorkouts;
 renderWorkouts=function(){
   tracoGymBaseWorkouts();
   const main=document.querySelector('.perf-workouts'); if(!main)return;
+
+  const selectedForStart=workoutPlan.find(w=>w.id===(state.selectedWorkout||(typeof v60RecommendedWorkout==='function'?v60RecommendedWorkout().id:todayWorkout().id)));
+  if($('#startSelected')&&selectedForStart)$('#startSelected').onclick=()=>tracoGymDirectStart(selectedForStart.id);
 
   const count=main.querySelector('.page-count');
   if(count){count.textContent='ordem A–E';count.classList.add('traco-order-badge');}
