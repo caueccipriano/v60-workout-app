@@ -8,8 +8,8 @@ html[data-design="performance"]{
   --perf-panel:#121212;
   --perf-panel-2:#171717;
   --perf-panel-3:#1E1E1E;
-  --perf-orange:#FF6B21;
-  --perf-orange-soft:#3A1C0D;
+  --perf-orange:#FF3B30;
+  --perf-orange-soft:#2B1110;
   --perf-white:#F3F2EE;
   --perf-muted:#7F848C;
   --perf-line:#292929;
@@ -39,7 +39,7 @@ html[data-design="performance"][data-theme="light"]{
   --text:#101010;
   --muted:#6D7178;
   --lime:var(--perf-orange);
-  --lime-soft:#FFE4D4;
+  --lime-soft:#FFE0DE;
   --blue:#E2E1DB;
   --orange:var(--perf-orange);
   --line:#D5D3CC;
@@ -145,7 +145,7 @@ html[data-design="performance"] .perf-bottom-nav .nav-btn.active span:last-child
 .perf-greeting p{margin:7px 0 0;color:var(--muted);font-size:11px}
 .perf-resume{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
-  margin:0 0 12px;padding:13px 14px;border:1px solid #56301B;
+  margin:0 0 12px;padding:13px 14px;border:1px solid #55201D;
   border-radius:12px;background:var(--perf-orange-soft);
 }
 .perf-resume span{display:block;font:800 8px/1 var(--perf-display);letter-spacing:.12em;color:var(--perf-orange)}
@@ -167,7 +167,7 @@ html[data-theme="light"] .perf-workout-hero{background:linear-gradient(145deg,#1
 }
 .perf-workout-hero:after{
   content:"";position:absolute;right:-50px;top:22px;width:190px;height:190px;border-radius:50%;
-  border:1px solid rgba(255,107,33,.2);box-shadow:0 0 0 28px rgba(255,107,33,.025),0 0 0 58px rgba(255,107,33,.018);z-index:-1;
+  border:1px solid rgba(255,59,48,.2);box-shadow:0 0 0 28px rgba(255,59,48,.025),0 0 0 58px rgba(255,59,48,.018);z-index:-1;
 }
 .perf-hero-top{display:flex;align-items:center;justify-content:space-between}
 .perf-hero-top span{font:800 9px/1 var(--perf-display);letter-spacing:.12em;color:var(--perf-orange)}
@@ -194,7 +194,7 @@ html[data-theme="light"] .perf-workout-hero{background:linear-gradient(145deg,#1
   display:grid;place-items:center;align-content:center;gap:2px;
 }
 .perf-seq b{font:700 15px/1 var(--perf-display)}.perf-seq span{font-size:12px}
-.perf-seq.done{color:#E8B99F;background:#27170F;border-color:#4A2816}
+.perf-seq.done{color:#F1AAA6;background:#251010;border-color:#56201D}
 .perf-seq.active{color:#111;background:var(--perf-orange);border-color:var(--perf-orange);box-shadow:0 0 0 1px var(--perf-orange)}
 .perf-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 .perf-metrics article{
@@ -226,13 +226,13 @@ html[data-theme="light"] .perf-workout-hero{background:linear-gradient(145deg,#1
 .perf-exercise-console{border:1px solid var(--line);border-radius:var(--perf-radius);background:var(--surface-soft);padding:15px}
 .perf-exercise-top{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:start;padding-bottom:14px;border-bottom:1px solid var(--line)}
 .perf-exercise-index{
-  width:42px;height:42px;border:1px solid #5B321C;border-radius:9px;color:var(--perf-orange);
+  width:42px;height:42px;border:1px solid #5A2420;border-radius:9px;color:var(--perf-orange);
   display:grid;place-items:center;font:700 12px/1 var(--perf-display);
 }
 .perf-exercise-top small{display:block;color:var(--perf-orange);font:700 8px/1 var(--perf-display);letter-spacing:.1em;text-transform:uppercase}
 .perf-exercise-top h1{margin:4px 0 2px;font:700 27px/.98 var(--perf-display);letter-spacing:-.05em}
 .perf-exercise-top p{margin:0;color:var(--muted);font-size:9px}
-.perf-core-chip{display:inline-flex;margin-top:7px;border:1px solid #60341C;border-radius:6px;padding:4px 6px;color:var(--perf-orange);font:800 7px/1 var(--perf-display);letter-spacing:.09em}
+.perf-core-chip{display:inline-flex;margin-top:7px;border:1px solid #62241F;border-radius:6px;padding:4px 6px;color:var(--perf-orange);font:800 7px/1 var(--perf-display);letter-spacing:.09em}
 .perf-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 .perf-value-panel{border:1px solid var(--line);border-radius:12px;padding:10px 8px;background:color-mix(in srgb,var(--surface) 50%,var(--surface-soft))}
 .perf-value-panel>span{display:block;text-align:center;font:700 7px/1 var(--perf-display);letter-spacing:.11em;color:var(--muted)}
@@ -246,8 +246,8 @@ html[data-theme="light"] .perf-workout-hero{background:linear-gradient(145deg,#1
 .perf-value-panel label small{font:700 9px/1 var(--perf-display);color:var(--muted)}
 .perf-set-track{display:flex;justify-content:center;gap:8px;margin:15px 0}
 .perf-set-track span{width:30px;height:30px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;color:var(--muted)}
-.perf-set-track span b{font:700 10px/1 var(--perf-display)}.perf-set-track .done{background:#2C1A10;border-color:#5A311A;color:var(--perf-orange)}
-.perf-set-track .current{background:var(--perf-orange);border-color:var(--perf-orange);color:#111;box-shadow:0 0 0 4px rgba(255,107,33,.12)}
+.perf-set-track span b{font:700 10px/1 var(--perf-display)}.perf-set-track .done{background:#271010;border-color:#5A201C;color:var(--perf-orange)}
+.perf-set-track .current{background:var(--perf-orange);border-color:var(--perf-orange);color:#111;box-shadow:0 0 0 4px rgba(255,59,48,.12)}
 .perf-complete-set{
   width:100%;min-height:48px;border:0;border-radius:10px;background:var(--perf-orange);color:#111;
   display:flex;align-items:center;justify-content:space-between;padding:0 15px;font-weight:900;
@@ -272,7 +272,7 @@ html[data-theme="light"] .perf-workout-hero{background:linear-gradient(145deg,#1
   color:var(--muted);font-size:8px;
 }
 .perf-session-footer span:first-child{font:700 14px/1 var(--perf-display);color:var(--text)}
-.perf-session-footer span:nth-child(2){text-align:center}.perf-session-footer button{border:0;background:transparent;color:#B85E3A;font-size:9px}
+.perf-session-footer span:nth-child(2){text-align:center}.perf-session-footer button{border:0;background:transparent;color:#CC5A52;font-size:9px}
 
 /* Rest overlay becomes machine timer */
 html[data-design="performance"] .rest-overlay{background:rgba(4,4,4,.94);backdrop-filter:blur(18px)}
@@ -290,7 +290,7 @@ html[data-design="performance"] .workout-select{
   border:1px solid var(--line);box-shadow:none;border-radius:12px;background:var(--surface-soft);padding:13px;
   grid-template-columns:38px 1fr auto;
 }
-html[data-design="performance"] .workout-select.active{background:#181818;border-color:#633318;box-shadow:inset 3px 0 0 var(--perf-orange)}
+html[data-design="performance"] .workout-select.active{background:#181818;border-color:#6A2621;box-shadow:inset 3px 0 0 var(--perf-orange)}
 html[data-design="performance"] .workout-num{font:700 16px/1 var(--perf-display);color:var(--perf-orange)}
 html[data-design="performance"] .selected-blue{
   background:var(--surface-soft);border:1px solid var(--line);border-radius:14px;padding:17px;color:var(--text);
@@ -437,4 +437,33 @@ html[data-design="performance"] .traco-undo-bar button{background:var(--perf-ora
   .perf-inputs{grid-template-columns:1fr}
   .perf-metrics{grid-template-columns:1fr 1fr}
   .perf-metrics article:last-child{grid-column:1/-1}
+}
+
+
+/* Traço 2.1 — compact body mobile */
+@media(max-width:430px){
+  html[data-design="performance"] .measure-form .form-grid{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:10px;
+  }
+  html[data-design="performance"] .measure-form .form-grid>label:first-child{
+    grid-column:1/-1;
+  }
+  html[data-design="performance"] .measure-form.form-card{
+    padding:15px;
+  }
+  html[data-design="performance"] .measure-form .form-grid input{
+    min-height:52px;
+  }
+  html[data-design="performance"] .body-stats{
+    grid-template-columns:1fr 1fr;
+  }
+}
+@media(max-width:330px){
+  html[data-design="performance"] .measure-form .form-grid{
+    grid-template-columns:1fr;
+  }
+  html[data-design="performance"] .measure-form .form-grid>label:first-child{
+    grid-column:auto;
+  }
 }
