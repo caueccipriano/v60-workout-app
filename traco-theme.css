@@ -768,3 +768,35 @@ html[data-theme="dark"] .traco-undo-bar button{
     font-size:16px;
   }
 }
+
+
+/* Traço 1.2 — centraliza o traço dos campos vazios na medição corporal */
+.measure-form .unit-input{
+  position:relative;
+}
+.measure-form .unit-input::before{
+  content:"—";
+  position:absolute;
+  left:0;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  text-align:center;
+  pointer-events:none;
+  color:var(--muted);
+  font-size:16px;
+  line-height:1;
+  z-index:1;
+}
+.measure-form .unit-input:focus-within::before,
+.measure-form .unit-input:has(input:not(:placeholder-shown))::before{
+  display:none;
+}
+.measure-form .unit-input input{
+  position:relative;
+  z-index:2;
+  background:transparent;
+}
+html[data-theme="dark"] .measure-form .unit-input::before{
+  color:#A3A39F;
+}
