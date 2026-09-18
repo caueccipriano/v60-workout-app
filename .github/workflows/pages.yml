@@ -73,7 +73,7 @@ jobs:
             if(!brand.includes(required)) throw new Error(`Missing persistent theme feature: ${required}`);
           }
           if(!index.includes("localStorage.getItem('traco_theme')")||!index.includes('traco-theme.css?v=251')||!index.includes('traco-performance.css?v=251')) throw new Error('First-paint theme bootstrap missing');
-          if(!sw.includes("'./traco-theme.css'")||!sw.includes("'./traco-performance.css'")||!sw.includes("'./traco-performance.js'")||!sw.includes("'./traco-gym-ux.js'")||!sw.includes("'./traco-gym-ux.css'")||!sw.includes("const CACHE = 'traco-v43'")) throw new Error('Theme/cache integration missing');
+          if(!sw.includes("'./traco-theme.css'")||!sw.includes("'./traco-performance.css'")||!sw.includes("'./traco-performance.js'")||!sw.includes("'./traco-gym-ux.js'")||!sw.includes("'./traco-gym-ux.css'")||!sw.includes("const CACHE = 'traco-v44'")) throw new Error('Theme/cache integration missing');
           if(!guides.includes("dark?'#FF3B30':'#E9342C'")) throw new Error('Exercise guide dark palette missing');
           if(!core.includes("dark?'#FF3B30':'#E9342C'")) throw new Error('Core guide dark palette missing');
           console.log('Dark theme + body mobile layout OK: black/red, persistent, first-paint safe');
@@ -334,7 +334,7 @@ jobs:
           ]){
             if(!css.includes(required)) throw new Error(`Missing gym UX design rule: ${required}`);
           }
-          if(!index.includes('traco-gym-ux.css?v=258')||!index.includes('traco-gym-ux.js?v=258')) throw new Error('Gym UX assets not loaded last');
+          if(!index.includes('traco-gym-ux.css?v=259')||!index.includes('traco-gym-ux.js?v=259')) throw new Error('Gym UX assets not loaded last');
           if(!sw.includes("'./traco-gym-ux.js'")||!sw.includes("'./traco-gym-ux.css'")||!sw.includes("'./privacy.html'")||!sw.includes("'./support.html'")) throw new Error('Gym UX/support not offline-cached');
           console.log('Traço 2.3 Gym UX Pass OK');
           NODE
@@ -431,7 +431,7 @@ jobs:
             'treino de hoje',
             'toque no exercício que você quer fazer agora',
             'organizar fila completa',
-            'traco-v241-workout-list',
+            'perf-native-exercise-list',
             'data-today-exercise',
             'session.tracoSetQueue=[...doneTokens,...chosen,...other]'
           ]){
@@ -450,7 +450,7 @@ jobs:
           }
 
           if(ux.includes("$('.perf-value-panel button').forEach")||ux.includes("$('[data-today-exercise]').forEach")) throw new Error('Session enhancer must use multi-element selector for forEach handlers');
-          if(!ux.includes("consoleCard.insertAdjacentHTML('afterend',`<section class=\"traco-v241-workout-list\"")) throw new Error('Must mount rebuilt exercise list below exercise console');
+          if(!ux.includes("consoleCard.insertAdjacentHTML('afterend',`<section class=\"perf-native-exercise-list\"")) throw new Error('Must mount rebuilt exercise list below exercise console');
           if(!ux.includes("TRACO_GYM_UX_VERSION='2.4.0'")) throw new Error('Visible app version must be 2.4.0');
           const brand=fs.readFileSync('traco-brand.js','utf8');
           const version=fs.readFileSync('version.json','utf8');
@@ -459,7 +459,7 @@ jobs:
           if(!css.includes('light theme contrast audit')) throw new Error('Missing full light theme contrast audit');
           if(!ux.includes("const progress=main.querySelector('.perf-session-progress');")||!ux.includes("const consoleCard=main.querySelector('.perf-exercise-console');")) throw new Error('Missing stable active-workout mount anchors');
           if(!css.includes('light-mode workout value contrast')) throw new Error('Missing light mode workout value contrast');
-          for(const required of ['traco-today-workout','traco-v241-workout-list','data-today-exercise','st.done','st.total']){ if(!ux.includes(required)&&!css.includes(required)) throw new Error(`Missing visible workout list: ${required}`); }
+          for(const required of ['traco-today-workout','perf-native-exercise-list','data-today-exercise','st.done','st.total']){ if(!ux.includes(required)&&!css.includes(required)) throw new Error(`Missing visible workout list: ${required}`); }
           if(!ux.includes("document.body.classList.toggle('traco-exercise-picker-open',hasPicker)")) throw new Error('Exercise picker missing overlay recovery');
           console.log('Active exercise switcher OK: choose exercise -> move next set -> render current screen');
           NODE
@@ -543,7 +543,7 @@ jobs:
           const css=fs.readFileSync('exercise-videos.css','utf8');
 
           for(const required of [
-            "const CACHE = 'traco-v43'",
+            "const CACHE = 'traco-v44'",
             "ignoreSearch:true",
             "caches.match('./index.html',{ignoreSearch:true})",
             "cache.addAll(ASSETS)",
