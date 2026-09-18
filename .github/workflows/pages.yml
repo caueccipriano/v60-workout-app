@@ -433,7 +433,7 @@ jobs:
           if(addAt<0||insertAt<0||addAt<insertAt) throw new Error('Body lock is applied before the pre-start modal exists');
 
           for(const required of [
-            'Traço 2.3.5 — iPhone modal scroll hotfix',
+            'iPhone modal scroll hotfix',
             'overflow:auto !important',
             '.traco-prestart-list',
             'overflow-y:auto !important',
