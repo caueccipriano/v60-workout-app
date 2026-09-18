@@ -1233,3 +1233,37 @@ body.traco-exercise-picker-open{
   display:block;
   box-shadow:none !important;
 }
+
+
+/* Traço 2.3.8 — obvious active workout adjustment */
+.traco-adjust-workout{
+  width:100%;
+  min-height:54px;
+  margin:8px 0 12px;
+  padding:10px 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  border:1px solid #5A2522;
+  border-radius:12px;
+  background:#21100F;
+  color:var(--traco-text);
+  text-align:left;
+}
+.traco-adjust-workout:active{background:#2B1311;transform:scale(.99)}
+.traco-adjust-workout span{min-width:0}
+.traco-adjust-workout b,
+.traco-adjust-workout small{display:block}
+.traco-adjust-workout b{color:var(--traco-action);font-size:11px}
+.traco-adjust-workout small{margin-top:3px;color:var(--traco-muted);font-size:8.5px;line-height:1.35}
+.traco-adjust-workout i{
+  flex:none;
+  width:34px;height:34px;
+  display:grid;place-items:center;
+  border-radius:9px;
+  background:var(--traco-action);
+  color:#090909;
+  font:900 17px/1 var(--traco-numbers);
+  font-style:normal;
+}
