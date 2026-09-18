@@ -451,6 +451,10 @@ jobs:
 
           if(!ux.includes("exerciseConsole.insertAdjacentHTML('afterend',navigatorHTML)")) throw new Error('Must mount daily workout list below exercise console');
           if(!ux.includes("TRACO_GYM_UX_VERSION='2.4.0'")) throw new Error('Visible app version must be 2.4.0');
+          const brand=fs.readFileSync('traco-brand.js','utf8');
+          const version=fs.readFileSync('version.json','utf8');
+          if(!brand.includes("version:'2.4.0'")||!brand.includes('versão 2.4.0')) throw new Error('Canonical brand version is not 2.4.0');
+          if(!version.includes('"version":"2.4.0"')) throw new Error('version.json is not 2.4.0');
           if(!css.includes('light theme contrast audit')) throw new Error('Missing full light theme contrast audit');
           if(!ux.includes('traco-session-progress-anchor')) throw new Error('Missing Safari-safe workout list anchor');
           if(!css.includes('light-mode workout value contrast')) throw new Error('Missing light mode workout value contrast');
