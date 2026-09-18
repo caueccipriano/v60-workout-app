@@ -412,7 +412,7 @@ jobs:
             if(!css.includes(required)) throw new Error(`Missing normal pre-start CSS: ${required}`);
           }
 
-          if(!ux.includes("$('.perf-value-panel [data-adjust]').forEach")) throw new Error('Gym stepper selector regression');
+          if(!ux.includes("document.querySelectorAll('.perf-value-panel [data-adjust]').forEach")) throw new Error('Gym stepper selector regression');
           if(!ux.includes("$$('.workout-select[data-workout]').forEach")) throw new Error('Workout-card selector regression');
 
           console.log('Pre-start hotfix OK: normal screen + scroll + deterministic start');
