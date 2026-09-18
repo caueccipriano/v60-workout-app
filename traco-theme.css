@@ -323,3 +323,104 @@ html[data-theme="dark"] .v60-progress-title>b{
   color:#111;
 }
 html[data-theme="dark"] .toast{background:#F7F7F2;color:#111}
+
+
+/* 1.1.1 — history/progress polish */
+.history-card-reported{
+  position:relative;
+  overflow:hidden;
+}
+.history-card-reported::before{
+  content:"";
+  position:absolute;
+  left:0;top:10px;bottom:10px;
+  width:3px;
+  border-radius:999px;
+  background:var(--lime);
+}
+.mini-chart-baseline{
+  min-height:148px;
+  height:auto;
+  align-items:stretch;
+}
+.baseline-chart{
+  width:100%;
+  min-height:148px;
+  border-radius:20px;
+  border:1px dashed rgba(255,255,255,.30);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:24px;
+}
+.baseline-chart b{
+  font-family:"DM Serif Display",Georgia,serif;
+  font-size:48px;
+  line-height:1;
+  font-weight:400;
+}
+.baseline-chart span{
+  max-width:250px;
+  margin-top:10px;
+  font-size:11px;
+  line-height:1.45;
+  color:#D7DCFF;
+}
+.v60-volume-pending>div{
+  border:1px dashed var(--line);
+  border-radius:16px;
+  padding:13px 14px;
+  background:var(--surface-soft);
+}
+.v60-volume-pending b{
+  display:block;
+  font-size:13px;
+}
+.v60-volume-pending small{
+  display:block;
+  margin-top:4px;
+  color:var(--muted);
+  font-size:9px;
+  line-height:1.45;
+}
+.measure-form input[type="date"]{
+  -webkit-appearance:none;
+  appearance:none;
+  min-width:0;
+  width:100%;
+}
+@media(max-width:430px){
+  .measure-form .form-grid{
+    grid-template-columns:1fr;
+    gap:13px;
+  }
+  .measure-form .form-grid>label:first-child{grid-column:auto}
+  .measure-form.form-card{padding:19px}
+  .measure-form .form-grid input{min-height:56px}
+}
+
+/* Dark polish from QA screenshots */
+html[data-theme="dark"] .traco-about-card img{
+  filter:hue-rotate(310deg) saturate(1.35) brightness(1.02);
+}
+html[data-theme="dark"] .history-card-reported::before{background:#FF6B21}
+html[data-theme="dark"] .baseline-chart{
+  background:#111;
+  border-color:#343434;
+}
+html[data-theme="dark"] .baseline-chart span{color:#A9A9A4}
+html[data-theme="dark"] .v60-volume-pending>div{
+  background:#101010;
+  border-color:#333;
+}
+html[data-theme="dark"] .v60-volume-pending b{color:#F7F7F2}
+html[data-theme="dark"] .v60-volume-pending small{color:#969692}
+html[data-theme="dark"] .history-summary>div{
+  background:#151515;
+  box-shadow:inset 0 0 0 1px #252525;
+}
+html[data-theme="dark"] .history-card-reported{
+  background:#131313;
+}
