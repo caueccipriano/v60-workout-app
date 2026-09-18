@@ -431,7 +431,7 @@ jobs:
             'treino de hoje',
             'toque no exercício que você quer fazer agora',
             'organizar fila completa',
-            'traco-today-workout-list',
+            'traco-v241-workout-list',
             'data-today-exercise',
             'session.tracoSetQueue=[...doneTokens,...chosen,...other]'
           ]){
@@ -459,7 +459,7 @@ jobs:
           if(!css.includes('light theme contrast audit')) throw new Error('Missing full light theme contrast audit');
           if(!ux.includes('traco-session-progress-anchor')) throw new Error('Missing Safari-safe workout list anchor');
           if(!css.includes('light-mode workout value contrast')) throw new Error('Missing light mode workout value contrast');
-          for(const required of ['traco-today-workout','traco-today-workout-list','data-today-exercise','st.done','st.total']){ if(!ux.includes(required)&&!css.includes(required)) throw new Error(`Missing visible workout list: ${required}`); }
+          for(const required of ['traco-today-workout','traco-v241-workout-list','data-today-exercise','st.done','st.total']){ if(!ux.includes(required)&&!css.includes(required)) throw new Error(`Missing visible workout list: ${required}`); }
           if(!ux.includes("document.body.classList.toggle('traco-exercise-picker-open',hasPicker)")) throw new Error('Exercise picker missing overlay recovery');
           console.log('Active exercise switcher OK: choose exercise -> move next set -> render current screen');
           NODE
