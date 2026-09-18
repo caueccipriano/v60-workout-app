@@ -1797,3 +1797,29 @@ html[data-design="performance"] .perf-value-panel input{
 }
 html[data-design="performance"] .perf-value-panel input::-webkit-outer-spin-button,
 html[data-design="performance"] .perf-value-panel input::-webkit-inner-spin-button{-webkit-appearance:none!important;margin:0!important}
+
+/* 2.4.3 — keep value + unit centered as one visual group */
+html[data-design="performance"] .perf-value-panel label{
+  display:grid!important;
+  grid-template-columns:1fr auto 1fr!important;
+  align-items:baseline!important;
+  justify-items:center!important;
+  width:100%!important;
+  min-width:0!important;
+}
+html[data-design="performance"] .perf-value-panel label input{
+  grid-column:2!important;
+  width:auto!important;
+  min-width:1.7ch!important;
+  max-width:4.5ch!important;
+  height:48px!important;
+  padding:0!important;
+  margin:0!important;
+  text-align:center!important;
+}
+html[data-design="performance"] .perf-value-panel label small{
+  grid-column:3!important;
+  justify-self:start!important;
+  margin-left:4px!important;
+  white-space:nowrap!important;
+}
