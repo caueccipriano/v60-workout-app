@@ -1839,3 +1839,36 @@ html[data-theme="light"][data-design="performance"] .perf-more .settings-intro p
 html[data-theme="light"][data-design="performance"] .perf-more .settings-intro small,
 html[data-theme="light"][data-design="performance"] .settings-intro p,
 html[data-theme="light"][data-design="performance"] .settings-intro small{color:#c7c8bd!important;-webkit-text-fill-color:#c7c8bd!important}
+
+/* 2.4.4 — stack units below numeric values */
+html[data-design="performance"] .perf-value-panel label{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  grid-template-rows:48px auto!important;
+  align-items:center!important;
+  justify-items:center!important;
+  width:100%!important;
+  min-width:0!important;
+}
+html[data-design="performance"] .perf-value-panel label input{
+  grid-column:1!important;
+  grid-row:1!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  height:48px!important;
+  margin:0!important;
+  padding:0!important;
+  text-align:center!important;
+  line-height:48px!important;
+}
+html[data-design="performance"] .perf-value-panel label small{
+  grid-column:1!important;
+  grid-row:2!important;
+  justify-self:center!important;
+  align-self:start!important;
+  margin:-5px 0 0!important;
+  line-height:12px!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+}
