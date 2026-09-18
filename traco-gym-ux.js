@@ -323,7 +323,7 @@ renderSession=function(){
   if(back){back.classList.add('traco-session-nav');back.setAttribute('aria-label','voltar um exercício');back.insertAdjacentHTML('beforeend','<small>anterior</small>');}
   if(close){close.classList.add('traco-session-nav');close.setAttribute('aria-label','sair e cancelar treino');close.insertAdjacentHTML('beforeend','<small>sair</small>');}
 
-  $('.perf-value-panel button').forEach(btn=>btn.classList.add('traco-gym-stepper'));
+  $$('.perf-value-panel button').forEach(btn=>btn.classList.add('traco-gym-stepper'));
   const progress=main.querySelector('.perf-session-progress');
   if(progress){
     progress.classList.add('traco-progress-visible');
@@ -362,7 +362,7 @@ renderWorkouts=function(){
     const small=note.querySelector('small');if(small)small.textContent='sequência flexível: siga a recomendação ou escolha outro treino.';
   }
 
-  $('.workout-select[data-workout]').forEach(card=>{
+  $$('.workout-select[data-workout]').forEach(card=>{
     const small=card.querySelector('small'),id=card.dataset.workout;
     if(small&&!small.querySelector?.('.x')&&!small.textContent.includes('feito ')){
       small.textContent=small.textContent.replace(/ · sequência/g,'')+` · ${tracoGymLastWorkout(id)}`;
