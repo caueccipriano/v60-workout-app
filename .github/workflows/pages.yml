@@ -283,7 +283,7 @@ jobs:
           for(const required of [
             'placeholder="—"',
             'class="${val?\'\':\'is-empty\'}"',
-            "$('[data-edit-body]').forEach
+            "$$('[data-edit-body]').forEach"
           ]){
             if(!app.includes(required)) throw new Error(`Missing body-centering feature: ${required}`);
           }
@@ -405,8 +405,8 @@ jobs:
           ]){
             if(!css.includes(required)) throw new Error(`Missing pre-start organizer style: ${required}`);
           }
-          if(!ux.includes("$('.perf-value-panel button').forEach)) throw new Error('Gym stepper selector regression');
-          if(!ux.includes("$('.workout-select[data-workout]').forEach)) throw new Error('Workout-card selector regression');
+          if(!ux.includes("$$('.perf-value-panel button').forEach")) throw new Error('Gym stepper selector regression');
+          if(!ux.includes("$$('.workout-select[data-workout]').forEach")) throw new Error('Workout-card selector regression');
           console.log('Pre-start series organizer OK: review -> adjust -> start');
           NODE
       - name: Validate pre-start scroll hotfix
