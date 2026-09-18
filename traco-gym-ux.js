@@ -480,7 +480,18 @@ renderSession=function(){
     haptic();
   });
   const progress=main.querySelector('.perf-session-progress');
-  if(progress){
+  // The base performance renderer may omit the progress node in some session states.
+  // Always create a stable anchor so the daily exercise navigator renders on Safari/PWA too.
+  let tracoSessionAnchor=progress;
+  if(!tracoSessionAnchor){
+    const workoutCard=main.querySelector('.perf-session-card')||main.querySelector('.perf-session-main')||main.firstElementChild;
+    if(workoutCard){
+      workoutCard.insertAdjacentHTML('afterend','<div class="perf-session-progress traco-progress-visible traco-session-progress-anchor"><span></span><small></small></div>');
+      tracoSessionAnchor=main.querySelector('.traco-session-progress-anchor');
+    }
+  }
+  if(tracoSessionAnchor){
+    const progress=tracoSessionAnchor;
     progress.classList.add('traco-progress-visible');
     const qp=tracoGymQueueProgress(state.activeSession);
     const bar=progress.querySelector('span');if(bar)bar.style.width=(qp.total?Math.round(qp.done/qp.total*100):0)+'%';
