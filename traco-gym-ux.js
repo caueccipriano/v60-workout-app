@@ -122,6 +122,7 @@ function tracoGymOpenSetOrderEditor(workoutId,{session=null}={}){
         <button type="button" id="tracoOrderClose" aria-label="fechar">×</button>
       </header>
       <p class="traco-order-help">${session?'as séries concluídas ficam preservadas. reorganize só o que ainda falta.':'cada linha é uma série. você pode alternar exercícios e montar superséries do seu jeito.'}</p>
+      <div class="traco-order-guide"><span>↑ sobe</span><span>↓ desce</span><span>depois: salvar ordem</span></div>
       ${session&&fixed.length?`<div class="traco-order-done-note">✓ ${fixed.length} ${fixed.length===1?'série concluída':'séries concluídas'} · não entram na reorganização</div>`:''}
       <div class="traco-order-list" id="tracoOrderList"></div>
       <div class="traco-order-actions">
