@@ -431,8 +431,8 @@ jobs:
             'treino de hoje',
             'toque no exercício que você quer fazer agora',
             'organizar fila completa',
-            "id=\"tracoTodayExercises\"",
-            "$('#tracoTodayExercises').onclick=tracoGymOpenExercisePicker",
+            'traco-today-workout-list',
+            'data-today-exercise',
             'session.tracoSetQueue=[...doneTokens,...chosen,...other]'
           ]){
             if(!ux.includes(required)) throw new Error(`Missing active exercise switcher feature: ${required}`);
