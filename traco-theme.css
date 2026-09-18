@@ -424,3 +424,151 @@ html[data-theme="dark"] .history-summary>div{
 html[data-theme="dark"] .history-card-reported{
   background:#131313;
 }
+
+
+/* Traço 1.2 — editable history */
+.traco-editor-open{overflow:hidden}
+.traco-editor-backdrop{
+  position:fixed;inset:0;z-index:260;
+  display:flex;align-items:flex-end;justify-content:center;
+  background:rgba(0,0,0,.58);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+}
+.traco-editor-sheet{
+  width:min(680px,100%);
+  max-height:88dvh;
+  overflow:auto;
+  background:#FAFAFA;
+  border-radius:28px 28px 0 0;
+  padding:22px 18px calc(18px + env(safe-area-inset-bottom));
+  box-shadow:0 -18px 48px rgba(0,0,0,.24);
+}
+.traco-editor-head{
+  position:sticky;top:-22px;z-index:4;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  margin:0 -18px 16px;padding:22px 18px 12px;
+  background:linear-gradient(#FAFAFA 82%,rgba(250,250,250,0));
+}
+.traco-editor-head span{
+  display:block;font-size:9px;font-weight:900;letter-spacing:.09em;
+  text-transform:uppercase;color:#888;
+}
+.traco-editor-head h3{
+  margin:2px 0 0;font-family:"DM Serif Display",Georgia,serif;
+  font-size:34px;font-weight:400;line-height:1;
+}
+.traco-editor-head small{display:block;margin-top:5px;color:#888;font-size:10px}
+.traco-editor-x{
+  width:40px;height:40px;flex:0 0 40px;border:0;border-radius:50%;
+  background:#ECECE6;color:#333;font-size:27px;line-height:1;
+}
+.traco-editor-date,
+.traco-body-edit-grid>label{
+  display:block;color:#777;font-size:10px;
+}
+.traco-editor-date input,
+.traco-body-edit-grid input{
+  width:100%;min-height:52px;margin-top:7px;padding:0 14px;
+  border:1px solid var(--line);border-radius:16px;background:#fff;color:#111;outline:0;
+}
+.traco-editor-exercises{display:grid;gap:12px;margin-top:16px}
+.traco-editor-exercise{
+  border:1px solid var(--line);border-radius:20px;padding:14px;background:#fff;
+}
+.traco-editor-ex-title{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;
+}
+.traco-editor-ex-title b{display:block;font-size:13px}
+.traco-editor-ex-title small{display:block;margin-top:3px;color:#888;font-size:9px}
+.traco-editor-ex-title button{
+  border:0;border-radius:999px;padding:9px 11px;background:var(--lime);
+  color:#111;font-weight:900;font-size:10px;white-space:nowrap;
+}
+.traco-editor-sets{display:grid;gap:8px}
+.traco-editor-set{
+  display:grid;grid-template-columns:24px minmax(0,1fr) minmax(0,1fr) 34px;
+  gap:8px;align-items:end;
+}
+.traco-editor-set>span{
+  align-self:center;display:grid;place-items:center;width:24px;height:24px;
+  border-radius:50%;background:#F0F0EA;color:#777;font-size:9px;font-weight:800;
+}
+.traco-editor-set label{font-size:9px;color:#888}
+.traco-editor-set input{
+  width:100%;min-width:0;height:42px;margin-top:4px;padding:0 9px;
+  border:1px solid var(--line);border-radius:12px;background:#FAFAFA;color:#111;outline:0;
+}
+.traco-remove-set{
+  width:34px;height:42px;border:0;border-radius:12px;background:#F5E8E5;color:#A33;
+  font-size:20px;
+}
+.traco-complete-toggle{
+  display:flex;align-items:center;gap:11px;margin:16px 0 0;padding:13px;
+  border:1px solid var(--line);border-radius:17px;background:var(--surface-soft);
+}
+.traco-complete-toggle input{width:19px;height:19px;accent-color:var(--lime)}
+.traco-complete-toggle b,.traco-complete-toggle small{display:block}
+.traco-complete-toggle b{font-size:11px}
+.traco-complete-toggle small{margin-top:2px;color:#888;font-size:9px}
+.traco-editor-actions{
+  position:sticky;bottom:calc(-18px - env(safe-area-inset-bottom));
+  z-index:5;display:grid;grid-template-columns:auto 1fr;gap:9px;
+  margin:18px -18px calc(-18px - env(safe-area-inset-bottom));
+  padding:12px 18px calc(18px + env(safe-area-inset-bottom));
+  background:linear-gradient(rgba(250,250,250,0),#FAFAFA 18%);
+}
+.traco-danger-btn{
+  border:1px solid #E5C9C3;border-radius:999px;padding:0 16px;
+  background:#FFF4F1;color:#B34B34;font-weight:900;font-size:10px;
+}
+.history-edit-btn,.measure-edit-btn{
+  border:0;border-radius:999px;padding:9px 11px;background:var(--surface-soft);
+  color:var(--muted);font-size:9px;font-weight:900;
+}
+.history-main{min-width:0}
+.measure-history>div{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;
+}
+.measure-history-copy{min-width:0}
+.measure-history-copy>b,.measure-history-copy>span{display:block}
+.measure-history-copy>span{margin-top:3px}
+.traco-body-edit-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+}
+.traco-body-edit-grid .wide{grid-column:1/-1}
+.traco-body-edit-grid .unit-input span{bottom:18px}
+@media(max-width:430px){
+  .traco-editor-sheet{max-height:92dvh}
+  .traco-body-edit-grid{grid-template-columns:1fr}
+  .traco-body-edit-grid .wide{grid-column:auto}
+  .traco-editor-actions{grid-template-columns:1fr}
+  .traco-danger-btn{min-height:46px;order:2}
+}
+
+/* dark editor */
+html[data-theme="dark"] .traco-editor-sheet{background:#0D0D0D;color:#F7F7F2}
+html[data-theme="dark"] .traco-editor-head{
+  background:linear-gradient(#0D0D0D 82%,rgba(13,13,13,0));
+}
+html[data-theme="dark"] .traco-editor-x{background:#202020;color:#F7F7F2}
+html[data-theme="dark"] .traco-editor-exercise,
+html[data-theme="dark"] .traco-editor-date input,
+html[data-theme="dark"] .traco-body-edit-grid input{
+  background:#141414;border-color:#2D2D2D;color:#F7F7F2;
+}
+html[data-theme="dark"] .traco-editor-set>span{background:#232323;color:#AAA}
+html[data-theme="dark"] .traco-editor-set input{
+  background:#0A0A0A;border-color:#303030;color:#F7F7F2;
+}
+html[data-theme="dark"] .traco-remove-set{background:#291714;color:#FF8B73}
+html[data-theme="dark"] .traco-complete-toggle{background:#151515;border-color:#2D2D2D}
+html[data-theme="dark"] .traco-editor-actions{
+  background:linear-gradient(rgba(13,13,13,0),#0D0D0D 18%);
+}
+html[data-theme="dark"] .traco-danger-btn{
+  background:#251411;border-color:#5A2B23;color:#FF8B73;
+}
+html[data-theme="dark"] .history-edit-btn,
+html[data-theme="dark"] .measure-edit-btn{
+  background:#242424;color:#B8B8B2;
+}
