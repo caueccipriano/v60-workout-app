@@ -1673,3 +1673,18 @@ html[data-design="performance"] .perf-value-panel label small{
 .traco-today-exercise-row.is-current .traco-today-exercise-index,.traco-today-exercise-row.is-current .traco-today-exercise-go{color:var(--traco-action)}
 .traco-today-exercise-row.is-complete{opacity:.55}
 .traco-today-exercise-row.is-complete .traco-today-exercise-index{color:var(--traco-action)}
+
+
+/* TRAÇO 2.4.2 — light-mode workout value contrast */
+html:not([data-theme="dark"])[data-design="performance"] .perf-value-panel input,
+html[data-theme="light"][data-design="performance"] .perf-value-panel input{
+  color:#111113 !important;
+  -webkit-text-fill-color:#111113 !important;
+  opacity:1 !important;
+}
+html:not([data-theme="dark"])[data-design="performance"] .perf-value-panel label small,
+html[data-theme="light"][data-design="performance"] .perf-value-panel label small{
+  color:#55585E !important;
+  -webkit-text-fill-color:#55585E !important;
+  opacity:1 !important;
+}
