@@ -437,3 +437,205 @@ html[data-design="performance"] select:focus-visible{
   html[data-design="performance"] .perf-inputs{grid-template-columns:1fr}
   html[data-design="performance"] .perf-value-panel>div{grid-template-columns:52px minmax(0,1fr) 52px}
 }
+
+
+/* =========================================================
+   TRAÇO 2.3.1 — CUSTOM EXERCISE ORDER
+   ========================================================= */
+.traco-organize-exercises{
+  width:calc(100% - 24px);
+  min-height:54px;
+  margin:12px;
+  padding:10px 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  border:1px solid #36363C;
+  border-radius:12px;
+  background:#111113;
+  color:var(--traco-text);
+  text-align:left;
+}
+.traco-organize-exercises:active{background:#19191C}
+.traco-organize-exercises span{min-width:0}
+.traco-organize-exercises b,
+.traco-organize-exercises small{display:block}
+.traco-organize-exercises b{font-size:11px}
+.traco-organize-exercises small{margin-top:3px;color:var(--traco-muted);font-size:8.5px}
+.traco-organize-exercises i{
+  flex:none;
+  width:34px;height:34px;
+  display:grid;place-items:center;
+  border-radius:9px;
+  background:#25110F;
+  color:var(--traco-action);
+  font:800 18px/1 var(--traco-numbers);
+  font-style:normal;
+}
+
+body.traco-order-open{overflow:hidden}
+.traco-order-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:900;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding:0;
+  background:rgba(0,0,0,.74);
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+}
+.traco-order-sheet{
+  width:min(560px,100%);
+  max-height:min(88dvh,820px);
+  display:flex;
+  flex-direction:column;
+  border:1px solid #333339;
+  border-bottom:0;
+  border-radius:22px 22px 0 0;
+  background:#101011;
+  color:var(--traco-text);
+  box-shadow:0 -18px 60px rgba(0,0,0,.45);
+  overflow:hidden;
+  padding-bottom:max(14px,env(safe-area-inset-bottom));
+  animation:tracoOrderIn .2s ease-out;
+}
+@keyframes tracoOrderIn{
+  from{transform:translateY(18px);opacity:.5}
+  to{transform:translateY(0);opacity:1}
+}
+.traco-order-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  padding:18px 18px 10px;
+}
+.traco-order-head>div>span{
+  display:block;
+  color:var(--traco-action);
+  font-size:8px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+.traco-order-head h3{
+  margin:3px 0 0;
+  font-family:var(--traco-editorial);
+  font-size:27px;
+  font-weight:400;
+  letter-spacing:-.03em;
+}
+.traco-order-head small{
+  display:block;
+  margin-top:4px;
+  color:var(--traco-muted);
+  font-size:9px;
+}
+.traco-order-head>button{
+  flex:none;
+  width:44px;height:44px;
+  display:grid;place-items:center;
+  border:1px solid #35353A;
+  border-radius:12px;
+  background:#171719;
+  color:var(--traco-text);
+  font-size:24px;
+}
+.traco-order-help{
+  margin:0;
+  padding:0 18px 12px;
+  color:var(--traco-muted);
+  font-size:9px;
+  line-height:1.45;
+}
+.traco-order-list{
+  min-height:0;
+  overflow:auto;
+  padding:0 12px 8px;
+  -webkit-overflow-scrolling:touch;
+}
+.traco-order-row{
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+  min-height:66px;
+  padding:9px 8px;
+  border-bottom:1px solid #28282D;
+}
+.traco-order-row:last-child{border-bottom:0}
+.traco-order-position{
+  font:700 11px/1 var(--traco-numbers);
+  color:#757981;
+  text-align:center;
+}
+.traco-order-exercise{min-width:0}
+.traco-order-exercise b,
+.traco-order-exercise small{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.traco-order-exercise b{font-size:11px}
+.traco-order-exercise small{margin-top:4px;color:var(--traco-muted);font-size:8px}
+.traco-order-controls{
+  display:grid;
+  grid-template-columns:48px 48px;
+  gap:6px;
+}
+.traco-order-controls button{
+  width:48px;
+  height:48px;
+  min-width:48px;
+  min-height:48px;
+  border:1px solid #37373D;
+  border-radius:11px;
+  background:#18181B;
+  color:var(--traco-text);
+  font:800 19px/1 var(--traco-numbers);
+}
+.traco-order-controls button:active:not(:disabled){
+  background:var(--traco-action);
+  color:#090909;
+  border-color:var(--traco-action);
+}
+.traco-order-controls button:disabled{
+  opacity:.22;
+}
+.traco-order-actions{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);
+  gap:8px;
+  padding:10px 12px 0;
+  border-top:1px solid #28282D;
+  background:#101011;
+}
+.traco-order-actions button{
+  min-height:52px;
+  border-radius:12px;
+  font-size:10px;
+  font-weight:900;
+}
+.traco-order-reset{
+  border:1px solid #37373D;
+  background:#18181B;
+  color:var(--traco-muted-strong);
+}
+
+@media(max-width:380px){
+  .traco-order-row{
+    grid-template-columns:28px minmax(0,1fr) auto;
+    gap:7px;
+  }
+  .traco-order-controls{
+    grid-template-columns:44px 44px;
+    gap:4px;
+  }
+  .traco-order-controls button{
+    width:44px;min-width:44px;height:48px;
+  }
+}
