@@ -375,7 +375,7 @@ renderWorkouts=function(){
   if(block&&selected&&!block.querySelector('.traco-organize-exercises')){
     const preview=block.querySelector('.exercise-preview');
     preview?.insertAdjacentHTML('beforebegin',`<button type="button" class="traco-organize-exercises" id="tracoOrganizeExercises">
-      <span><b>organizar séries</b><small>${tracoGymHasCustomSetOrder(selected.id)?'ordem personalizada ativa':'mudar a ordem de todas as séries'}</small></span>
+      <span><b>editar ordem padrão</b><small>${tracoGymHasCustomSetOrder(selected.id)?'ordem personalizada ativa':'define como este treino abre por padrão'}</small></span>
       <i>↕</i>
     </button>`);
     $('#tracoOrganizeExercises').onclick=()=>tracoGymOpenSetOrderEditor(selected.id);
