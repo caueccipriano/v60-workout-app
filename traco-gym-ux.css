@@ -1288,3 +1288,42 @@ body.traco-exercise-picker-open{
   overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
 }
+
+
+/* Traço 2.3.4 — pre-start as normal page */
+.traco-prestart-page{
+  min-height:100dvh;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  background:var(--traco-base);
+}
+.traco-prestart-page-inner{
+  width:min(560px,100%);
+  margin:0 auto;
+  padding:calc(18px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom));
+}
+.traco-prestart-page .traco-prestart-head{
+  display:grid;
+  grid-template-columns:44px minmax(0,1fr);
+  align-items:start;
+  gap:12px;
+}
+.traco-prestart-back{
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  border:1px solid #35353A;
+  border-radius:12px;
+  background:#171719;
+  color:var(--traco-text);
+  font-size:20px;
+}
+.traco-prestart-page .traco-prestart-list{
+  max-height:none;
+  overflow:visible;
+}
+.traco-prestart-page .traco-prestart-organize,
+.traco-prestart-page .traco-prestart-go{
+  position:static;
+}
