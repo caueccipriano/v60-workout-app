@@ -308,7 +308,7 @@ jobs:
 
           for(const required of [
             'TRACO_GYM_UX_VERSION',
-            'tracoGymExecutionButton',
+            "typeof v60GuidePreview==='function'?v60GuidePreview(ex):''",
             'traco-home-xp',
             'traco-gym-stepper',
             'tracoGymLastWorkout',
