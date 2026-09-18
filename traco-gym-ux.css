@@ -1465,3 +1465,44 @@ html[data-design="performance"] .main-card{
     width:100%;
   }
 }
+
+
+/* Traço 2.3.13 — single-source iPhone scroll recovery */
+html[data-design="performance"],
+html[data-design="performance"] body{
+  width:100%;
+  height:auto !important;
+  min-height:100% !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  position:static !important;
+  touch-action:pan-y !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+html[data-design="performance"] #app,
+html[data-design="performance"] .app-shell,
+html[data-design="performance"] .main-card{
+  width:100%;
+  height:auto !important;
+  min-height:100dvh !important;
+  max-height:none !important;
+  overflow:visible !important;
+  position:static !important;
+  touch-action:pan-y !important;
+}
+html[data-design="performance"] .main-card{
+  padding-bottom:calc(var(--nav-height) + 40px + env(safe-area-inset-bottom)) !important;
+}
+html[data-design="performance"] .traco-order-backdrop,
+html[data-design="performance"] .traco-exercise-picker-backdrop{
+  position:fixed !important;
+  inset:0 !important;
+  overflow-y:auto !important;
+  overscroll-behavior:contain;
+  touch-action:pan-y !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+html[data-design="performance"] body:not(.traco-order-open):not(.traco-exercise-picker-open) .traco-order-backdrop,
+html[data-design="performance"] body:not(.traco-order-open):not(.traco-exercise-picker-open) .traco-exercise-picker-backdrop{
+  pointer-events:none;
+}
