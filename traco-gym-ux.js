@@ -432,7 +432,16 @@ function tracoGymOpenExercisePicker(){
 /* ACTIVE WORKOUT */
 const tracoGymBaseSession=renderSession;
 renderSession=function(){
-  if(state.activeSession){tracoGymEnsureSessionQueue(state.activeSession);tracoGymSyncQueueCursor(state.activeSession);save(K.draft,state.activeSession);}
+  if(state.activeSession){
+    try{
+      tracoGymEnsureSessionQueue(state.activeSession);
+      tracoGymSyncQueueCursor(state.activeSession);
+      save(K.draft,state.activeSession);
+    }catch(error){
+      console.error('Traço session queue init failed',error);
+      delete state.activeSession.tracoSetQueue;
+    }
+  }
   tracoGymBaseSession();
   const main=document.querySelector('.perf-session'); if(!main||!state.activeSession)return;
   const ex=state.activeSession.exercises[state.currentExercise];
