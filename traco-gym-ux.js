@@ -3,7 +3,7 @@
  * Final UX layer: gym-first, fast touch targets, achievement color, clearer copy.
  * Internal v60_* storage keys remain for backwards compatibility.
  */
-const TRACO_GYM_UX_VERSION='2.3.3';
+const TRACO_GYM_UX_VERSION='2.3.4';
 const TRACO_ACHIEVEMENT='#F4C542';
 const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
 const TRACO_SET_ORDER_KEY='traco_set_order_v1';
@@ -98,6 +98,7 @@ function tracoGymQueueProgress(session){
 function tracoGymCloseOrderEditor(){
   document.querySelector('#tracoOrderEditor')?.remove();
   document.body.classList.remove('traco-order-open');
+  tracoGymRepairOverlayState();
 }
 function tracoGymOrderRowMeta(source,token){
   const {exerciseId,setIndex}=tracoGymQueueParts(token);
@@ -114,7 +115,7 @@ function tracoGymOpenSetOrderEditor(workoutId,{session=null}={}){
   let ids=session?activeQueue.filter(token=>!tracoGymSetForToken(session,token).set?.done):activeQueue.slice();
 
   document.querySelector('#tracoOrderEditor')?.remove();
-  document.body.classList.add('traco-order-open');
+  document.body.classList.remove('traco-order-open');
   document.body.insertAdjacentHTML('beforeend',`<div class="traco-order-backdrop" id="tracoOrderEditor">
     <section class="traco-order-sheet" role="dialog" aria-modal="true" aria-label="organizar séries">
       <header class="traco-order-head">
@@ -131,6 +132,7 @@ function tracoGymOpenSetOrderEditor(workoutId,{session=null}={}){
       </div>
     </section>
   </div>`);
+  document.body.classList.add('traco-order-open');
 
   const renderRows=()=>{
     const list=$('#tracoOrderList');
@@ -240,39 +242,54 @@ function tracoGymRefreshPreStart(workoutId){
 function tracoGymClosePreStart(){
   $('#tracoPreStart')?.remove();
   document.body.classList.remove('traco-prestart-open');
+  tracoGymRepairOverlayState();
 }
 function tracoGymOpenPreStart(workoutId){
   const workout=workoutPlan.find(w=>w.id===workoutId);if(!workout)return;
-  document.querySelector('#tracoPreStart')?.remove();
-  document.body.classList.add('traco-prestart-open');
-  const item=typeof v60SequenceItem==='function'?v60SequenceItem(workoutId):null;
-  document.body.insertAdjacentHTML('beforeend',`<div class="traco-prestart-backdrop" id="tracoPreStart">
-    <section class="traco-prestart-sheet" role="dialog" aria-modal="true" aria-label="preparar treino">
-      <header class="traco-prestart-head">
-        <div><span>antes de começar</span><h3>Treino ${tracoGymEsc(item?.letter||'')} · ${tracoGymEsc(workout.short)}</h3><small id="tracoPreStartCount">${tracoGymPreStartQueue(workoutId).length} séries · ${workout.exercises.length} exercícios</small></div>
-        <button type="button" id="tracoPreStartClose" aria-label="fechar">×</button>
-      </header>
-      <div class="traco-prestart-tip"><b>ordem de hoje</b><small>confere as primeiras séries. quer mudar? organiza agora — ou durante o treino em “fila do treino”.</small></div>
-      <div class="traco-prestart-custom" id="tracoPreStartCustom" ${tracoGymHasCustomSetOrder(workoutId)?'':'hidden'}>✓ ordem personalizada ativa</div>
-      <div class="traco-prestart-list" id="tracoPreStartList">${tracoGymPreStartRows(workoutId)}</div>
-      <button type="button" class="traco-prestart-organize" id="tracoPreStartOrganize">
-        <span><b>ajustar ordem das séries</b><small>mover qualquer série antes de começar</small></span><i>↕</i>
-      </button>
-      <button type="button" class="cta-lime traco-prestart-go" id="tracoPreStartGo">começar assim</button>
-    </section>
-  </div>`);
-  $('#tracoPreStartClose').onclick=tracoGymClosePreStart;
-  $('#tracoPreStart').onclick=e=>{if(e.target.id==='tracoPreStart')tracoGymClosePreStart();};
-  $('#tracoPreStartOrganize').onclick=()=>tracoGymOpenSetOrderEditor(workoutId);
-  $('#tracoPreStartGo').onclick=()=>{
-    tracoGymClosePreStart();
+  tracoGymClearTransientOverlays();
+  try{
+    const item=typeof v60SequenceItem==='function'?v60SequenceItem(workoutId):null;
+    const queueCount=tracoGymPreStartQueue(workoutId).length;
+    const rows=tracoGymPreStartRows(workoutId);
+    const custom=tracoGymHasCustomSetOrder(workoutId);
+
+    document.body.insertAdjacentHTML('beforeend',`<div class="traco-prestart-backdrop" id="tracoPreStart">
+      <section class="traco-prestart-sheet" role="dialog" aria-modal="true" aria-label="preparar treino">
+        <header class="traco-prestart-head">
+          <div><span>antes de começar</span><h3>Treino ${tracoGymEsc(item?.letter||'')} · ${tracoGymEsc(workout.short)}</h3><small id="tracoPreStartCount">${queueCount} séries · ${workout.exercises.length} exercícios</small></div>
+          <button type="button" id="tracoPreStartClose" aria-label="fechar">×</button>
+        </header>
+        <div class="traco-prestart-tip"><b>ordem de hoje</b><small>confere as primeiras séries. quer mudar? organiza agora — ou durante o treino em “fila do treino”.</small></div>
+        <div class="traco-prestart-custom" id="tracoPreStartCustom" ${custom?'':'hidden'}>✓ ordem personalizada ativa</div>
+        <div class="traco-prestart-list" id="tracoPreStartList">${rows}</div>
+        <button type="button" class="traco-prestart-organize" id="tracoPreStartOrganize">
+          <span><b>ajustar ordem das séries</b><small>mover qualquer série antes de começar</small></span><i>↕</i>
+        </button>
+        <button type="button" class="cta-lime traco-prestart-go" id="tracoPreStartGo">começar assim</button>
+      </section>
+    </div>`);
+    document.body.classList.add('traco-prestart-open');
+
+    $('#tracoPreStartClose').onclick=tracoGymClosePreStart;
+    $('#tracoPreStart').onclick=e=>{if(e.target.id==='tracoPreStart')tracoGymClosePreStart();};
+    $('#tracoPreStartOrganize').onclick=()=>tracoGymOpenSetOrderEditor(workoutId);
+    $('#tracoPreStartGo').onclick=()=>{
+      tracoGymClosePreStart();
+      tracoGymStartBypass=true;
+      try{tracoGymBaseStartSession(workoutId);}finally{tracoGymStartBypass=false;tracoGymRepairOverlayState();}
+    };
+  }catch(error){
+    console.error('Traço pre-start failed',error);
+    tracoGymClearTransientOverlays();
+    toast('abrindo o treino direto');
     tracoGymStartBypass=true;
-    try{tracoGymBaseStartSession(workoutId);}finally{tracoGymStartBypass=false;}
-  };
+    try{tracoGymBaseStartSession(workoutId);}finally{tracoGymStartBypass=false;tracoGymRepairOverlayState();}
+  }
 }
 
 const tracoGymBaseStartSession=startSession;
 startSession=function(workoutId){
+  tracoGymRepairOverlayState();
   const draft=load(K.draft,null);
   if(tracoGymStartBypass||(draft&&draft.workoutId===workoutId&&!draft.finishedAt)){
     return tracoGymBaseStartSession(workoutId);
@@ -469,4 +486,5 @@ renderFinish=function(){
   localStorage.setItem(TRACO_LAST_LEVEL_KEY,String(xp.level));
 };
 
+tracoGymRepairOverlayState();
 render();
