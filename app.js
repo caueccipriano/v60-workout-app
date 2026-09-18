@@ -166,14 +166,170 @@ function finishSession(){const s=state.activeSession;if(!s)return;const done=s.e
 function cancelSession(){if(!confirm('cancelar este treino? o rascunho será apagado.'))return;localStorage.removeItem(K.draft);state.activeSession=null;clearInterval(state.sessionClock);clearInterval(state.restTimer);state.restRemaining=0;$('#restOverlay')?.remove();state.page='home';render()}
 function renderFinish(){const x=state.finishSummary;if(!x){state.page='home';render();return}const pr=x.prs[0];$('#app').innerHTML=`<main class="finish-shell"><section class="finish-card"><button class="finish-close" id="finishClose">${iconSvg('close')}</button><div class="finish-check">${iconSvg('check')}</div><h1>treino fechado</h1><p>${x.name}</p><div class="finish-stats"><div><span>tempo</span><strong>${Math.max(1,Math.round(x.duration/60))}min</strong></div><div><span>carga total</span><strong>${formatLoad(x.total)}</strong></div></div>${pr?`<div class="finish-pr">${iconSvg('trophy')}<div><b>novo recorde pessoal</b><span>${pr.name} — ${pr.weight}kg × ${pr.reps}</span></div></div>`:`<div class="finish-note">sem PR hoje — consistência também conta.</div>`}<div class="finish-streak">${iconSvg('flame')}<span>streak</span><b>${x.streak} dias</b></div><button class="cta-lime" id="backHome">voltar pro início</button></section></main>`;$('#backHome').onclick=$('#finishClose').onclick=()=>{state.finishSummary=null;state.page='home';render()};}
 
+function tracoEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));}
+function tracoDateKey(ms){const d=new Date(ms);return d.toISOString().slice(0,10);}
+function tracoRecomputePRs(){
+  const all=sessions().filter(x=>x.finishedAt).sort((a,b)=>a.startedAt-b.startedAt);
+  const best={};
+  for(const sess of all){
+    const prs=[];
+    for(const ex of (sess.exercises||[])){
+      const done=(ex.sets||[]).filter(z=>z.done&&Number(z.weight)>0);
+      const mx=Math.max(0,...done.map(z=>Number(z.weight||0)));
+      if(!sess.excludeFromVolume&&mx>(best[ex.id]||0)&&mx>0){
+        prs.push({id:ex.id,name:ex.name,weight:mx,reps:Math.max(0,...done.filter(z=>Number(z.weight||0)===mx).map(z=>Number(z.reps||0)))});
+      }
+      best[ex.id]=Math.max(best[ex.id]||0,mx);
+    }
+    sess.prs=prs;
+  }
+  save(K.sessions,all);
+}
+function tracoSyncAttendance(oldDate,newDate){
+  if(typeof v60LoadAttendance!=='function'||typeof v60SaveAttendance!=='function')return;
+  const rows=v60LoadAttendance();
+  const all=sessions().filter(s=>s.finishedAt);
+  let next=rows.slice();
+  if(oldDate&&oldDate!==newDate&&!all.some(s=>tracoDateKey(s.startedAt)===oldDate)){
+    next=next.filter(r=>r.date!==oldDate);
+  }
+  if(newDate&&!next.some(r=>r.date===newDate))next.push({date:newDate,source:'edited-session'});
+  v60SaveAttendance(next);
+}
+function tracoSessionEditorClose(){document.querySelector('#tracoSessionEditor')?.remove();document.body.classList.remove('traco-editor-open');}
+function tracoSessionEditorRender(draft){
+  document.querySelector('#tracoSessionEditor')?.remove();
+  document.body.classList.add('traco-editor-open');
+  const date=tracoDateKey(draft.startedAt);
+  document.body.insertAdjacentHTML('beforeend',`<div class="traco-editor-backdrop" id="tracoSessionEditor">
+    <section class="traco-editor-sheet" role="dialog" aria-modal="true" aria-label="editar treino">
+      <div class="traco-editor-head"><div><span>histórico</span><h3>editar treino</h3><small>${tracoEsc(draft.wName)}</small></div><button class="traco-editor-x" id="tracoSessionClose" aria-label="fechar">×</button></div>
+      <label class="traco-editor-date">data<input id="tracoSessionDate" type="date" value="${date}"></label>
+      <div class="traco-editor-exercises">
+        ${(draft.exercises||[]).map((ex,ei)=>`<article class="traco-editor-exercise" data-ex-index="${ei}">
+          <div class="traco-editor-ex-title"><div><b>${tracoEsc(ex.name)}</b><small>${tracoEsc(ex.equipment||'')}</small></div><button type="button" data-add-set="${ei}">+ série</button></div>
+          <div class="traco-editor-sets">
+            ${(ex.sets||[]).map((set,si)=>`<div class="traco-editor-set" data-set-index="${si}">
+              <span>${si+1}</span>
+              <label>kg<input type="number" step="0.5" inputmode="decimal" data-weight value="${tracoEsc(set.weight)}"></label>
+              <label>reps<input type="number" inputmode="numeric" data-reps value="${tracoEsc(set.reps)}"></label>
+              <button type="button" class="traco-remove-set" data-remove-set="${ei}:${si}" aria-label="remover série">×</button>
+            </div>`).join('')}
+          </div>
+        </article>`).join('')}
+      </div>
+      ${draft.manualConfirmed?`<label class="traco-complete-toggle"><input id="tracoSessionComplete" type="checkbox" ${draft.excludeFromVolume?'':'checked'}><span><b>dados completos</b><small>usar este treino no volume e nos PRs</small></span></label>`:''}
+      <div class="traco-editor-actions"><button class="traco-danger-btn" id="tracoDeleteSession">excluir treino</button><button class="cta-lime" id="tracoSaveSession">salvar alterações</button></div>
+    </section>
+  </div>`);
+  const modal=document.querySelector('#tracoSessionEditor');
+  modal._draft=draft;
+  $('#tracoSessionClose').onclick=tracoSessionEditorClose;
+  modal.onclick=e=>{if(e.target===modal)tracoSessionEditorClose();};
+  $('[data-add-set]').forEach(btn=>btn.onclick=()=>{
+    tracoSessionSyncDraft(modal._draft);
+    const ex=modal._draft.exercises[Number(btn.dataset.addSet)];
+    ex.sets.push({n:ex.sets.length+1,weight:'',reps:'',done:false});
+    tracoSessionEditorRender(modal._draft);
+  });
+  $('[data-remove-set]').forEach(btn=>btn.onclick=()=>{
+    tracoSessionSyncDraft(modal._draft);
+    const [ei,si]=btn.dataset.removeSet.split(':').map(Number);
+    const ex=modal._draft.exercises[ei];
+    if(ex.sets.length<=1)return toast('mantém pelo menos uma série');
+    ex.sets.splice(si,1);ex.sets.forEach((set,i)=>set.n=i+1);
+    tracoSessionEditorRender(modal._draft);
+  });
+  $('#tracoSaveSession').onclick=()=>tracoSaveSessionEdit(modal._draft);
+  $('#tracoDeleteSession').onclick=()=>tracoDeleteSession(draft.id);
+}
+function tracoSessionSyncDraft(draft){
+  const modal=document.querySelector('#tracoSessionEditor');if(!modal)return draft;
+  draft.exercises.forEach((ex,ei)=>{
+    const card=modal.querySelector(`[data-ex-index="${ei}"]`);if(!card)return;
+    [...card.querySelectorAll('.traco-editor-set')].forEach((row,si)=>{
+      if(!ex.sets[si])return;
+      ex.sets[si].weight=row.querySelector('[data-weight]').value;
+      ex.sets[si].reps=row.querySelector('[data-reps]').value;
+      ex.sets[si].done=Boolean(ex.sets[si].weight||ex.sets[si].reps);
+      ex.sets[si].n=si+1;
+    });
+  });
+  return draft;
+}
+function tracoOpenSessionEditor(id){
+  const original=sessions().find(s=>String(s.id)===String(id));if(!original)return toast('treino não encontrado');
+  const draft=JSON.parse(JSON.stringify(original));
+  tracoSessionEditorRender(draft);
+}
+function tracoSaveSessionEdit(draft){
+  tracoSessionSyncDraft(draft);
+  const date=$('#tracoSessionDate')?.value;if(!date)return toast('escolhe uma data');
+  const completeToggle=$('#tracoSessionComplete');
+  if(completeToggle?.checked){
+    const missing=draft.exercises.some(ex=>(ex.sets||[]).some(set=>set.done&&(!Number(set.weight)||!Number(set.reps))));
+    if(missing)return toast('preenche carga e reps das séries usadas');
+    draft.excludeFromVolume=false;
+  }else if(draft.manualConfirmed){draft.excludeFromVolume=true;}
+  const oldDate=tracoDateKey(draft.startedAt);
+  const old=new Date(draft.startedAt),newStart=new Date(date+'T12:00:00');
+  draft.startedAt=newStart.getTime();
+  if(draft.finishedAt){
+    const dur=Math.max(1,Number(draft.duration)||Math.floor((draft.finishedAt-old.getTime())/1000)||1);
+    draft.duration=dur;draft.finishedAt=draft.startedAt+dur*1000;
+  }
+  const all=sessions(),idx=all.findIndex(s=>String(s.id)===String(draft.id));
+  if(idx<0)return toast('treino não encontrado');
+  all[idx]=draft;save(K.sessions,all);
+  tracoRecomputePRs();tracoSyncAttendance(oldDate,date);
+  tracoSessionEditorClose();toast('treino atualizado');haptic();renderHistory();
+}
+function tracoDeleteSession(id){
+  if(!confirm('excluir este treino do histórico? essa ação não pode ser desfeita.'))return;
+  const all=sessions(),target=all.find(s=>String(s.id)===String(id));if(!target)return;
+  const date=tracoDateKey(target.startedAt);
+  save(K.sessions,all.filter(s=>String(s.id)!==String(id)));
+  tracoRecomputePRs();tracoSyncAttendance(date,null);
+  tracoSessionEditorClose();toast('treino excluído');renderHistory();
+}
+function tracoBodyEditorClose(){document.querySelector('#tracoBodyEditor')?.remove();document.body.classList.remove('traco-editor-open');}
+function tracoOpenBodyEditor(id){
+  const entry=body().find(x=>String(x.id)===String(id));if(!entry)return toast('medição não encontrada');
+  document.body.classList.add('traco-editor-open');
+  document.body.insertAdjacentHTML('beforeend',`<div class="traco-editor-backdrop" id="tracoBodyEditor"><section class="traco-editor-sheet traco-body-editor" role="dialog" aria-modal="true" aria-label="editar medição">
+    <div class="traco-editor-head"><div><span>corpo</span><h3>editar medição</h3></div><button class="traco-editor-x" id="tracoBodyClose">×</button></div>
+    <div class="traco-body-edit-grid">
+      <label class="wide">data<input id="tracoBodyDate" type="date" value="${tracoEsc(entry.date)}"></label>
+      <label>peso<div class="unit-input"><input id="tracoBodyWeight" type="number" step="0.1" inputmode="decimal" value="${tracoEsc(entry.weight)}"><span>kg</span></div></label>
+      <label>cintura<div class="unit-input"><input id="tracoBodyWaist" type="number" step="0.1" inputmode="decimal" value="${tracoEsc(entry.waist)}"><span>cm</span></div></label>
+      <label>peito<div class="unit-input"><input id="tracoBodyChest" type="number" step="0.1" inputmode="decimal" value="${tracoEsc(entry.chest)}"><span>cm</span></div></label>
+      <label>braço<div class="unit-input"><input id="tracoBodyArm" type="number" step="0.1" inputmode="decimal" value="${tracoEsc(entry.arm)}"><span>cm</span></div></label>
+    </div>
+    <div class="traco-editor-actions"><button class="traco-danger-btn" id="tracoDeleteBody">excluir medição</button><button class="cta-lime" id="tracoSaveBodyEdit">salvar alterações</button></div>
+  </section></div>`);
+  const modal=$('#tracoBodyEditor');$('#tracoBodyClose').onclick=tracoBodyEditorClose;modal.onclick=e=>{if(e.target===modal)tracoBodyEditorClose();};
+  $('#tracoSaveBodyEdit').onclick=()=>{
+    const updated={...entry,date:$('#tracoBodyDate').value,weight:$('#tracoBodyWeight').value,waist:$('#tracoBodyWaist').value,chest:$('#tracoBodyChest').value,arm:$('#tracoBodyArm').value};
+    if(!updated.date)return toast('escolhe uma data');
+    if(!updated.weight&&!updated.waist&&!updated.chest&&!updated.arm)return toast('preenche pelo menos uma medida');
+    const all=body(),idx=all.findIndex(x=>String(x.id)===String(id));if(idx<0)return;
+    all[idx]=updated;save(K.body,all);tracoBodyEditorClose();toast('medição atualizada');haptic();renderBody();
+  };
+  $('#tracoDeleteBody').onclick=()=>{
+    if(!confirm('excluir esta medição? essa ação não pode ser desfeita.'))return;
+    save(K.body,body().filter(x=>String(x.id)!==String(id)));tracoBodyEditorClose();toast('medição excluída');renderBody();
+  };
+}
+
 function renderHistory(){
   const ss=sessions().filter(s=>s.finishedAt).sort((a,b)=>b.startedAt-a.startedAt),streak=calcStreak(ss),totalLoad=ss.reduce((a,s)=>a+volumeOfSession(s),0),partial=hasPartialVolume(ss),loads=recordedLoadCount(ss);
   const summarySecond=partial?`<div><span>referências</span><b>${loads} cargas</b></div>`:`<div><span>volume</span><b>${formatLoad(totalLoad)}</b></div>`;
-  const content=ss.length?`<div class="history-summary"><div><span>treinos</span><b>${ss.length}</b></div>${summarySecond}</div><div class="history-list">${ss.map(s=>`<article class="history-card ${s.manualConfirmed?'history-card-reported':''}"><div class="history-date"><b>${new Date(s.startedAt).getDate()}</b><span>${new Intl.DateTimeFormat('pt-BR',{month:'short'}).format(new Date(s.startedAt))}</span></div><div><h3>${s.wName}</h3><p>${s.manualConfirmed?'cargas informadas · reps pendentes':`${Math.round((s.duration||0)/60)} min · ${formatLoad(volumeOfSession(s))}${s.prs?.length?` · ${s.prs.length} PR`:''}`}</p></div><span class="history-check">✓</span></article>`).join('')}</div>`
+  const content=ss.length?`<div class="history-summary"><div><span>treinos</span><b>${ss.length}</b></div>${summarySecond}</div><div class="history-list">${ss.map(s=>`<article class="history-card ${s.manualConfirmed?'history-card-reported':''}"><div class="history-date"><b>${new Date(s.startedAt).getDate()}</b><span>${new Intl.DateTimeFormat('pt-BR',{month:'short'}).format(new Date(s.startedAt))}</span></div><div class="history-main"><h3>${tracoEsc(s.wName)}</h3><p>${s.manualConfirmed?'cargas informadas · reps pendentes':`${Math.round((s.duration||0)/60)} min · ${formatLoad(volumeOfSession(s))}${s.prs?.length?` · ${s.prs.length} PR`:''}`}</p></div><button class="history-edit-btn" data-edit-session="${tracoEsc(s.id)}">editar</button></article>`).join('')}</div>`
     : `<section class="empty-story"><span>${iconSvg('spark')}</span><h3>ainda não tem história pra contar.</h3><p>fecha o primeiro treino e essa timeline começa a ganhar vida.</p><button class="cta-lime" id="emptyStart">começar hoje</button></section>`;
-  shell(`<div class="page-head history-head"><div><span class="page-kicker">timeline</span><h2>histórico</h2></div><div class="streak-pill small-pill">${iconSvg('flame')} ${streak} dias</div></div>${content}`,{classes:'history-page'});if($('#emptyStart'))$('#emptyStart').onclick=()=>startSession(todayWorkout().id);
+  shell(`<div class="page-head history-head"><div><span class="page-kicker">timeline</span><h2>histórico</h2></div><div class="streak-pill small-pill">${iconSvg('flame')} ${streak} dias</div></div>${content}`,{classes:'history-page'});
+  if($('#emptyStart'))$('#emptyStart').onclick=()=>startSession(todayWorkout().id);
+  $$('[data-edit-session]').forEach(btn=>btn.onclick=()=>tracoOpenSessionEditor(btn.dataset.editSession));
 }
-
 function renderProgress(){
   const ss=sessions().filter(s=>s.finishedAt).sort((a,b)=>b.startedAt-a.startedAt),exOptions=[...new Map(workoutPlan.flatMap(w=>w.exercises).map(e=>[e.id,e])).values()],selected=state.progressEx||exOptions[0].id,points=[];
   ss.slice().reverse().forEach(s=>{const ex=s.exercises.find(e=>e.id===selected);if(ex){const weights=ex.sets.filter(z=>z.done&&Number(z.weight)>0).map(z=>Number(z.weight));if(weights.length)points.push({date:new Date(s.startedAt),value:Math.max(...weights)})}});
@@ -199,8 +355,9 @@ function renderBody(){
   shell(`<div class="page-head body-head"><div><span class="page-kicker">check-in</span><h2>corpo</h2></div><span class="level-chip">${entries.length?`${entries.length} registros`:'medidas'}</span></div>
     <section class="body-blue"><div class="body-blue-title"><span>último registro</span><small>${latest?new Intl.DateTimeFormat('pt-BR').format(new Date(latest.date+'T12:00:00')):'ainda vazio'}</small></div><div class="body-stats">${stat('weight','kg','peso')}${stat('waist','cm','cintura')}${stat('chest','cm','peito')}${stat('arm','cm','braço')}</div>${!latest?'<p class="body-empty-copy">seu primeiro check-in vira a linha de base da evolução.</p>':''}</section>
     <section class="form-card light measure-form"><h3>nova medição</h3><div class="form-grid"><label>data<input id="bodyDate" type="date" value="${new Date().toISOString().slice(0,10)}"></label><label>peso<div class="unit-input"><input id="bodyWeight" type="number" step="0.1" inputmode="decimal"><span>kg</span></div></label><label>cintura<div class="unit-input"><input id="bodyWaist" type="number" step="0.1" inputmode="decimal"><span>cm</span></div></label><label>peito<div class="unit-input"><input id="bodyChest" type="number" step="0.1" inputmode="decimal"><span>cm</span></div></label><label>braço<div class="unit-input"><input id="bodyArm" type="number" step="0.1" inputmode="decimal"><span>cm</span></div></label></div><button class="cta-lime" id="saveBody">salvar medição</button></section>
-    ${entries.length?`<div class="measure-history">${entries.slice(0,10).map(e=>`<div><b>${new Intl.DateTimeFormat('pt-BR').format(new Date(e.date+'T12:00:00'))}</b><span>${[e.weight&&e.weight+'kg',e.waist&&e.waist+'cm cintura'].filter(Boolean).join(' · ')}</span></div>`).join('')}</div>`:''}`,{classes:'body-page'});
+    ${entries.length?`<div class="measure-history">${entries.slice(0,10).map(e=>`<div><span class="measure-history-copy"><b>${new Intl.DateTimeFormat('pt-BR').format(new Date(e.date+'T12:00:00'))}</b><span>${[e.weight&&e.weight+'kg',e.waist&&e.waist+'cm cintura',e.chest&&e.chest+'cm peito',e.arm&&e.arm+'cm braço'].filter(Boolean).join(' · ')}</span></span><button class="measure-edit-btn" data-edit-body="${tracoEsc(e.id)}">editar</button></div>`).join('')}</div>`:''}`,{classes:'body-page'});
   $('#saveBody').onclick=()=>{const entry={id:Date.now(),date:$('#bodyDate').value,weight:$('#bodyWeight').value,waist:$('#bodyWaist').value,chest:$('#bodyChest').value,arm:$('#bodyArm').value};if(!entry.date)return toast('escolhe uma data');if(!entry.weight&&!entry.waist&&!entry.chest&&!entry.arm)return toast('preenche pelo menos uma medida');const all=body();all.push(entry);save(K.body,all);toast('medição salva');haptic();renderBody()};
+  $('[data-edit-body]').forEach(btn=>btn.onclick=()=>tracoOpenBodyEditor(btn.dataset.editBody));
 }
 
 function renderSettings(){
