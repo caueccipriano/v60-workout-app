@@ -3,7 +3,7 @@
  * Final UX layer: gym-first, fast touch targets, achievement color, clearer copy.
  * Internal v60_* storage keys remain for backwards compatibility.
  */
-const TRACO_GYM_UX_VERSION='2.3.7';
+const TRACO_GYM_UX_VERSION='2.3.8';
 const TRACO_ACHIEVEMENT='#F4C542';
 const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
 const TRACO_SET_ORDER_KEY='traco_set_order_v1';
@@ -426,7 +426,7 @@ function tracoGymOpenExercisePicker(){
   </div>`);
   $('#tracoExercisePickerClose').onclick=tracoGymCloseExercisePicker;
   $('#tracoExercisePicker').onclick=e=>{if(e.target.id==='tracoExercisePicker')tracoGymCloseExercisePicker();};
-  $('[data-pick-exercise]').forEach(btn=>btn.onclick=()=>{
+  $$('[data-pick-exercise]').forEach(btn=>btn.onclick=()=>{
     const id=btn.dataset.pickExercise;
     if(!tracoGymMoveExerciseNext(session,id))return toast('esse exercício já terminou');
     tracoGymCloseExercisePicker();
@@ -465,6 +465,12 @@ renderSession=function(){
     const qp=tracoGymQueueProgress(state.activeSession);
     const bar=progress.querySelector('span');if(bar)bar.style.width=(qp.total?Math.round(qp.done/qp.total*100):0)+'%';
     const label=progress.querySelector('small');if(label)label.textContent=`série ${Math.min(qp.done+1,qp.total)}/${qp.total} · exercício ${state.currentExercise+1}/${state.activeSession.exercises.length}`;
+    if(!main.querySelector('#tracoAdjustWorkout')){
+      progress.insertAdjacentHTML('afterend',`<button type="button" class="traco-adjust-workout" id="tracoAdjustWorkout">
+        <span><b>ajustar treino</b><small>trocar exercício ou mudar a ordem das séries</small></span><i>↕</i>
+      </button>`);
+      $('#tracoAdjustWorkout').onclick=tracoGymOpenExercisePicker;
+    }
     progress.insertAdjacentHTML('afterend',`<div class="traco-session-switchers">
       <button type="button" class="traco-switch-exercise" id="tracoSwitchExercise"><span><b>trocar exercício</b><small>escolher o que fazer agora</small></span><i>→</i></button>
       <button type="button" class="traco-active-queue" id="tracoActiveQueue"><span><b>fila do treino</b><small>${qp.remaining} ${qp.remaining===1?'série restante':'séries restantes'}</small></span><i>↕</i></button>
@@ -472,6 +478,7 @@ renderSession=function(){
     $('#tracoSwitchExercise').onclick=tracoGymOpenExercisePicker;
     $('#tracoActiveQueue').onclick=()=>tracoGymOpenSetOrderEditor(state.activeSession.workoutId,{session:state.activeSession});
   }
+  tracoGymRepairOverlayState();
 };
 
 const tracoGymBaseCompleteSet=completeCurrentSet;
