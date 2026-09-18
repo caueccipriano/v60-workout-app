@@ -7,7 +7,7 @@
 .v60-real-video-wrap.is-fallback .v60-real-video{display:none}
 .v60-video-badge,.v60-video-source{position:absolute;z-index:3;background:rgba(17,17,17,.78);color:#fff;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 .v60-video-badge{left:12px;bottom:12px;display:flex;align-items:center;gap:6px;border-radius:999px;padding:7px 10px;font-size:9px;font-weight:850;letter-spacing:.01em}
-.v60-video-badge i{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 rgba(196,216,46,.55);animation:v60VideoPulse 1.4s ease-out infinite}
+.v60-video-badge i{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 rgba(255,59,48,.55);animation:v60VideoPulse 1.4s ease-out infinite}
 .v60-video-source{right:10px;top:10px;border-radius:999px;padding:5px 8px;font-size:8px;font-weight:750;opacity:.9}
 .v60-video-preview .v60-real-video-wrap{border-radius:24px 24px 0 0;aspect-ratio:16/9}
 .v60-video-preview{overflow:hidden}
@@ -20,6 +20,18 @@
 .v60-exact-reference-head small{font-size:9px;color:#777;font-weight:700;text-align:right}
 .v60-exact-reference .v60-v4-motion-svg{display:block;width:100%;height:auto;border-radius:18px;overflow:hidden}
 .v60-video-license-note{margin:14px 2px 20px;color:#888;font-size:9px;line-height:1.45}
-@keyframes v60VideoPulse{0%{box-shadow:0 0 0 0 rgba(196,216,46,.6)}70%{box-shadow:0 0 0 7px rgba(196,216,46,0)}100%{box-shadow:0 0 0 0 rgba(196,216,46,0)}}
+@keyframes v60VideoPulse{0%{box-shadow:0 0 0 0 rgba(255,59,48,.6)}70%{box-shadow:0 0 0 7px rgba(255,59,48,0)}100%{box-shadow:0 0 0 0 rgba(255,59,48,0)}}
 @media(max-width:430px){.v60-real-video-wrap{aspect-ratio:4/3}.v60-real-video-wrap.is-large{aspect-ratio:4/3}.v60-video-badge{font-size:8px;padding:6px 9px}.v60-video-source{font-size:7px}.v60-video-match-copy{font-size:11px}.v60-exact-reference{padding:9px;border-radius:18px}.v60-exact-reference-head{align-items:flex-start;flex-direction:column;gap:2px}.v60-exact-reference-head small{text-align:left}}
 @media(prefers-reduced-motion:reduce){.v60-video-badge i{animation:none}.v60-real-video{transition:none}}
+
+/* Traço Redline video polish */
+.v60-video-badge i{background:#FF3B30}
+.v60-video-preview{border-radius:12px}
+.v60-real-video-wrap{border-radius:12px}
+.v60-real-video-wrap.is-large{border-radius:14px}
+.v60-video-badge{border-radius:8px}
+.v60-video-badge.technical{background:rgba(17,17,17,.84)}
+.v60-video-match-copy{color:var(--muted)}
+html[data-theme="dark"] .v60-exact-reference{background:#121212;border-color:#2A2A2A}
+html[data-theme="dark"] .v60-exact-reference-head span{color:#F3F2EE}
+html[data-theme="dark"] .v60-exact-reference-head small{color:#888}
