@@ -1,4 +1,4 @@
-window.TRACO_BRAND={name:'Traço',version:'1.1.0',legacyDataPrefix:'v60_'};
+window.TRACO_BRAND={name:'Traço',version:'1.1.1',legacyDataPrefix:'v60_'};
 const TRACO_THEME_KEY='traco_theme';
 
 function tracoTheme(){
@@ -36,7 +36,7 @@ exportData=function(){
   }
   const data={
     brand:'Traço',
-    version:'1.1.0',
+    version:'1.1.1',
     sessions:sessions(),
     body:body(),
     settings:settings(),
@@ -91,7 +91,7 @@ renderSettings=function(){
   tracoBaseRenderSettings();
   const intro=document.querySelector('.settings-intro');
   if(intro&&!document.querySelector('.traco-about-card')){
-    intro.insertAdjacentHTML('afterend','<section class="traco-about-card"><img src="./assets/traco-icon-180.png" alt=""><div><span>seu app</span><b>Traço</b><small>treino · evolução · constância · versão 1.1.0</small></div></section>');
+    intro.insertAdjacentHTML('afterend','<section class="traco-about-card"><img src="./assets/traco-icon-180.png" alt=""><div><span>seu app</span><b>Traço</b><small>treino · evolução · constância · versão 1.1.1</small></div></section>');
   }
   const about=document.querySelector('.traco-about-card');
   if(about&&!document.querySelector('.traco-theme-card')){
