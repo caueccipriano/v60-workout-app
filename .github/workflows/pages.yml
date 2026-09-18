@@ -220,8 +220,8 @@ jobs:
           const css=fs.readFileSync('traco-theme.css','utf8');
           const media=fs.readFileSync('exercise-videos.js','utf8');
 
-          if(app.includes("$('[data-add-set]').forEach")) throw new Error('Regression: add-set uses querySelector instead of querySelectorAll');
-          if(app.includes("$('[data-remove-set]').forEach")) throw new Error('Regression: remove-set uses querySelector instead of querySelectorAll');
+          if(/^\s*\$\('\[data-add-set\]'\)\.forEach/m.test(app)) throw new Error('Regression: add-set uses querySelector instead of querySelectorAll');
+          if(/^\s*\$\('\[data-remove-set\]'\)\.forEach/m.test(app)) throw new Error('Regression: remove-set uses querySelector instead of querySelectorAll');
 
           for(const required of [
             "$('[data-add-set]').forEach",
