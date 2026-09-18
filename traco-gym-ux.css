@@ -1267,3 +1267,24 @@ body.traco-exercise-picker-open{
   font:900 17px/1 var(--traco-numbers);
   font-style:normal;
 }
+
+
+/* Traço 2.3.4 — overlay scroll safety */
+html,body{
+  min-height:100%;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+body.traco-order-open,
+body.traco-prestart-open,
+body.traco-exercise-picker-open{
+  overflow-y:auto !important;
+  position:static !important;
+  height:auto !important;
+  touch-action:auto !important;
+}
+.traco-prestart-sheet,
+.traco-order-sheet{
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
