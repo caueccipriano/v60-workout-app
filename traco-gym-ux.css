@@ -1,0 +1,439 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+/* =========================================================
+   TRAÇO 2.3 — GYM UX DESIGN SYSTEM
+   ========================================================= */
+html[data-design="performance"]{
+  --traco-action:#FF3B30;
+  --traco-action-pressed:#E33129;
+  --traco-base:#090909;
+  --traco-card:#141414;
+  --traco-card-2:#1A1A1A;
+  --traco-text:#F3F2EE;
+  --traco-muted:#A8ABB2;
+  --traco-muted-strong:#C2C4C9;
+  --traco-line:#303036;
+  --traco-achievement:#F4C542;
+  --traco-achievement-soft:#2A2410;
+  --traco-achievement-text:#FFE888;
+  --traco-editorial:"DM Serif Display",Georgia,serif;
+  --traco-ui:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --traco-numbers:"Space Grotesk","Inter",sans-serif;
+
+  /* backwards-compatible aliases */
+  --perf-orange:var(--traco-action);
+  --perf-orange-soft:#2B1110;
+  --perf-black:var(--traco-base);
+  --perf-panel:var(--traco-card);
+  --perf-panel-2:var(--traco-card-2);
+  --perf-white:var(--traco-text);
+  --perf-muted:var(--traco-muted);
+  --perf-line:var(--traco-line);
+}
+html[data-design="performance"][data-theme="dark"]{
+  --bg-app:var(--traco-base);
+  --surface:var(--traco-base);
+  --surface-soft:var(--traco-card);
+  --text:var(--traco-text);
+  --muted:var(--traco-muted);
+  --line:var(--traco-line);
+  --lime:var(--traco-action);
+  --orange:var(--traco-action);
+}
+html[data-design="performance"] body,
+html[data-design="performance"] button,
+html[data-design="performance"] input,
+html[data-design="performance"] select,
+html[data-design="performance"] textarea{
+  font-family:var(--traco-ui);
+}
+html[data-design="performance"] .perf-greeting h1,
+html[data-design="performance"] .perf-page .page-head h2,
+html[data-design="performance"] .history-page .page-head h2,
+html[data-design="performance"] .settings-page .page-head h2{
+  font-family:var(--traco-editorial);
+  font-weight:400;
+  letter-spacing:-.035em;
+}
+html[data-design="performance"] .perf-hero-copy strong,
+html[data-design="performance"] .perf-metrics article>b,
+html[data-design="performance"] .perf-value-panel input,
+html[data-design="performance"] .progress-copy strong,
+html[data-design="performance"] .xp-grid b,
+html[data-design="performance"] .measure-value b,
+html[data-design="performance"] .finish-stats strong{
+  font-family:var(--traco-numbers);
+  font-weight:700;
+}
+html[data-design="performance"] .page-kicker,
+html[data-design="performance"] .perf-section-label span,
+html[data-design="performance"] .perf-media-heading span{
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+/* Contrast */
+html[data-design="performance"] .perf-greeting p,
+html[data-design="performance"] .perf-hero-copy small,
+html[data-design="performance"] .perf-metrics article>small,
+html[data-design="performance"] .perf-section-label span,
+html[data-design="performance"] .workout-select small,
+html[data-design="performance"] .body-empty-copy,
+html[data-design="performance"] .v60-profile-note{
+  color:var(--traco-muted);
+}
+html[data-design="performance"] .perf-seq{
+  color:#B7BAC0;
+  background:#151515;
+  border-color:#38383E;
+}
+html[data-design="performance"] .perf-seq:not(.active):not(.done) b{color:#D0D2D6}
+html[data-design="performance"] .perf-seq:not(.active):not(.done) span{color:#8E9198}
+
+/* Primary interaction */
+html[data-design="performance"] .cta-lime,
+html[data-design="performance"] .perf-complete-set,
+html[data-design="performance"] .perf-start-cta{
+  background:var(--traco-action);
+  color:#090909;
+  transition:transform .09s ease,background .09s ease,opacity .09s ease;
+}
+html[data-design="performance"] .cta-lime:active,
+html[data-design="performance"] .perf-complete-set:active,
+html[data-design="performance"] .perf-workout-hero:active .perf-start-cta{
+  background:var(--traco-action-pressed);
+  transform:scale(.985);
+}
+
+/* Home CTA: whole card is obviously tappable, play no fake sub-button */
+.traco-start-cta .perf-start-play,
+.perf-start-cta .perf-start-play{
+  width:26px;
+  height:26px;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  color:#090909 !important;
+}
+.traco-start-cta .perf-start-play svg{width:19px;height:19px}
+.perf-workout-hero{cursor:pointer;-webkit-tap-highlight-color:transparent}
+
+/* Achievement language */
+.traco-achievement-card .perf-metric-icon,
+.traco-achievement-card>b,
+.traco-achievement-chip,
+.traco-achievement-fill{
+  color:var(--traco-achievement) !important;
+}
+.traco-achievement-card{
+  border-color:#4B421C !important;
+  background:linear-gradient(145deg,#1A180F,#121212) !important;
+}
+.traco-achievement-chip{
+  border-color:#5A4D19 !important;
+  background:var(--traco-achievement-soft) !important;
+  color:var(--traco-achievement-text) !important;
+}
+.traco-achievement-fill,
+.perf-xp-band .xp-track i{background:var(--traco-achievement) !important}
+.traco-target-icon{
+  width:24px;height:24px;display:grid;place-items:center;color:var(--traco-action);
+}
+.traco-target-icon svg{width:20px;height:20px}
+
+/* XP on home */
+.traco-home-xp{
+  margin-top:10px;
+  padding:12px 13px;
+  border:1px solid var(--traco-line);
+  border-radius:12px;
+  background:var(--traco-card);
+}
+.traco-home-xp>div:first-child{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.traco-home-xp span{font-size:9px;font-weight:800;color:var(--traco-achievement);text-transform:uppercase;letter-spacing:.08em}
+.traco-home-xp b{font:700 11px/1 var(--traco-numbers);color:var(--traco-text)}
+.traco-home-xp-track{height:4px;margin-top:10px;border-radius:99px;background:#2A2A2D;overflow:hidden}
+.traco-home-xp-track i{display:block;height:100%;border-radius:99px;background:var(--traco-achievement)}
+.traco-home-xp small{display:block;margin-top:7px;color:var(--traco-muted);font-size:8px}
+
+/* Reuse subtle glow on highlighted product moments */
+.perf-progress-main,
+.body-blue{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+}
+.perf-progress-main::before,
+.body-blue::before{
+  content:"";
+  position:absolute;right:-90px;top:-110px;z-index:-1;
+  width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,59,48,.11),transparent 68%);
+  pointer-events:none;
+}
+
+/* Gym-sized controls */
+html[data-design="performance"] .perf-value-panel>div{
+  grid-template-columns:52px minmax(0,1fr) 52px;
+  gap:7px;
+}
+html[data-design="performance"] .perf-value-panel button,
+html[data-design="performance"] .traco-gym-stepper{
+  width:52px !important;
+  height:52px !important;
+  min-width:52px;
+  min-height:52px;
+  border-radius:12px;
+  font-size:24px;
+  font-weight:800;
+}
+html[data-design="performance"] .perf-value-panel input{
+  min-height:52px;
+  font-size:30px;
+}
+html[data-design="performance"] .perf-complete-set{
+  min-height:56px;
+  font-size:14px;
+}
+html[data-design="performance"] .perf-complete-set.traco-saved{
+  background:var(--traco-achievement);
+  color:#111;
+}
+html[data-design="performance"] .perf-set-track span{
+  width:34px;height:34px;transition:transform .15s ease,background .15s ease,color .15s ease;
+}
+html[data-design="performance"] .perf-set-track .traco-flash{
+  background:var(--traco-achievement) !important;
+  color:#111 !important;
+  border-color:var(--traco-achievement) !important;
+  animation:tracoSetPulse .28s ease;
+}
+@keyframes tracoSetPulse{50%{transform:scale(1.18)}}
+
+/* Clear progress */
+.traco-progress-visible{
+  height:30px !important;
+}
+.traco-progress-visible:before,
+.traco-progress-visible>span{height:3px !important}
+.traco-progress-visible small{
+  color:var(--traco-muted-strong) !important;
+  font-size:9px !important;
+}
+
+/* Back vs exit are distinct */
+.traco-session-nav{
+  min-width:48px;
+  min-height:48px;
+  display:flex !important;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+}
+.traco-session-nav svg{width:20px;height:20px}
+.traco-session-nav small{
+  display:block;
+  font-size:7px;
+  line-height:1;
+  color:var(--traco-muted);
+  font-weight:700;
+}
+
+/* No third-party thumbnails in active workout */
+.traco-execution-trigger{
+  width:100%;
+  min-height:64px;
+  display:grid;
+  grid-template-columns:42px minmax(0,1fr) auto;
+  align-items:center;
+  gap:11px;
+  padding:10px 12px;
+  border:1px solid #34343A;
+  border-radius:12px;
+  background:#101012;
+  color:var(--traco-text);
+  text-align:left;
+}
+.traco-execution-trigger:active{background:#18181B}
+.traco-execution-play{
+  width:42px;height:42px;
+  display:grid;place-items:center;
+  border-radius:10px;
+  background:var(--traco-action);
+  color:#090909;
+}
+.traco-execution-play svg{width:20px;height:20px}
+.traco-execution-trigger b,
+.traco-execution-trigger small{display:block}
+.traco-execution-trigger b{font-size:12px}
+.traco-execution-trigger small{margin-top:3px;color:var(--traco-muted);font-size:9px;line-height:1.3}
+.traco-execution-trigger>i{font-style:normal;color:var(--traco-action);font-size:17px}
+
+/* Exercise transition */
+.perf-exercise-console{
+  animation:tracoExerciseIn .18s ease-out;
+}
+@keyframes tracoExerciseIn{
+  from{opacity:.72;transform:translateX(7px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+/* Workout library */
+.traco-order-badge{
+  white-space:nowrap;
+  min-width:auto !important;
+  padding:9px 11px !important;
+  font-size:9px !important;
+  text-transform:lowercase;
+}
+.traco-flex-note{
+  display:grid !important;
+  grid-template-columns:38px 1fr;
+  align-items:center;
+  gap:11px;
+}
+.traco-flex-icon{
+  width:38px;height:38px;
+  display:grid;place-items:center;
+  border-radius:10px;
+  background:#24110F;
+  color:var(--traco-action);
+}
+.traco-flex-icon svg{width:20px;height:20px}
+.traco-flex-note>div:last-child span,
+.traco-flex-note>div:last-child b,
+.traco-flex-note>div:last-child small{display:block}
+.workout-select.recommended{border-color:#5B2824 !important}
+.workout-select small{line-height:1.4}
+
+/* Progress */
+.perf-progress-filter label{
+  color:var(--traco-muted-strong) !important;
+  font-size:9px !important;
+  font-weight:700;
+}
+.traco-baseline-next{
+  width:100%;
+  min-height:118px;
+  display:grid;
+  place-items:center;
+  align-content:center;
+  text-align:center;
+  padding:18px;
+}
+.traco-baseline-next i{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--traco-achievement);
+  box-shadow:0 0 0 7px rgba(244,197,66,.08);
+  margin-bottom:12px;
+}
+.traco-baseline-next b{font:700 16px/1.1 var(--traco-numbers)}
+.traco-baseline-next small{display:block;max-width:240px;margin-top:7px;color:var(--traco-muted);font-size:9px;line-height:1.45}
+
+/* Body */
+.traco-body-intro{
+  margin:-7px 0 15px;
+  color:var(--traco-muted);
+  font-size:10px;
+  line-height:1.5;
+}
+.traco-status-badge{
+  display:inline-flex !important;
+  align-items:center;
+  min-height:26px;
+  padding:0 9px;
+  border:1px solid #3A3A3F;
+  border-radius:999px;
+  background:#18181A;
+  color:var(--traco-muted-strong) !important;
+  font-size:8px !important;
+  font-weight:700;
+}
+
+/* Settings links */
+.traco-settings-link{
+  text-decoration:none;
+  box-sizing:border-box;
+}
+.traco-data-support{margin-bottom:24px}
+.traco-data-support h3{font-family:var(--traco-editorial) !important;font-weight:400 !important}
+
+/* Finish / PR / level-up */
+.traco-has-achievement .finish-pr,
+.traco-has-achievement .finish-check{
+  background:var(--traco-achievement) !important;
+  color:#111 !important;
+}
+.traco-has-achievement .finish-streak svg,
+.traco-has-achievement .finish-streak b{color:var(--traco-achievement) !important}
+.traco-level-up{
+  position:fixed;
+  inset:0;
+  z-index:500;
+  display:grid;
+  place-items:center;
+  align-content:center;
+  background:rgba(8,8,8,.90);
+  color:var(--traco-text);
+  text-align:center;
+  animation:tracoLevelFade 2s ease forwards;
+  pointer-events:none;
+}
+.traco-level-up span{
+  color:var(--traco-achievement);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.traco-level-up b{
+  margin:8px 0;
+  font:700 92px/.9 var(--traco-numbers);
+  color:var(--traco-achievement);
+}
+.traco-level-up small{font-size:12px;color:var(--traco-muted)}
+@keyframes tracoLevelFade{
+  0%{opacity:0}10%{opacity:1}75%{opacity:1}100%{opacity:0}
+}
+
+/* General tap targets and focus */
+html[data-design="performance"] .nav-btn,
+html[data-design="performance"] .history-edit-btn,
+html[data-design="performance"] .measure-edit-btn,
+html[data-design="performance"] .settings-row{
+  min-height:44px;
+}
+html[data-design="performance"] button:focus-visible,
+html[data-design="performance"] a:focus-visible,
+html[data-design="performance"] input:focus-visible,
+html[data-design="performance"] select:focus-visible{
+  outline:2px solid var(--traco-achievement);
+  outline-offset:2px;
+}
+
+/* Bottom nav active text remains visibly active */
+.perf-bottom-nav .nav-btn.active span:last-child{
+  color:var(--traco-action) !important;
+  font-weight:800;
+}
+
+@media(max-width:430px){
+  html[data-design="performance"] .perf-value-panel>div{
+    grid-template-columns:48px minmax(0,1fr) 48px;
+    gap:5px;
+  }
+  html[data-design="performance"] .perf-value-panel button,
+  html[data-design="performance"] .traco-gym-stepper{
+    width:48px !important;
+    min-width:48px;
+    height:52px !important;
+  }
+  .traco-session-nav small{font-size:6.8px}
+}
+@media(max-width:355px){
+  html[data-design="performance"] .perf-inputs{grid-template-columns:1fr}
+  html[data-design="performance"] .perf-value-panel>div{grid-template-columns:52px minmax(0,1fr) 52px}
+}
