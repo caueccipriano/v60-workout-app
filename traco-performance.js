@@ -106,6 +106,12 @@ renderSession=function(){
       <div class="perf-set-track">${ex.sets.map((x,i)=>`<span class="${x.done?'done':''} ${i===si?'current':''}"><b>${i+1}</b></span>`).join('')}</div>
       <button class="perf-complete-set" id="completeSet"><span>concluir série</span><b>→</b></button>
     </section>
+    <section class="perf-native-exercise-list" id="perfNativeExerciseList">
+      <header><div><small>TREINO EM ANDAMENTO</small><h2>lista de exercícios</h2><p>toque no exercício que você quer fazer agora</p></div></header>
+      <div class="perf-native-exercise-rows">
+        ${s.exercises.map((item,i)=>{const done=(item.sets||[]).filter(x=>x.done).length,total=(item.sets||[]).length,active=i===state.currentExercise;return `<button type="button" class="perf-native-exercise-row ${active?'is-current':''} ${done>=total&&total?'is-complete':''}" data-native-exercise-index="${i}" ${done>=total&&total?'disabled':''}><span class="perf-native-exercise-number">${String(i+1).padStart(2,'0')}</span><span><b>${tracoPerfEsc(item.name)}</b><small>${done}/${total} séries concluídas</small></span><i>${done>=total&&total?'✓':active?'●':'→'}</i></button>`;}).join('')}
+      </div>
+    </section>
     <section class="perf-media-block"><div class="perf-media-heading"><span>EXECUÇÃO</span><b>movimento auditado</b></div>${guide}</section>
     <section class="perf-last-performance">${iconSvg('trophy')}<div><span>última referência</span><b>${tracoPerfEsc(lastSetText(ex.id))}</b></div></section>
     ${extras}
@@ -124,7 +130,8 @@ renderSession=function(){
     input.value=String(Math.max(0,Math.round((current+delta)/step)*step));
     input.dispatchEvent(new Event('input',{bubbles:true}));
   });
-  $('#completeSet').onclick=completeCurrentSet;
+  document.querySelectorAll('[data-native-exercise-index]').forEach(btn=>btn.onclick=()=>{const next=Number(btn.dataset.nativeExerciseIndex);if(Number.isInteger(next)&&next>=0&&next<s.exercises.length){state.currentExercise=next;save(K.draft,s);renderSession();}});
+    $('#completeSet').onclick=completeCurrentSet;
   $('#cancelSession').onclick=()=>{typeof v60CloseGuide==='function'&&v60CloseGuide();cancelSession();};
   $('#sessionBack').onclick=()=>{typeof v60CloseGuide==='function'&&v60CloseGuide();if(state.currentExercise>0){state.currentExercise--;renderSession();}else{state.page='home';render();}};
   $('#finishEarly').onclick=()=>{if(confirm('encerrar o treino agora?')){typeof v60CloseGuide==='function'&&v60CloseGuide();finishSession();}};
