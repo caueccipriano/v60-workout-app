@@ -162,7 +162,7 @@ function showRestOverlay(){let el=$('#restOverlay');if(!el){document.body.insert
 function beginRestTicker(){clearInterval(state.restTimer);state.restTimer=setInterval(()=>{state.restRemaining--;const el=$('#restTime');if(el)el.textContent=fmtClock(Math.max(0,state.restRemaining));if(state.restRemaining<=0){stopRest();toast('bora pra próxima série');haptic()}},1000)}
 function stopRest(){clearInterval(state.restTimer);state.restRemaining=0;$('#restOverlay')?.remove();if(state.page==='session')renderSession()}
 function detectPRs(s){const prev=sessions().filter(x=>x.finishedAt),best={};prev.forEach(sess=>sess.exercises.forEach(ex=>{const mx=Math.max(0,...ex.sets.filter(z=>z.done).map(z=>Number(z.weight||0)));best[ex.id]=Math.max(best[ex.id]||0,mx)}));return s.exercises.map(ex=>{const mx=Math.max(0,...ex.sets.filter(z=>z.done).map(z=>Number(z.weight||0)));return mx>(best[ex.id]||0)&&mx>0?{id:ex.id,name:ex.name,weight:mx,reps:Math.max(0,...ex.sets.filter(z=>z.done&&Number(z.weight||0)===mx).map(z=>Number(z.reps||0)))}:null}).filter(Boolean);}
-function finishSession(){const s=state.activeSession;if(!s)return;const done=s.exercises.flatMap(e=>e.sets).filter(x=>x.done).length;if(done===0&&!confirm('nenhuma série marcada. encerrar mesmo assim?'))return;const prs=detectPRs(s);s.prs=prs;s.finishedAt=Date.now();s.duration=Math.floor((s.finishedAt-s.startedAt)/1000);const total=volumeOfSession(s),all=sessions();all.push(s);save(K.sessions,all);localStorage.removeItem(K.draft);state.finishSummary={name:s.wName,duration:s.duration,total,prs,streak:calcStreak(all)};state.activeSession=null;clearInterval(state.sessionClock);clearInterval(state.restTimer);state.restRemaining=0;$('#restOverlay')?.remove();state.page='finish';renderFinish();}
+function finishSession(){const s=state.activeSession;if(!s)return;const done=s.exercises.flatMap(e=>e.sets).filter(x=>x.done).length;if(done===0&&!confirm('nenhuma série marcada. encerrar mesmo assim?'))return;const key=tracoDateKey(s.startedAt);if(tracoHasDuplicateSession(key,s.workoutId,s.id)&&!confirm('Já existe este treino nessa data. Deseja manter os dois?'))return;const prs=detectPRs(s);s.prs=prs;s.finishedAt=Date.now();s.duration=Math.floor((s.finishedAt-s.startedAt)/1000);const total=volumeOfSession(s),all=sessions();all.push(s);save(K.sessions,all);localStorage.removeItem(K.draft);state.finishSummary={name:s.wName,duration:s.duration,total,prs,streak:calcStreak(all)};state.activeSession=null;clearInterval(state.sessionClock);clearInterval(state.restTimer);state.restRemaining=0;$('#restOverlay')?.remove();state.page='finish';renderFinish();}
 function cancelSession(){if(!confirm('cancelar este treino? o rascunho será apagado.'))return;localStorage.removeItem(K.draft);state.activeSession=null;clearInterval(state.sessionClock);clearInterval(state.restTimer);state.restRemaining=0;$('#restOverlay')?.remove();state.page='home';render()}
 function renderFinish(){const x=state.finishSummary;if(!x){state.page='home';render();return}const pr=x.prs[0];$('#app').innerHTML=`<main class="finish-shell"><section class="finish-card"><button class="finish-close" id="finishClose">${iconSvg('close')}</button><div class="finish-check">${iconSvg('check')}</div><h1>treino fechado</h1><p>${x.name}</p><div class="finish-stats"><div><span>tempo</span><strong>${Math.max(1,Math.round(x.duration/60))}min</strong></div><div><span>carga total</span><strong>${formatLoad(x.total)}</strong></div></div>${pr?`<div class="finish-pr">${iconSvg('trophy')}<div><b>novo recorde pessoal</b><span>${pr.name} — ${pr.weight}kg × ${pr.reps}</span></div></div>`:`<div class="finish-note">sem PR hoje — consistência também conta.</div>`}<div class="finish-streak">${iconSvg('flame')}<span>streak</span><b>${x.streak} dias</b></div><button class="cta-lime" id="backHome">voltar pro início</button></section></main>`;$('#backHome').onclick=$('#finishClose').onclick=()=>{state.finishSummary=null;state.page='home';render()};}
 
@@ -195,6 +195,27 @@ function tracoSyncAttendance(oldDate,newDate){
   }
   if(newDate&&!next.some(r=>r.date===newDate))next.push({date:newDate,source:'edited-session'});
   v60SaveAttendance(next);
+}
+function tracoHasDuplicateSession(date,workoutId,excludeId=null){
+  return sessions().some(s=>s.finishedAt&&String(s.id)!==String(excludeId??'')&&s.workoutId===workoutId&&tracoDateKey(s.startedAt)===date);
+}
+let tracoUndoState=null;
+function tracoOfferUndo(label,restore){
+  clearTimeout(tracoUndoState?.timer);
+  document.querySelector('#tracoUndoBar')?.remove();
+  const id='undo-'+Date.now();
+  document.body.insertAdjacentHTML('beforeend',`<div class="traco-undo-bar" id="tracoUndoBar" role="status"><span>${tracoEsc(label)}</span><button type="button" id="tracoUndoBtn">desfazer</button></div>`);
+  const timer=setTimeout(()=>{document.querySelector('#tracoUndoBar')?.remove();if(tracoUndoState?.id===id)tracoUndoState=null;},7000);
+  tracoUndoState={id,timer,restore};
+  document.querySelector('#tracoUndoBtn').onclick=()=>{
+    if(!tracoUndoState||tracoUndoState.id!==id)return;
+    clearTimeout(tracoUndoState.timer);
+    const fn=tracoUndoState.restore;tracoUndoState=null;
+    document.querySelector('#tracoUndoBar')?.remove();
+    fn();
+    toast('restaurado');
+    haptic();
+  };
 }
 function tracoSessionEditorClose(){document.querySelector('#tracoSessionEditor')?.remove();document.body.classList.remove('traco-editor-open');}
 function tracoSessionEditorRender(draft){
@@ -265,12 +286,13 @@ function tracoOpenSessionEditor(id){
 function tracoSaveSessionEdit(draft){
   tracoSessionSyncDraft(draft);
   const date=$('#tracoSessionDate')?.value;if(!date)return toast('escolhe uma data');
+  if(tracoHasDuplicateSession(date,draft.workoutId,draft.id)&&!confirm('Já existe este treino nessa data. Deseja manter os dois?'))return;
   const completeToggle=$('#tracoSessionComplete');
-  if(completeToggle?.checked){
-    const missing=draft.exercises.some(ex=>(ex.sets||[]).some(set=>set.done&&(!Number(set.weight)||!Number(set.reps))));
-    if(missing)return toast('preenche carga e reps das séries usadas');
-    draft.excludeFromVolume=false;
-  }else if(draft.manualConfirmed){draft.excludeFromVolume=true;}
+  const used=(draft.exercises||[]).flatMap(ex=>ex.sets||[]).filter(set=>set.done||set.weight||set.reps);
+  const incomplete=used.some(set=>!Number(set.weight)||!Number(set.reps));
+  if(completeToggle?.checked&&incomplete)return toast('preenche carga e reps das séries usadas');
+  draft.excludeFromVolume=incomplete||(completeToggle? !completeToggle.checked:false);
+  if(incomplete)draft.partialEdited=true;else delete draft.partialEdited;
   const oldDate=tracoDateKey(draft.startedAt);
   const old=new Date(draft.startedAt),newStart=new Date(date+'T12:00:00');
   draft.startedAt=newStart.getTime();
@@ -282,15 +304,20 @@ function tracoSaveSessionEdit(draft){
   if(idx<0)return toast('treino não encontrado');
   all[idx]=draft;save(K.sessions,all);
   tracoRecomputePRs();tracoSyncAttendance(oldDate,date);
-  tracoSessionEditorClose();toast('treino atualizado');haptic();renderHistory();
+  tracoSessionEditorClose();toast(draft.excludeFromVolume?'treino salvo como parcial':'treino atualizado');haptic();renderHistory();
 }
 function tracoDeleteSession(id){
-  if(!confirm('excluir este treino do histórico? essa ação não pode ser desfeita.'))return;
+  if(!confirm('excluir este treino do histórico?'))return;
   const all=sessions(),target=all.find(s=>String(s.id)===String(id));if(!target)return;
   const date=tracoDateKey(target.startedAt);
   save(K.sessions,all.filter(s=>String(s.id)!==String(id)));
   tracoRecomputePRs();tracoSyncAttendance(date,null);
-  tracoSessionEditorClose();toast('treino excluído');renderHistory();
+  tracoSessionEditorClose();renderHistory();
+  tracoOfferUndo('treino excluído',()=>{
+    const now=sessions();
+    if(!now.some(s=>String(s.id)===String(target.id))){now.push(target);save(K.sessions,now);}
+    tracoRecomputePRs();tracoSyncAttendance(null,date);state.page='history';renderHistory();
+  });
 }
 function tracoBodyEditorClose(){document.querySelector('#tracoBodyEditor')?.remove();document.body.classList.remove('traco-editor-open');}
 function tracoOpenBodyEditor(id){
@@ -316,15 +343,20 @@ function tracoOpenBodyEditor(id){
     all[idx]=updated;save(K.body,all);tracoBodyEditorClose();toast('medição atualizada');haptic();renderBody();
   };
   $('#tracoDeleteBody').onclick=()=>{
-    if(!confirm('excluir esta medição? essa ação não pode ser desfeita.'))return;
-    save(K.body,body().filter(x=>String(x.id)!==String(id)));tracoBodyEditorClose();toast('medição excluída');renderBody();
+    if(!confirm('excluir esta medição?'))return;
+    const deleted={...entry};
+    save(K.body,body().filter(x=>String(x.id)!==String(id)));tracoBodyEditorClose();renderBody();
+    tracoOfferUndo('medição excluída',()=>{
+      const all=body();if(!all.some(x=>String(x.id)===String(deleted.id))){all.push(deleted);save(K.body,all);}
+      state.page='body';renderBody();
+    });
   };
 }
 
 function renderHistory(){
   const ss=sessions().filter(s=>s.finishedAt).sort((a,b)=>b.startedAt-a.startedAt),streak=calcStreak(ss),totalLoad=ss.reduce((a,s)=>a+volumeOfSession(s),0),partial=hasPartialVolume(ss),loads=recordedLoadCount(ss);
   const summarySecond=partial?`<div><span>referências</span><b>${loads} cargas</b></div>`:`<div><span>volume</span><b>${formatLoad(totalLoad)}</b></div>`;
-  const content=ss.length?`<div class="history-summary"><div><span>treinos</span><b>${ss.length}</b></div>${summarySecond}</div><div class="history-list">${ss.map(s=>`<article class="history-card ${s.manualConfirmed?'history-card-reported':''}"><div class="history-date"><b>${new Date(s.startedAt).getDate()}</b><span>${new Intl.DateTimeFormat('pt-BR',{month:'short'}).format(new Date(s.startedAt))}</span></div><div class="history-main"><h3>${tracoEsc(s.wName)}</h3><p>${s.manualConfirmed?(s.excludeFromVolume?'cargas informadas · reps pendentes':`histórico completo · ${formatLoad(volumeOfSession(s))}${s.prs?.length?` · ${s.prs.length} PR`:''}`):`${Math.round((s.duration||0)/60)} min · ${formatLoad(volumeOfSession(s))}${s.prs?.length?` · ${s.prs.length} PR`:''}`}</p></div><button class="history-edit-btn" data-edit-session="${tracoEsc(s.id)}">editar</button></article>`).join('')}</div>`
+  const content=ss.length?`<div class="history-summary"><div><span>treinos</span><b>${ss.length}</b></div>${summarySecond}</div><div class="history-list">${ss.map(s=>`<article class="history-card ${s.manualConfirmed?'history-card-reported':''}"><div class="history-date"><b>${new Date(s.startedAt).getDate()}</b><span>${new Intl.DateTimeFormat('pt-BR',{month:'short'}).format(new Date(s.startedAt))}</span></div><div class="history-main"><h3>${tracoEsc(s.wName)}</h3><p>${s.excludeFromVolume?(s.manualConfirmed?'cargas informadas · reps pendentes':'histórico parcial · complete as reps'):(s.manualConfirmed?`histórico completo · ${formatLoad(volumeOfSession(s))}${s.prs?.length?` · ${s.prs.length} PR`:''}`:`${Math.round((s.duration||0)/60)} min · ${formatLoad(volumeOfSession(s))}${s.prs?.length?` · ${s.prs.length} PR`:''}`)}</p></div><button class="history-edit-btn" data-edit-session="${tracoEsc(s.id)}">editar</button></article>`).join('')}</div>`
     : `<section class="empty-story"><span>${iconSvg('spark')}</span><h3>ainda não tem história pra contar.</h3><p>fecha o primeiro treino e essa timeline começa a ganhar vida.</p><button class="cta-lime" id="emptyStart">começar hoje</button></section>`;
   shell(`<div class="page-head history-head"><div><span class="page-kicker">timeline</span><h2>histórico</h2></div><div class="streak-pill small-pill">${iconSvg('flame')} ${streak} dias</div></div>${content}`,{classes:'history-page'});
   if($('#emptyStart'))$('#emptyStart').onclick=()=>startSession(todayWorkout().id);
