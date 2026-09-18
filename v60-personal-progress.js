@@ -153,10 +153,13 @@ renderHistory=function(){
 function v60ProgressPlusMarkup(){
   const p=v60Profile(),weeks=v60WeekBuckets(8),goal=Math.max(1,Number(p.weeklyGoal)||5),maxCount=Math.max(goal,...weeks.map(w=>w.count),1),maxVol=Math.max(...weeks.map(w=>w.volume),1);
   const cardioThisWeek=weeks[weeks.length-1]?.cardio||0;
-  const totalSessions=v60CompletedSessions().length;
-  const bars=weeks.map((w,i)=>`<div class="v60-week-bar"><div class="v60-bar-stack"><i style="height:${Math.max(5,Math.round(w.count/maxCount*100))}%"></i></div><b>${w.count}</b><span>${new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'2-digit'}).format(w.start)}</span></div>`).join('');
-  const volumes=weeks.map(w=>`<i style="height:${Math.max(4,Math.round(w.volume/maxVol*100))}%" title="${Math.round(w.volume)}kg"></i>`).join('');
-  return `<section class="v60-progress-plus"><div class="v60-progress-title"><div><span>consistência</span><h3>últimas 8 semanas</h3></div><b>${weekSessions().length}/${goal}</b></div><div class="v60-week-bars">${bars}</div><div class="v60-mini-kpis"><div><span>treinos totais</span><b>${totalSessions}</b></div><div><span>cardio esta semana</span><b>${cardioThisWeek}min</b></div></div><div class="v60-volume-block"><span>volume semanal</span><div class="v60-volume-bars">${volumes}</div></div></section>`;
+  const completed=v60CompletedSessions(),totalSessions=completed.length,partial=completed.some(s=>s.excludeFromVolume);
+  const bars=weeks.map(w=>`<div class="v60-week-bar"><div class="v60-bar-stack"><i style="height:${w.count?Math.max(5,Math.round(w.count/maxCount*100)):0}%"></i></div><b>${w.count}</b><span>${new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'2-digit'}).format(w.start)}</span></div>`).join('');
+  const volumes=weeks.map(w=>`<i style="height:${w.volume?Math.max(4,Math.round(w.volume/maxVol*100)):0}%" title="${Math.round(w.volume)}kg"></i>`).join('');
+  const volumeBlock=partial
+    ? `<div class="v60-volume-block v60-volume-pending"><span>volume semanal</span><div><b>reps pendentes</b><small>as cargas já estão salvas; o volume entra quando tivermos as repetições reais.</small></div></div>`
+    : `<div class="v60-volume-block"><span>volume semanal</span><div class="v60-volume-bars">${volumes}</div></div>`;
+  return `<section class="v60-progress-plus"><div class="v60-progress-title"><div><span>consistência</span><h3>últimas 8 semanas</h3></div><b>${weekSessions().length}/${goal}</b></div><div class="v60-week-bars">${bars}</div><div class="v60-mini-kpis"><div><span>treinos totais</span><b>${totalSessions}</b></div><div><span>cardio esta semana</span><b>${cardioThisWeek}min</b></div></div>${volumeBlock}</section>`;
 }
 const v60BaseRenderProgress=renderProgress;
 renderProgress=function(){
