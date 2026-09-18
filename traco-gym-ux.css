@@ -1020,7 +1020,7 @@ body.traco-order-open{
   font-style:normal;
 }
 
-body.traco-exercise-picker-open{overflow:hidden}
+body.traco-exercise-picker-open{overflow-y:auto;position:static;touch-action:pan-y}
 .traco-exercise-picker-backdrop{
   position:fixed;
   inset:0;
