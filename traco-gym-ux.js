@@ -311,26 +311,21 @@ function tracoGymOpenPreStart(workoutId){
     $('#tracoPreStart').onclick=e=>{if(e.target.id==='tracoPreStart')tracoGymClosePreStart();};
     $('#tracoPreStartOrganize').onclick=()=>tracoGymOpenSetOrderEditor(workoutId);
     $('#tracoPreStartGo').onclick=()=>{
-      tracoGymClearTransientOverlays();
-      tracoGymStartBypass=true;
-      requestAnimationFrame(()=>{
-        try{tracoGymBaseStartSession(workoutId);}
-        catch(error){
-          console.error('Traço direct start failed',error);
-          toast('não consegui abrir o treino · tenta de novo');
-        }finally{
-          tracoGymStartBypass=false;
-          tracoGymClearTransientOverlays();
-          tracoGymRepairOverlayState();
-        }
-      });
+      try{
+        tracoGymClosePreStart();
+        tracoGymClearTransientOverlays();
+        tracoGymBaseStartSession(workoutId);
+      }catch(error){
+        console.error('Traço direct start failed',error);
+        tracoGymClearTransientOverlays();
+        toast('não consegui abrir o treino · tenta de novo');
+      }
     };
   }catch(error){
     console.error('Traço pre-start failed',error);
     tracoGymClearTransientOverlays();
     toast('abrindo o treino direto');
-    tracoGymStartBypass=true;
-    try{tracoGymBaseStartSession(workoutId);}finally{tracoGymStartBypass=false;tracoGymRepairOverlayState();}
+    tracoGymBaseStartSession(workoutId);
   }
 }
 
