@@ -1688,3 +1688,29 @@ html[data-theme="light"][data-design="performance"] .perf-value-panel label smal
   -webkit-text-fill-color:#55585E !important;
   opacity:1 !important;
 }
+
+
+/* TRAÇO 2.4.0 — light theme contrast audit */
+html[data-theme="light"] .perf-progress,
+html[data-theme="light"] .perf-body,
+html[data-theme="light"] .perf-more,
+html[data-theme="light"] .perf-workouts{color:#111113}
+html[data-theme="light"] .perf-progress .level-card b,
+html[data-theme="light"] .perf-progress .level-card strong,
+html[data-theme="light"] .perf-progress .level-card h1,
+html[data-theme="light"] .perf-body b,
+html[data-theme="light"] .perf-body strong,
+html[data-theme="light"] .perf-more b,
+html[data-theme="light"] .perf-more strong{color:#111113 !important;-webkit-text-fill-color:#111113 !important}
+html[data-theme="light"] .perf-progress small,
+html[data-theme="light"] .perf-progress p,
+html[data-theme="light"] .perf-body small,
+html[data-theme="light"] .perf-body p,
+html[data-theme="light"] .perf-more small,
+html[data-theme="light"] .perf-more p{color:#686B71 !important;-webkit-text-fill-color:#686B71 !important}
+html[data-theme="light"] .traco-today-workout{background:#F1F0EC;border-color:#D0CEC7;color:#111113}
+html[data-theme="light"] .traco-today-workout>header{border-color:#D8D6D0}
+html[data-theme="light"] .traco-today-exercise-row{color:#111113;border-color:#DDDAD4}
+html[data-theme="light"] .traco-today-exercise-copy b{color:#111113 !important;-webkit-text-fill-color:#111113 !important}
+html[data-theme="light"] .traco-today-exercise-copy small{color:#6C6F75 !important;-webkit-text-fill-color:#6C6F75 !important}
+html[data-theme="light"] .traco-today-exercise-row.is-current{background:rgba(255,59,48,.08)}
