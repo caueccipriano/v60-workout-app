@@ -1569,3 +1569,47 @@ html[data-design="performance"] .perf-value-panel label small{
   min-width:max-content;
   color:var(--traco-muted-strong) !important;
 }
+
+
+/* TRAÇO 2.3.3 — compact workout steppers */
+html[data-design="performance"] .perf-inputs{
+  gap:10px !important;
+}
+html[data-design="performance"] .perf-value-panel{
+  padding:12px 10px 10px !important;
+}
+html[data-design="performance"] .perf-value-panel>div{
+  grid-template-columns:44px minmax(0,1fr) 44px !important;
+  gap:4px !important;
+  margin-top:7px !important;
+}
+html[data-design="performance"] .perf-value-panel button,
+html[data-design="performance"] .traco-gym-stepper{
+  width:44px !important;
+  min-width:44px !important;
+  height:48px !important;
+  min-height:48px !important;
+  border-radius:11px !important;
+  font-size:22px !important;
+}
+html[data-design="performance"] .perf-value-panel input{
+  min-height:48px !important;
+  line-height:48px !important;
+  font-size:27px !important;
+  letter-spacing:-.04em !important;
+}
+html[data-design="performance"] .perf-value-panel label small{
+  font-size:8px !important;
+  margin-left:1px;
+}
+@media(max-width:380px){
+  html[data-design="performance"] .perf-value-panel>div{
+    grid-template-columns:40px minmax(0,1fr) 40px !important;
+  }
+  html[data-design="performance"] .perf-value-panel button,
+  html[data-design="performance"] .traco-gym-stepper{
+    width:40px !important;
+    min-width:40px !important;
+  }
+  html[data-design="performance"] .perf-value-panel input{font-size:25px !important}
+}
