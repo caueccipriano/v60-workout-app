@@ -326,8 +326,15 @@ function tracoGymDirectStart(workoutId){
     return tracoGymBaseStartSession(workoutId);
   }catch(error){
     console.error('Traço workout start failed',error);
+    // The base start can create/render the session before a secondary enhancement throws.
+    // If the session is already active, keep it open and do not show a false start failure.
+    if(state.activeSession&&state.activeSession.workoutId===workoutId){
+      state.page='session';
+      try{tracoGymRepairOverlayState();}catch(repairError){console.error('Traço overlay repair failed',repairError);}
+      return state.activeSession;
+    }
     toast('não consegui abrir o treino · tenta de novo');
-    tracoGymRepairOverlayState();
+    try{tracoGymRepairOverlayState();}catch(repairError){console.error('Traço overlay repair failed',repairError);}
     return null;
   }
 }
