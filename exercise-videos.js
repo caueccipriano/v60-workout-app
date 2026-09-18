@@ -43,7 +43,7 @@ const TRACO_MEDIA_AUDIT=Object.freeze({
 });
 
 const TRACO_VIDEO_LIBRARY=Object.freeze({
-  'supino-inclinado':{provider:'youtube',id:'R84DD4unAyI',source:'Idris',variant:'Smith incline 30–45°'},
+  'supino-inclinado':{provider:'vimeo',id:'756783757',hash:'9e03c89f9b',source:'Muscle & Strength',variant:'Smith incline bench press 30–45°'},
   'desenvolvimento':{provider:'youtube',id:'FRxZ6wr5bpA',source:'Muscle & Strength',variant:'seated dumbbell press'},
   'elevacao-lateral':{provider:'youtube',id:'Fv-eAW1uKDI',source:'Muscle & Strength',variant:'single-arm low cable lateral raise'},
   'crucifixo-baixo-alto':{provider:'youtube',id:'8YjdqeIXPUQ',source:'Muscle & Strength',variant:'standing low-to-high cable fly'},
@@ -59,25 +59,25 @@ const TRACO_VIDEO_LIBRARY=Object.freeze({
   'remada-baixa':{provider:'vimeo',id:'756788734',hash:'145dc3923d',source:'Muscle & Strength',variant:'seated cable row'},
   'pullover':{provider:'youtube',id:'gDtXrJWPdlY',source:'Muscle & Strength',variant:'straight-arm lat pulldown'},
   'crucifixo-inverso':{provider:'youtube',id:'Baavi8rJWBI',source:'Muscle & Strength',variant:'bent-over low-pulley rear-delt fly'},
-  'rosca-polia':{provider:'youtube',id:'_hRnRorKRWs',source:'Live Lean TV',variant:'standing low-pulley straight-bar cable curl'},
-  'rosca-martelo':{provider:'youtube',id:'zC3nLlEvin4',source:'ScottHermanFitness',variant:'standing dumbbell hammer curl'},
+  'rosca-polia':{provider:'vimeo',id:'760001419',source:'Muscle & Strength',variant:'standing low-pulley cable curl'},
+  'rosca-martelo':{provider:'vimeo',id:'756794163',source:'Muscle & Strength',variant:'standing dumbbell hammer curl'},
   'crunch':{provider:'youtube',id:'nCHypnGvcq4',source:'YST Exercises',variant:'reverse crunch on flat bench'},
   'supino-reto':{provider:'vimeo',id:'756783677',hash:'b20676578f',source:'Muscle & Strength',variant:'Smith machine flat bench press'},
   'crucifixo-reto':{provider:'youtube',id:'OPYrUGZL8nU',source:'Muscle & Strength',variant:'standing mid-chest cable fly'},
   'elevacao-lateral-2':{provider:'youtube',id:'Fv-eAW1uKDI',source:'Muscle & Strength',variant:'single-arm low cable lateral raise'},
   'face-pull':{provider:'youtube',id:'7ZvpXA_mFpQ',source:'Muscle & Strength',variant:'cable face pull with rope'},
   'triceps-overhead-2':{provider:'youtube',id:'NRENeEgaIgA',source:'Muscle & Strength',variant:'high-pulley overhead rope extension'},
-  'rosca-unilateral':{provider:'youtube',id:'Qbk5A7lWVOE',source:'Mountain Dog / John Meadows',variant:'one-arm low cable curl'},
+  'rosca-unilateral':{provider:'vimeo',id:'760001492',source:'Muscle & Strength',variant:'one-arm low cable curl'},
   'rdl':{provider:'vimeo',id:'756793204',hash:'c832d55911',source:'Muscle & Strength',variant:'Smith machine stiff-leg deadlift / RDL'},
   'flexora-2':{provider:'youtube',id:'3BWiLFc8Dbg',source:'Muscle & Strength',variant:'seated leg curl'},
   'leg-press-alto':{provider:'youtube',id:'iQhP0kkadSI',source:'SATS Nordic',variant:'high-feet leg press'},
   'puxada-neutra':{provider:'youtube',id:'M3scNzLIJHg',source:'Telmo Barriuso',variant:'close neutral-grip lat pulldown'},
   'elevacao-lateral-3':{provider:'youtube',id:'Fv-eAW1uKDI',source:'Muscle & Strength',variant:'single-arm low cable lateral raise'},
   'abdutora-2':{provider:'youtube',id:'7pbZA7ncuq8',source:'Muscle & Strength',variant:'hip abduction machine'},
-  'crunch-2':{provider:'youtube',id:'0KEP6A1deBE',source:'Travis Tarrant',variant:'kneeling rope cable crunch'},
-  'core-crunch-seg':{provider:'youtube',id:'0KEP6A1deBE',source:'Travis Tarrant',variant:'kneeling rope cable crunch'},
+  'crunch-2':{provider:'vimeo',id:'760008287',source:'Muscle & Strength',variant:'kneeling rope cable crunch'},
+  'core-crunch-seg':{provider:'vimeo',id:'760008287',source:'Muscle & Strength',variant:'kneeling rope cable crunch'},
   'core-pallof-ter':{provider:'youtube',id:'SFJprbDnaS0',source:'Muscle & Strength',variant:'standing Pallof press at chest height'},
-  'core-leg-raise-ter':{provider:'youtube',id:'_B8CJEYd5mI',source:'Live Lean TV',variant:'lying leg raise on flat bench'},
+  'core-leg-raise-ter':{provider:'vimeo',id:'877885227',source:'Muscle & Strength',variant:'lying leg raise on flat bench'},
   'core-woodchop-qui':{provider:'youtube',id:'0VWnOjUO7ks',source:'Muscle & Strength',variant:'high-cable wood chop'},
   'core-dead-bug-qui':{provider:'youtube',id:'eEhoSeBFoBk',source:'Muscle & Strength',variant:'dead bug on floor'}
 });
@@ -85,7 +85,7 @@ const TRACO_VIDEO_LIBRARY=Object.freeze({
 function v60VideoFor(ex){return TRACO_VIDEO_LIBRARY[String(ex?.id||'')]||null;}
 function v60VideoEmbedUrl(video){
   if(!video)return '';
-  if(video.provider==='youtube')return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(video.id)}?rel=0&modestbranding=1&playsinline=1`;
+  if(video.provider==='youtube')return `https://www.youtube.com/embed/${encodeURIComponent(video.id)}?rel=0&modestbranding=1&playsinline=1`;
   if(video.provider==='vimeo')return `https://player.vimeo.com/video/${encodeURIComponent(video.id)}?${video.hash?`h=${encodeURIComponent(video.hash)}&`:''}dnt=1&title=0&byline=0&portrait=0`;
   return '';
 }
@@ -99,7 +99,7 @@ function v60VideoIframe(ex,{large=false}={}){
   const video=v60VideoFor(ex);
   if(!video||navigator.onLine===false)return '';
   const title=`${ex.name} — ${video.variant}`;
-  return `<div class="v60-embed-wrap ${large?'is-large':''}"><iframe src="${v60VideoEmbedUrl(video)}" title="${tracoMediaEsc(title)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><span class="v60-video-badge"><i></i>vídeo 1:1</span><span class="v60-video-source">${tracoMediaEsc(video.source)}</span></div>`;
+  return `<div class="v60-embed-wrap ${large?'is-large':''}"><iframe src="${v60VideoEmbedUrl(video)}" title="${tracoMediaEsc(title)}" loading="eager" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><span class="v60-video-badge"><i></i>vídeo 1:1</span><span class="v60-video-source">${tracoMediaEsc(video.source)}</span></div>`;
 }
 function tracoMediaEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));}
 function tracoMediaSetCount(ex){if(Array.isArray(ex?.sets))return ex.sets.length;const n=Number(ex?.sets);return Number.isFinite(n)&&n>0?n:0;}
