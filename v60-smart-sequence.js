@@ -2,6 +2,7 @@ const V60_SMART_SEQUENCE_KEY='v60_smart_sequence_v1';
 const V60_ATTENDANCE_KEY='v60_attendance_v1';
 const V60_SMART_MIGRATION_KEY='v60_smart_sequence_bootstrap_20260917';
 const V60_REPORTED_HISTORY_KEY='v60_reported_history_bootstrap_20260917_v1';
+const V60_REPORTED_TODAY_KEY='v60_reported_history_20260918_v1';
 
 // A→E follows recovery better than weekday locking.
 // Confirmed current anchor: back (A) → chest (B) → legs (C next).
@@ -115,6 +116,74 @@ function v60BootstrapReportedHistory(){
   save(V60_REPORTED_HISTORY_KEY,true);
 }
 
+function v60BootstrapReportedToday(){
+  if(load(V60_REPORTED_TODAY_KEY,false))return;
+  const date='2026-09-18',workoutId='ter';
+  const all=sessions();
+
+  const existing=all.find(x=>x.finishedAt&&x.workoutId===workoutId&&v60DateKey(x.startedAt)===date);
+  if(!existing){
+    const plan=workoutPlan.find(w=>w.id===workoutId);
+    const rows=[
+      ['extensora','extensora','Cadeira extensora',4,10,25,null],
+      ['flexora','flexora','Flexora',4,10,20,null],
+      ['abdutora','abdutora','Máquina abdutora',4,10,25,null],
+      ['adutora','adutora','Máquina adutora',4,10,20,null],
+      ['agachamento-smith','agachamento Smith','Smith',4,10,10,'por lado'],
+      ['leg-press','leg press 45°','Leg press 45°',4,10,80,null],
+      ['mesa-flexora','mesa flexora','Mesa flexora',3,10,20,null],
+      ['elevacao-pelvica','elevação pélvica','Máquina / barra',3,10,20,'por lado']
+    ];
+    const exercises=rows.map(([id,name,equipment,setCount,reps,weight,loadBasis])=>{
+      const base=plan?.exercises?.find(ex=>ex.id===id);
+      return {
+        ...(base||{id,name,equipment,icon:'',min:reps,max:reps,rest:60}),
+        id,name,equipment,
+        reportedLoadBasis:loadBasis||null,
+        sets:Array.from({length:setCount},(_,i)=>({
+          n:i+1,weight:String(weight),reps:String(reps),done:true,
+          reported:true,repsKnown:true,loadBasis:loadBasis||null
+        }))
+      };
+    });
+    const startedAt=new Date(date+'T12:00:00').getTime();
+    all.push({
+      id:'reported-'+date+'-'+workoutId,
+      manualHistoryKey:date,
+      source:'user-reported-2026-09-18',
+      manualConfirmed:true,
+      workoutId,
+      wName:'pernas completas',
+      startedAt,
+      finishedAt:startedAt+1,
+      duration:0,
+      exercises,
+      extras:[],
+      prs:[]
+    });
+    save(K.sessions,all);
+  }
+
+  const attendance=v60LoadAttendance();
+  if(!attendance.some(x=>x.date===date)){
+    attendance.push({date,source:'manual-confirmed'});
+    v60SaveAttendance(attendance);
+  }
+
+  const seq=v60SequenceState();
+  if(seq.nextWorkoutId==='ter'){
+    v60AdvanceSequence('ter');
+  }
+
+  const draft=load(K.draft,null);
+  if(draft&&draft.workoutId===workoutId&&!draft.finishedAt&&v60DateKey(draft.startedAt||Date.now())===date){
+    const anyDone=(draft.exercises||[]).some(ex=>(ex.sets||[]).some(set=>set.done));
+    if(!anyDone) localStorage.removeItem(K.draft);
+  }
+
+  save(V60_REPORTED_TODAY_KEY,true);
+}
+
 function v60AllAttendanceDates(){
   const dates=new Set(v60LoadAttendance().map(x=>x.date));
   sessions().filter(s=>s.finishedAt).forEach(s=>dates.add(v60DateKey(s.startedAt)));
@@ -162,6 +231,7 @@ function v60SetRecommended(workoutId){
 
 v60BootstrapAttendance();
 v60BootstrapReportedHistory();
+v60BootstrapReportedToday();
 
 // Replace calendar-day prescription with the current A→E recommendation.
 todayWorkout=function(){return v60RecommendedWorkout();};
