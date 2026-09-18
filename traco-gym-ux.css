@@ -1823,3 +1823,19 @@ html[data-design="performance"] .perf-value-panel label small{
   margin-left:4px!important;
   white-space:nowrap!important;
 }
+
+/* 2.4.3 — settings light contrast: actual settings hero */
+html[data-theme="light"][data-design="performance"] .perf-more .settings-intro,
+html[data-theme="light"][data-design="performance"] .settings-intro{background:#151515!important;border-color:#2a2a2a!important}
+html[data-theme="light"][data-design="performance"] .perf-more .settings-intro h1,
+html[data-theme="light"][data-design="performance"] .perf-more .settings-intro h2,
+html[data-theme="light"][data-design="performance"] .perf-more .settings-intro b,
+html[data-theme="light"][data-design="performance"] .perf-more .settings-intro strong,
+html[data-theme="light"][data-design="performance"] .settings-intro h1,
+html[data-theme="light"][data-design="performance"] .settings-intro h2,
+html[data-theme="light"][data-design="performance"] .settings-intro b,
+html[data-theme="light"][data-design="performance"] .settings-intro strong{color:#f7f7f4!important;-webkit-text-fill-color:#f7f7f4!important}
+html[data-theme="light"][data-design="performance"] .perf-more .settings-intro p,
+html[data-theme="light"][data-design="performance"] .perf-more .settings-intro small,
+html[data-theme="light"][data-design="performance"] .settings-intro p,
+html[data-theme="light"][data-design="performance"] .settings-intro small{color:#c7c8bd!important;-webkit-text-fill-color:#c7c8bd!important}
