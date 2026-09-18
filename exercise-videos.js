@@ -42,6 +42,19 @@ const TRACO_MEDIA_AUDIT=Object.freeze({
   'core-dead-bug-qui':{name:"dead bug",equipment:"Solo / colchonete",scene:'deadBug',verified:true}
 });
 
+const V60_EXACT_VIDEOS=Object.freeze({
+  'desenvolvimento':{pexelsId:'4367541'},
+  'triceps-pushdown':{pexelsId:'5319433'},
+  'leg-press':{pexelsId:'36457367'},
+  'agachamento-smith':{pexelsId:'6892543'},
+  'extensora':{pexelsId:'36539451'},
+  'puxada-aberta':{pexelsId:'5983521'},
+  'remada-baixa':{pexelsId:'4367642'}
+});
+function v60VideoFor(ex){return V60_EXACT_VIDEOS[String(ex?.id||'')]||null;}
+function v60VideoSrc(video){return video?`https://www.pexels.com/download/video/${video.pexelsId}/`:'';}
+function v60VideoFailed(el){const wrap=el?.closest('.v60-real-video-wrap');if(wrap)wrap.classList.add('is-fallback');}
+function v60VideoLoaded(el){const wrap=el?.closest('.v60-real-video-wrap');if(wrap)wrap.classList.add('is-ready');el?.play?.().catch(()=>{});}
 function tracoMediaEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));}
 function tracoMediaSetCount(ex){if(Array.isArray(ex?.sets))return ex.sets.length;const n=Number(ex?.sets);return Number.isFinite(n)&&n>0?n:0;}
 function tracoNormalize(v){return String(v??'').normalize('NFC').trim().replace(/\s+/g,' ');}
@@ -78,16 +91,32 @@ function tracoMediaRender(ex,large=false){
     };
   }
 }
+function v60RealVideo(ex,{large=false,controls=false}={}){
+  const video=v60VideoFor(ex),technical=tracoMediaRender(ex,large);
+  if(!video)return `<div class="v60-real-video-wrap is-fallback technical-only"><div class="v60-video-fallback">${technical.html}</div><span class="v60-video-badge technical"><i></i>guia técnico</span></div>`;
+  return `<div class="v60-real-video-wrap ${large?'is-large':''}">
+    <video class="v60-real-video" src="${v60VideoSrc(video)}" muted playsinline autoplay loop preload="metadata" ${controls?'controls':''} onloadeddata="v60VideoLoaded(this)" onerror="v60VideoFailed(this)" aria-label="vídeo real de ${tracoMediaEsc(ex.name)}"></video>
+    <div class="v60-video-fallback">${technical.html}</div>
+    <span class="v60-video-badge"><i></i>vídeo real · execução exata</span>
+    <span class="v60-video-source">Pexels · ID ${video.pexelsId}</span>
+  </div>`;
+}
 function tracoMediaPreview(ex){
-  const media=tracoMediaRender(ex,false);
-  return `<button class="exercise-guide-preview v60-v4-preview traco-media-preview ${media.ok?'is-rendered':'is-fallback'}" data-media-exercise="${tracoMediaEsc(ex.id)}" id="openExerciseGuide" type="button" aria-label="ver execução de ${tracoMediaEsc(ex.name)}"><div class="v60-v4-motion-wrap">${media.html}<span class="v60-v4-loop-badge"><i></i> ${media.ok?'guia animado':'instruções'}</span></div><span class="exercise-guide-caption"><span><b>ver execução</b><small>${tracoMediaEsc(media.cue)}</small></span><i>↗</i></span></button>`;
+  const media=tracoMediaRender(ex,false),video=v60VideoFor(ex);
+  if(video){
+    return `<button class="exercise-guide-preview v60-video-preview traco-media-preview has-real-video" data-media-exercise="${tracoMediaEsc(ex.id)}" id="openExerciseGuide" type="button" aria-label="ver execução em vídeo de ${tracoMediaEsc(ex.name)}">${v60RealVideo(ex)}<span class="exercise-guide-caption"><span><b>ver execução em vídeo</b><small>vídeo real validado + guia técnico</small></span><i>↗</i></span></button>`;
+  }
+  return `<button class="exercise-guide-preview v60-v4-preview traco-media-preview ${media.ok?'is-rendered':'is-fallback'}" data-media-exercise="${tracoMediaEsc(ex.id)}" id="openExerciseGuide" type="button" aria-label="ver execução de ${tracoMediaEsc(ex.name)}"><div class="v60-v4-motion-wrap">${media.html}<span class="v60-v4-loop-badge"><i></i> ${media.ok?'guia animado':'instruções'}</span></div><span class="exercise-guide-caption"><span><b>ver guia técnico</b><small>${tracoMediaEsc(media.cue)}</small></span><i>↗</i></span></button>`;
 }
 function v60GuidePreview(ex){return tracoMediaPreview(ex);}
 function v60ShowGuide(ex){
   v60CloseGuide();
-  const g=v60GuideFor(ex),scene=v60V4Scene(ex),setCount=tracoMediaSetCount(ex),spec=TRACO_MEDIA_AUDIT[ex.id],media=tracoMediaRender(ex,true);
+  const g=v60GuideFor(ex),scene=v60V4Scene(ex),setCount=tracoMediaSetCount(ex),spec=TRACO_MEDIA_AUDIT[ex.id],media=tracoMediaRender(ex,true),video=v60VideoFor(ex);
   document.body.classList.add('v60-guide-open');
-  document.body.insertAdjacentHTML('beforeend',`<div class="v60-guide-backdrop" id="v60GuideBackdrop"></div><aside class="v60-guide-sheet v60-v4-sheet" id="v60GuideSheet" role="dialog" aria-modal="true" aria-label="execução de ${tracoMediaEsc(ex.name)}"><div class="v60-guide-handle"></div><button class="v60-guide-close" id="v60GuideClose" aria-label="fechar">×</button><div class="v60-guide-content"><span class="v60-guide-kicker">guia técnico validado</span><h2>${tracoMediaEsc(ex.name)}</h2><p class="v60-guide-equipment">${tracoMediaEsc(ex.equipment)}</p><div class="v60-v4-motion-wrap v60-v4-motion-large">${media.html}<span class="v60-v4-loop-badge"><i></i> ${media.ok?'início ↔ fim':'instruções'}</span></div><p class="v60-v4-tech-note">${tracoMediaEsc(scene.note)}</p><div class="v60-guide-tags"><span>${tracoMediaEsc(g.focus)}</span><span>${setCount} × ${tracoMediaEsc(ex.min)}-${tracoMediaEsc(ex.max)}</span><span>${tracoMediaEsc(ex.rest)}s descanso</span></div><section class="v60-guide-tips"><h3>dicas rápidas</h3><ol>${g.tips.map(t=>`<li>${tracoMediaEsc(t)}</li>`).join('')}</ol></section><section class="v60-guide-error"><span>erro comum</span><p>${tracoMediaEsc(g.error)}</p></section><p class="v60-video-license-note">Traço Exact Media · exercício, equipamento e trajetória auditados${spec?.scene?` · ${tracoMediaEsc(spec.scene)}`:''}.</p><button class="cta-lime" id="v60GuideDone">voltar pro treino</button></div></aside>`);
+  const primary=video
+    ? `${v60RealVideo(ex,{large:true,controls:true})}<p class="v60-video-match-copy">Vídeo real restaurado porque exercício, equipamento e padrão de execução foram validados como correspondência exata.</p><section class="v60-exact-reference"><div class="v60-exact-reference-head"><span>guia técnico</span><small>posição · trajetória · referência</small></div>${media.html}</section>`
+    : `<div class="v60-v4-motion-wrap v60-v4-motion-large">${media.html}<span class="v60-v4-loop-badge"><i></i> ${media.ok?'início ↔ fim':'instruções'}</span></div><p class="v60-v4-tech-note">${tracoMediaEsc(scene.note)}</p>`;
+  document.body.insertAdjacentHTML('beforeend',`<div class="v60-guide-backdrop" id="v60GuideBackdrop"></div><aside class="v60-guide-sheet ${video?'v60-video-sheet':'v60-v4-sheet'}" id="v60GuideSheet" role="dialog" aria-modal="true" aria-label="execução de ${tracoMediaEsc(ex.name)}"><div class="v60-guide-handle"></div><button class="v60-guide-close" id="v60GuideClose" aria-label="fechar">×</button><div class="v60-guide-content"><span class="v60-guide-kicker">${video?'execução em vídeo':'guia técnico validado'}</span><h2>${tracoMediaEsc(ex.name)}</h2><p class="v60-guide-equipment">${tracoMediaEsc(ex.equipment)}</p>${primary}<div class="v60-guide-tags"><span>${tracoMediaEsc(g.focus)}</span><span>${setCount} × ${tracoMediaEsc(ex.min)}-${tracoMediaEsc(ex.max)}</span><span>${tracoMediaEsc(ex.rest)}s descanso</span></div><section class="v60-guide-tips"><h3>dicas rápidas</h3><ol>${g.tips.map(t=>`<li>${tracoMediaEsc(t)}</li>`).join('')}</ol></section><section class="v60-guide-error"><span>erro comum</span><p>${tracoMediaEsc(g.error)}</p></section><p class="v60-video-license-note">${video?`Vídeo demonstrativo sob Licença Pexels · ID ${video.pexelsId}. `:''}Traço Exact Media · exercício, equipamento e trajetória auditados${spec?.scene?` · ${tracoMediaEsc(spec.scene)}`:''}.</p><button class="cta-lime" id="v60GuideDone">voltar pro treino</button></div></aside>`);
   $('#v60GuideBackdrop').onclick=v60CloseGuide;$('#v60GuideClose').onclick=v60CloseGuide;$('#v60GuideDone').onclick=v60CloseGuide;
 }
 function tracoAuditRenderedMedia(){
@@ -102,7 +131,8 @@ function tracoAuditRenderedMedia(){
 window.TRACO_MEDIA_AUDIT=TRACO_MEDIA_AUDIT;
 window.TRACO_MEDIA_AUDIT_RESULT=tracoAuditExerciseMedia();
 window.TRACO_MEDIA_RENDER_AUDIT_RESULT=tracoAuditRenderedMedia();
-window.V60_LICENSED_VIDEO_IDS=[];
+window.TRACO_EXACT_VIDEO_IDS=Object.keys(V60_EXACT_VIDEOS);
+window.V60_LICENSED_VIDEO_IDS=Object.keys(V60_EXACT_VIDEOS);
 if(!window.TRACO_MEDIA_AUDIT_RESULT.ok)console.error('Traço media audit failed',window.TRACO_MEDIA_AUDIT_RESULT.failures);
 if(!window.TRACO_MEDIA_RENDER_AUDIT_RESULT.ok)console.error('Traço media render audit failed',window.TRACO_MEDIA_RENDER_AUDIT_RESULT.failed);
 if(typeof state!=='undefined'&&state.page==='session')renderSession();
