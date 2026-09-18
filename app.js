@@ -58,6 +58,10 @@ function toast(msg){const t=$('#toast');if(!t)return;t.textContent=msg;t.classLi
 function fmtClock(sec){const m=Math.floor(sec/60),s=sec%60;return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}
 function volumeOfSession(s){if(s?.excludeFromVolume)return 0;return s.exercises.reduce((sum,ex)=>sum+ex.sets.reduce((a,set)=>a+(set.done?Number(set.weight||0)*Number(set.reps||0):0),0),0)}
 function formatLoad(v){if(v>=1000)return `${(v/1000).toFixed(v>=10000?1:2).replace('.',',')}t`;return `${Math.round(v)}kg`}
+function hasPartialVolume(ss=[]){return ss.some(s=>s?.excludeFromVolume)}
+function recordedLoadCount(ss=[]){
+  return ss.reduce((sum,s)=>sum+(s.exercises||[]).filter(ex=>(ex.sets||[]).some(set=>set.done&&Number(set.weight)>0)).length,0);
+}
 function weekSessions(){const now=new Date();const start=new Date(now);const diff=(start.getDay()+6)%7;start.setDate(start.getDate()-diff);start.setHours(0,0,0,0);return sessions().filter(s=>s.finishedAt&&s.startedAt>=start.getTime())}
 function calcStreak(ss=sessions()){
   const days=[...new Set(ss.filter(s=>s.finishedAt).map(s=>new Date(s.startedAt).toISOString().slice(0,10)))].sort().reverse();
@@ -98,20 +102,23 @@ function shell(content,{showNav=true,classes=''}={}){$('#app').innerHTML=`<main 
 function bindCommon(){$$('[data-nav]').forEach(b=>b.onclick=()=>{state.page=b.dataset.nav;render()});}
 
 function renderHome(){
-  const w=todayWorkout(),ws=weekSessions(),streak=calcStreak(),weeklyLoad=ws.reduce((a,s)=>a+volumeOfSession(s),0),pr=latestPR(),draft=load(K.draft,null),draftPct=sessionCompletion(draft);
+  const w=todayWorkout(),ws=weekSessions(),streak=calcStreak(),weeklyLoad=ws.reduce((a,s)=>a+volumeOfSession(s),0),partial=hasPartialVolume(ws),loadCount=recordedLoadCount(ws),pr=latestPR(),draft=load(K.draft,null),draftPct=sessionCompletion(draft);
   const recordHtml=pr
     ? `<div class="kpi-card kpi-orange"><span>novo recorde</span><strong>${pr.name}</strong><small>${pr.weight}kg${pr.reps?` × ${pr.reps}`:''}</small></div>`
     : `<div class="kpi-card kpi-record-empty"><span>primeiro PR</span><strong>bora buscar</strong><small>ainda sem recorde</small></div>`;
+  const loadKpi=partial
+    ? `<div class="kpi-card kpi-black"><span>cargas registradas</span><strong>${loadCount}</strong><small>reps pendentes · volume parcial</small></div>`
+    : `<div class="kpi-card kpi-black"><span>carga total</span><strong>${formatLoad(weeklyLoad)}</strong><small>esta semana</small></div>`;
   shell(`<header class="home-head"><div class="streak-pill">${iconSvg('flame')}<b>${streak}</b> dias</div><button class="profile-btn" data-nav="settings" aria-label="perfil">${iconSvg('user')}</button></header>
     <div class="weekday">${weekdayLabel().toUpperCase()}</div><h1 class="editorial-title">${w.short}</h1>
     ${draft?`<section class="resume-card"><div><span>treino em andamento</span><strong>${draft.wName}</strong><small>${draftPct}% fechado</small></div><button id="resumeWorkout">continuar</button></section>`:''}
     <button class="today-card" id="startToday" aria-label="começar treino"><div><span class="card-kicker">treino de hoje</span><strong>${w.exercises.length} exercícios</strong><small>~ 60 min</small></div><span class="play-dot">${iconSvg('play')}</span></button>
-    <section class="kpi-grid"><div class="kpi-card kpi-black"><span>carga total</span><strong>${formatLoad(weeklyLoad)}</strong><small>esta semana</small></div>${recordHtml}</section>
+    <section class="kpi-grid">${loadKpi}${recordHtml}</section>
     <section class="week-strip">${workoutPlan.map(x=>{const done=ws.some(s=>s.workoutId===x.id);return `<button class="week-chip ${done?'done':''} ${x.id===w.id?'today':''}" data-workout="${x.id}"><b>${x.id}</b><span>${done?'✓':'·'}</span></button>`}).join('')}</section>
     <button class="text-link week-link" id="seeWeek">ver semana de treino</button>`,{classes:'home-card'});
   $('#startToday').onclick=()=>startSession(w.id);if($('#resumeWorkout'))$('#resumeWorkout').onclick=()=>startSession(draft.workoutId);
   $('#seeWeek').onclick=()=>{state.page='workouts';state.selectedWorkout=w.id;renderWorkouts()};
-  $$('[data-workout]').forEach(el=>el.onclick=()=>{state.page='workouts';state.selectedWorkout=el.dataset.workout;renderWorkouts()});
+  $('[data-workout]').forEach(el=>el.onclick=()=>{state.page='workouts';state.selectedWorkout=el.dataset.workout;renderWorkouts()});
 }
 
 function renderWorkouts(){
@@ -160,8 +167,9 @@ function cancelSession(){if(!confirm('cancelar este treino? o rascunho será apa
 function renderFinish(){const x=state.finishSummary;if(!x){state.page='home';render();return}const pr=x.prs[0];$('#app').innerHTML=`<main class="finish-shell"><section class="finish-card"><button class="finish-close" id="finishClose">${iconSvg('close')}</button><div class="finish-check">${iconSvg('check')}</div><h1>treino fechado</h1><p>${x.name}</p><div class="finish-stats"><div><span>tempo</span><strong>${Math.max(1,Math.round(x.duration/60))}min</strong></div><div><span>carga total</span><strong>${formatLoad(x.total)}</strong></div></div>${pr?`<div class="finish-pr">${iconSvg('trophy')}<div><b>novo recorde pessoal</b><span>${pr.name} — ${pr.weight}kg × ${pr.reps}</span></div></div>`:`<div class="finish-note">sem PR hoje — consistência também conta.</div>`}<div class="finish-streak">${iconSvg('flame')}<span>streak</span><b>${x.streak} dias</b></div><button class="cta-lime" id="backHome">voltar pro início</button></section></main>`;$('#backHome').onclick=$('#finishClose').onclick=()=>{state.finishSummary=null;state.page='home';render()};}
 
 function renderHistory(){
-  const ss=sessions().filter(s=>s.finishedAt).sort((a,b)=>b.startedAt-a.startedAt),streak=calcStreak(ss),totalLoad=ss.reduce((a,s)=>a+volumeOfSession(s),0);
-  const content=ss.length?`<div class="history-summary"><div><span>treinos</span><b>${ss.length}</b></div><div><span>volume</span><b>${formatLoad(totalLoad)}</b></div></div><div class="history-list">${ss.map(s=>`<article class="history-card"><div class="history-date"><b>${new Date(s.startedAt).getDate()}</b><span>${new Intl.DateTimeFormat('pt-BR',{month:'short'}).format(new Date(s.startedAt))}</span></div><div><h3>${s.wName}</h3><p>${Math.round((s.duration||0)/60)} min · ${formatLoad(volumeOfSession(s))}${s.prs?.length?` · ${s.prs.length} PR`:''}</p></div><span class="history-check">✓</span></article>`).join('')}</div>`
+  const ss=sessions().filter(s=>s.finishedAt).sort((a,b)=>b.startedAt-a.startedAt),streak=calcStreak(ss),totalLoad=ss.reduce((a,s)=>a+volumeOfSession(s),0),partial=hasPartialVolume(ss),loads=recordedLoadCount(ss);
+  const summarySecond=partial?`<div><span>referências</span><b>${loads} cargas</b></div>`:`<div><span>volume</span><b>${formatLoad(totalLoad)}</b></div>`;
+  const content=ss.length?`<div class="history-summary"><div><span>treinos</span><b>${ss.length}</b></div>${summarySecond}</div><div class="history-list">${ss.map(s=>`<article class="history-card ${s.manualConfirmed?'history-card-reported':''}"><div class="history-date"><b>${new Date(s.startedAt).getDate()}</b><span>${new Intl.DateTimeFormat('pt-BR',{month:'short'}).format(new Date(s.startedAt))}</span></div><div><h3>${s.wName}</h3><p>${s.manualConfirmed?'cargas informadas · reps pendentes':`${Math.round((s.duration||0)/60)} min · ${formatLoad(volumeOfSession(s))}${s.prs?.length?` · ${s.prs.length} PR`:''}`}</p></div><span class="history-check">✓</span></article>`).join('')}</div>`
     : `<section class="empty-story"><span>${iconSvg('spark')}</span><h3>ainda não tem história pra contar.</h3><p>fecha o primeiro treino e essa timeline começa a ganhar vida.</p><button class="cta-lime" id="emptyStart">começar hoje</button></section>`;
   shell(`<div class="page-head history-head"><div><span class="page-kicker">timeline</span><h2>histórico</h2></div><div class="streak-pill small-pill">${iconSvg('flame')} ${streak} dias</div></div>${content}`,{classes:'history-page'});if($('#emptyStart'))$('#emptyStart').onclick=()=>startSession(todayWorkout().id);
 }
@@ -169,12 +177,20 @@ function renderHistory(){
 function renderProgress(){
   const ss=sessions().filter(s=>s.finishedAt).sort((a,b)=>b.startedAt-a.startedAt),exOptions=[...new Map(workoutPlan.flatMap(w=>w.exercises).map(e=>[e.id,e])).values()],selected=state.progressEx||exOptions[0].id,points=[];
   ss.slice().reverse().forEach(s=>{const ex=s.exercises.find(e=>e.id===selected);if(ex){const weights=ex.sets.filter(z=>z.done&&Number(z.weight)>0).map(z=>Number(z.weight));if(weights.length)points.push({date:new Date(s.startedAt),value:Math.max(...weights)})}});
-  const max=Math.max(1,...points.map(p=>p.value)),min=Math.min(...points.map(p=>p.value),max),xp=xpStats();
+  const max=Math.max(1,...points.map(p=>p.value)),min=Math.min(...points.map(p=>p.value),max),xp=xpStats(),partial=hasPartialVolume(ss),loads=recordedLoadCount(ss);
+  const chart=points.length===1
+    ? `<div class="baseline-chart"><b>${points[0].value}kg</b><span>baseline salvo · o próximo registro mostra sua evolução</span></div>`
+    : points.length>1
+      ? points.slice(-10).map(p=>`<i style="height:${Math.max(12,p.value/max*100)}%"><span>${p.value}</span></i>`).join('')
+      : '<div class="empty-chart"><b>0%</b><span>sem dados ainda — fecha um treino e começa a subir.</span></div>';
+  const volumeKpi=partial
+    ? `<div><span>referências salvas</span><b>${loads} cargas</b></div>`
+    : `<div><span>carga acumulada</span><b>${formatLoad(ss.reduce((a,s)=>a+volumeOfSession(s),0))}</b></div>`;
   shell(`<div class="page-head progress-head"><div><span class="page-kicker">xp de força</span><h2>evolução</h2></div><span class="level-chip">nível ${xp.level}</span></div>
     <section class="xp-band"><div><span>nível ${xp.level}</span><b>${xp.current} / 100 XP</b></div><small>${100-xp.current} XP pro próximo nível · 20 XP por treino + 10 por PR</small><div class="xp-track"><i style="width:${xp.pct}%"></i></div></section>
     <div class="select-wrap"><label>exercício</label><select id="progressEx">${exOptions.map(e=>`<option value="${e.id}" ${e.id===selected?'selected':''}>${e.name}</option>`).join('')}</select></div>
-    <section class="progress-blue"><div class="progress-copy"><span>melhor carga</span><strong>${points.length?Math.max(...points.map(p=>p.value))+'kg':'— kg'}</strong><small>${points.length>1?`+${Math.max(0,Math.max(...points.map(p=>p.value))-min)}kg desde o início`:'primeiro registro libera seu gráfico'}</small></div><div class="mini-chart">${points.length?points.slice(-10).map(p=>`<i style="height:${Math.max(12,p.value/max*100)}%"><span>${p.value}</span></i>`).join(''):'<div class="empty-chart"><b>0%</b><span>sem dados ainda — fecha um treino e começa a subir.</span></div>'}</div></section>
-    <section class="xp-grid"><div><span>treinos</span><b>${ss.length}</b></div><div><span>carga acumulada</span><b>${formatLoad(ss.reduce((a,s)=>a+volumeOfSession(s),0))}</b></div></section>`,{classes:'progress-page'});$('#progressEx').onchange=e=>{state.progressEx=e.target.value;renderProgress()};
+    <section class="progress-blue"><div class="progress-copy"><span>melhor carga</span><strong>${points.length?Math.max(...points.map(p=>p.value))+'kg':'— kg'}</strong><small>${points.length>1?`+${Math.max(0,Math.max(...points.map(p=>p.value))-min)}kg desde o início`:points.length===1?'baseline real salvo':'primeiro registro libera seu gráfico'}</small></div><div class="mini-chart ${points.length===1?'mini-chart-baseline':''}">${chart}</div></section>
+    <section class="xp-grid"><div><span>treinos</span><b>${ss.length}</b></div>${volumeKpi}</section>`,{classes:'progress-page'});$('#progressEx').onchange=e=>{state.progressEx=e.target.value;renderProgress()};
 }
 
 function renderBody(){
