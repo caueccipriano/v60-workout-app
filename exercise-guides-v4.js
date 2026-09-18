@@ -4,7 +4,7 @@ function v60V4SetCount(ex){if(Array.isArray(ex?.sets))return ex.sets.length;cons
 function v60V4Scene(ex){
   const id=String(ex?.id||'');
   const dark=document.documentElement?.dataset?.theme==='dark';
-  const W='#FAFAFA', M=dark?'rgba(250,250,250,.22)':'rgba(250,250,250,.28)', D=dark?'rgba(0,0,0,.34)':'rgba(9,16,55,.28)', L=dark?'#FF6B21':'#C4D82E', H=dark?'rgba(255,107,33,.34)':'rgba(196,216,46,.34)';
+  const W='#FAFAFA', M=dark?'rgba(250,250,250,.22)':'rgba(250,250,250,.28)', D=dark?'rgba(0,0,0,.34)':'rgba(9,16,55,.28)', L=dark?'#FF3B30':'#E9342C', H=dark?'rgba(255,59,48,.34)':'rgba(233,52,44,.28)';
   const line=(x1,y1,x2,y2,sw=5,c=W)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>`;
   const rect=(x,y,w,h,r=5,c=M)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${c}"/>`;
   const circ=(x,y,r,fill='none',stroke=W,sw=4)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
@@ -232,7 +232,7 @@ function v60V4MotionSvg(ex,large=false){
     <text x="42" y="43" fill="#FAFAFA" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="800">${v60V4Esc(ex.name)}</text>
     <text x="42" y="67" fill="#FAFAFA" opacity=".72" font-family="Arial,Helvetica,sans-serif" font-size="12">${v60V4Esc(ex.equipment)} · ${v60V4Esc(g.focus)}</text>
     <g class="v60-v4-equipment">${scene.equipment}</g><g class="v60-v4-pose v60-v4-pose-a">${scene.a}</g><g class="v60-v4-pose v60-v4-pose-b">${scene.b}</g><g class="v60-v4-arrow">${scene.motion}</g>
-    <rect x="40" y="306" width="128" height="34" rx="17" fill="#C4D82E"/><text x="62" y="329" fill="#111" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="900">${setCount} × ${v60V4Esc(ex.min)}-${v60V4Esc(ex.max)}</text>
+    <rect x="40" y="306" width="128" height="34" rx="17" fill="#FF3B30"/><text x="62" y="329" fill="#111" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="900">${setCount} × ${v60V4Esc(ex.min)}-${v60V4Esc(ex.max)}</text>
     <text x="190" y="329" fill="#FAFAFA" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700">${v60V4Esc(scene.note)}</text>
   </svg>`;
 }
