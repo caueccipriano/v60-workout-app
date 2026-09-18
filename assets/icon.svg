@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Traço">
-  <rect width="512" height="512" rx="112" fill="#B9FA22"/>
-  <g fill="#111111">
+  <rect width="512" height="512" rx="112" fill="#090909"/>
+  <g fill="#FF3B30">
     <rect x="79" y="178" width="38" height="76" rx="15"/>
     <rect x="135" y="150" width="42" height="132" rx="16"/>
     <rect x="232" y="224" width="52" height="142" rx="17"/>
     <rect x="395" y="178" width="38" height="76" rx="15"/>
   </g>
-  <path d="M166 205H258c13 0 25-4 36-11l67-45v109" fill="none" stroke="#111111" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M166 205H258c13 0 25-4 36-11l67-45v109" fill="none" stroke="#FF3B30" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
