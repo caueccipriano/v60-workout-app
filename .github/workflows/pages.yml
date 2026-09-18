@@ -375,7 +375,7 @@ jobs:
           if(!brand.includes("key.startsWith('traco_')")) throw new Error('Set order would be missing from backup');
           console.log('Full set queue OK: every set can be reordered, including active workout');
           NODE
-      - name: Validate pre-start series organizer
+      - name: Validate pre-start normal-screen hotfix
         run: |
           node <<'NODE'
           const fs=require('fs');
@@ -383,131 +383,36 @@ jobs:
           const css=fs.readFileSync('traco-gym-ux.css','utf8');
 
           for(const required of [
-            'tracoGymOpenPreStart',
-            'tracoGymRefreshPreStart',
+            'function tracoGymOpenPreStart',
+            'function tracoGymClosePreStart',
+            'traco-prestart-page-inner',
             'ajustar ordem das séries',
             'começar assim',
-            'antes de começar',
-            'ordem de hoje',
-            'fila do treino',
             "const tracoGymBaseStartSession=startSession",
-            'editar ordem padrão',
-            "if($('#tracoPreStart'))tracoGymRefreshPreStart(workoutId)"
+            'tracoGymBaseStartSession(workoutId)',
+            'tracoGymPreStartWorkoutId',
+            'tracoGymPreStartReturnPage'
           ]){
-            if(!ux.includes(required)) throw new Error(`Missing pre-start organizer feature: ${required}`);
+            if(!ux.includes(required)) throw new Error(`Missing normal pre-start flow: ${required}`);
           }
+
+          if(ux.includes("document.body.classList.add('traco-prestart-open')")) throw new Error('Pre-start still uses body-lock modal class');
+          if(ux.includes("requestAnimationFrame(()=>")) throw new Error('Pre-start still depends on deferred start');
+
           for(const required of [
-            '.traco-prestart-backdrop',
-            '.traco-prestart-sheet',
-            '.traco-prestart-organize',
-            '.traco-prestart-go',
-            '.traco-order-guide'
+            'Traço 2.3.4 — pre-start as normal page',
+            '.traco-prestart-page',
+            'overflow-y:auto',
+            '-webkit-overflow-scrolling:touch',
+            '.traco-prestart-back'
           ]){
-            if(!css.includes(required)) throw new Error(`Missing pre-start organizer style: ${required}`);
+            if(!css.includes(required)) throw new Error(`Missing normal pre-start CSS: ${required}`);
           }
+
           if(!ux.includes("$$('.perf-value-panel button').forEach")) throw new Error('Gym stepper selector regression');
           if(!ux.includes("$$('.workout-select[data-workout]').forEach")) throw new Error('Workout-card selector regression');
-          console.log('Pre-start series organizer OK: review -> adjust -> start');
-          NODE
-      - name: Validate pre-start scroll hotfix
-        run: |
-          node <<'NODE'
-          const fs=require('fs');
-          const ux=fs.readFileSync('traco-gym-ux.js','utf8');
-          const css=fs.readFileSync('traco-gym-ux.css','utf8');
 
-          for(const required of [
-            'tracoGymRepairOverlayState',
-            'tracoGymClearTransientOverlays',
-            "document.body.classList.add('traco-prestart-open')",
-            "toast('abrindo o treino direto')",
-            'tracoGymBaseStartSession(workoutId)',
-            'window.addEventListener(\'pageshow\''
-          ]){
-            if(!ux.includes(required)) throw new Error(`Missing scroll-safety feature: ${required}`);
-          }
-
-          const openFn=ux.slice(ux.indexOf('function tracoGymOpenPreStart'),ux.indexOf('const tracoGymBaseStartSession=startSession'));
-          const addAt=openFn.indexOf("classList.add('traco-prestart-open')");
-          const insertAt=openFn.indexOf("insertAdjacentHTML('beforeend'");
-          if(addAt<0||insertAt<0||addAt<insertAt) throw new Error('Body lock is applied before the pre-start modal exists');
-
-          for(const required of [
-            'iPhone modal scroll hotfix',
-            'overflow:auto !important',
-            '.traco-prestart-list',
-            'overflow-y:auto !important',
-            'position:sticky'
-          ]){
-            if(!css.includes(required)) throw new Error(`Missing iPhone scroll fix: ${required}`);
-          }
-
-          console.log('Pre-start scroll hotfix OK: no stale body lock + reachable start CTA');
-          NODE
-      - name: Validate definitive PWA scroll safety
-        run: |
-          node <<'NODE'
-          const fs=require('fs');
-          const ux=fs.readFileSync('traco-gym-ux.js','utf8');
-          const css=fs.readFileSync('traco-gym-ux.css','utf8');
-
-          for(const required of [
-            "TRACO_GYM_UX_VERSION='2.3.8'",
-            'tracoGymClearTransientOverlays',
-            "el.style.removeProperty('overflow')",
-            "el.style.removeProperty('touch-action')",
-            "toast('abrindo o treino direto')",
-            "if(!document.querySelector('#tracoPreStart'))throw new Error('pre-start não abriu')",
-            'tracoGymClearTransientOverlays',
-            'tracoGymRepairOverlayState',
-            'render();'
-          ]){
-            if(!ux.includes(required)) throw new Error(`Missing definitive scroll/entry safeguard: ${required}`);
-          }
-
-          if(css.includes('body.traco-exercise-picker-open{overflow:hidden}')) throw new Error('Legacy picker body lock still present');
-
-          for(const required of [
-            'definitive iOS/PWA scroll safety',
-            'body.traco-exercise-picker-open',
-            'overflow-y:auto !important',
-            'touch-action:pan-y !important',
-            '.traco-exercise-picker-backdrop'
-          ]){
-            if(!css.includes(required)) throw new Error(`Missing definitive scroll CSS: ${required}`);
-          }
-
-          console.log('Definitive PWA scroll safety OK: no body lock + start fallback');
-          NODE
-      - name: Validate iPhone scroll recovery hotfix
-        run: |
-          node <<'NODE'
-          const fs=require('fs');
-          const ux=fs.readFileSync('traco-gym-ux.js','utf8');
-          const css=fs.readFileSync('traco-gym-ux.css','utf8');
-
-          for(const required of [
-            'function tracoGymRepairOverlayState',
-            "document.body.classList.remove('v60-guide-open')",
-            "document.body.classList.remove('traco-editor-open')",
-            'function tracoGymPreStartRows(workoutId,limit=4)',
-            'requestAnimationFrame(()=>',
-            "tracoGymClearTransientOverlays();",
-            "toast('não consegui abrir o treino · tenta de novo')"
-          ]){
-            if(!ux.includes(required)) throw new Error(`Missing iPhone recovery feature: ${required}`);
-          }
-
-          for(const required of [
-            'pre-start must never trap scrolling',
-            'max-height:none !important',
-            'overflow:visible !important',
-            'position:static !important'
-          ]){
-            if(!css.includes(required)) throw new Error(`Missing iPhone recovery CSS: ${required}`);
-          }
-
-          console.log('iPhone scroll recovery OK: compact pre-start + fail-safe start + orphan-lock cleanup');
+          console.log('Pre-start hotfix OK: normal screen + scroll + deterministic start');
           NODE
       - name: Validate active exercise switcher
         run: |
