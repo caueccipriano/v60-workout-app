@@ -453,15 +453,31 @@ renderSession=function(){
 
   const media=main.querySelector('.perf-media-block');
   if(media){
-    media.innerHTML=`<div class="perf-media-heading"><span>execução</span><b>sem distração no treino</b></div>${tracoGymExecutionButton(ex)}`;
-    $('#openExerciseGuide').onclick=()=>v60ShowGuide(ex);
+    media.innerHTML=`<div class="perf-media-heading"><span>execução</span><b>sem distração no treino</b></div>${typeof v60GuidePreview==='function'?v60GuidePreview(ex):''}`;
+    if($('#openExerciseGuide'))$('#openExerciseGuide').onclick=()=>v60ShowGuide(ex);
   }
 
   const back=$('#sessionBack'),close=$('#cancelSession');
   if(back){back.classList.add('traco-session-nav');back.setAttribute('aria-label','voltar um exercício');back.insertAdjacentHTML('beforeend','<small>anterior</small>');}
   if(close){close.classList.add('traco-session-nav');close.setAttribute('aria-label','sair e cancelar treino');close.insertAdjacentHTML('beforeend','<small>sair</small>');}
 
-  $$('.perf-value-panel button').forEach(btn=>btn.classList.add('traco-gym-stepper'));
+  $('.perf-value-panel button').forEach(btn=>btn.classList.add('traco-gym-stepper'));
+  // Rebind steppers after the final Gym UX render. This keeps iOS/PWA taps
+  // independent from earlier render-layer handlers.
+  const activeSet=ex?.sets?.[currentSetIndex(ex)];
+  $('.perf-value-panel [data-adjust]').forEach(btn=>btn.onclick=()=>{
+    const [kind,raw]=String(btn.dataset.adjust||'').split(':'),delta=Number(raw);
+    const input=kind==='weight'?$('#weightInput'):$('#repsInput');
+    if(!input||!activeSet||!Number.isFinite(delta))return;
+    const step=kind==='weight'?0.5:1;
+    const current=Number(input.value||0);
+    const next=Math.max(0,Math.round((current+delta)/step)*step);
+    input.value=kind==='weight'?String(Number(next.toFixed(1))):String(Math.round(next));
+    activeSet[kind]=input.value;
+    save(K.draft,state.activeSession);
+    input.dispatchEvent(new Event('input',{bubbles:true}));
+    haptic();
+  });
   const progress=main.querySelector('.perf-session-progress');
   if(progress){
     progress.classList.add('traco-progress-visible');
