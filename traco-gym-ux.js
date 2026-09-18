@@ -3,7 +3,7 @@
  * Final UX layer: gym-first, fast touch targets, achievement color, clearer copy.
  * Internal v60_* storage keys remain for backwards compatibility.
  */
-const TRACO_GYM_UX_VERSION='2.3.2';
+const TRACO_GYM_UX_VERSION='2.3.3';
 const TRACO_ACHIEVEMENT='#F4C542';
 const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
 const TRACO_SET_ORDER_KEY='traco_set_order_v1';
@@ -186,7 +186,7 @@ function tracoGymOpenSetOrderEditor(workoutId,{session=null}={}){
     tracoGymCloseOrderEditor();
     toast('ordem das séries salva');
     haptic();
-    renderWorkouts();
+    if($('#tracoPreStart'))tracoGymRefreshPreStart(workoutId);else renderWorkouts();
   };
 }
 
@@ -203,6 +203,80 @@ currentSetIndex=function(ex){
     }
   }
   return tracoGymBaseCurrentSetIndex(ex);
+};
+
+let tracoGymStartBypass=false;
+
+function tracoGymPreStartQueue(workoutId){
+  const workout=workoutPlan.find(w=>w.id===workoutId);if(!workout)return [];
+  return tracoGymPlanQueueFor(workoutId);
+}
+function tracoGymPreStartRows(workoutId,limit=7){
+  const workout=workoutPlan.find(w=>w.id===workoutId);if(!workout)return '';
+  const queue=tracoGymPreStartQueue(workoutId);
+  const source={exercises:workout.exercises};
+  const visible=queue.slice(0,limit);
+  const html=visible.map((token,i)=>{
+    const {ex,setIndex,total}=tracoGymOrderRowMeta(source,token);
+    if(!ex)return '';
+    return `<div class="traco-prestart-row"><span>${String(i+1).padStart(2,'0')}</span><div><b>${tracoGymEsc(ex.name)}</b><small>série ${setIndex+1} de ${total}</small></div></div>`;
+  }).join('');
+  const rest=Math.max(0,queue.length-visible.length);
+  return html+(rest?`<div class="traco-prestart-more">+${rest} séries depois</div>`:'');
+}
+function tracoGymRefreshPreStart(workoutId){
+  const modal=$('#tracoPreStart');if(!modal)return;
+  const list=modal.querySelector('#tracoPreStartList');
+  const count=modal.querySelector('#tracoPreStartCount');
+  if(list)list.innerHTML=tracoGymPreStartRows(workoutId);
+  if(count){
+    const workout=workoutPlan.find(w=>w.id===workoutId);
+    count.textContent=`${tracoGymPreStartQueue(workoutId).length} séries · ${workout?.exercises?.length||0} exercícios`;
+  }
+  const badge=modal.querySelector('#tracoPreStartCustom');
+  if(badge)badge.hidden=!tracoGymHasCustomSetOrder(workoutId);
+}
+function tracoGymClosePreStart(){
+  $('#tracoPreStart')?.remove();
+  document.body.classList.remove('traco-prestart-open');
+}
+function tracoGymOpenPreStart(workoutId){
+  const workout=workoutPlan.find(w=>w.id===workoutId);if(!workout)return;
+  document.querySelector('#tracoPreStart')?.remove();
+  document.body.classList.add('traco-prestart-open');
+  const item=typeof v60SequenceItem==='function'?v60SequenceItem(workoutId):null;
+  document.body.insertAdjacentHTML('beforeend',`<div class="traco-prestart-backdrop" id="tracoPreStart">
+    <section class="traco-prestart-sheet" role="dialog" aria-modal="true" aria-label="preparar treino">
+      <header class="traco-prestart-head">
+        <div><span>antes de começar</span><h3>Treino ${tracoGymEsc(item?.letter||'')} · ${tracoGymEsc(workout.short)}</h3><small id="tracoPreStartCount">${tracoGymPreStartQueue(workoutId).length} séries · ${workout.exercises.length} exercícios</small></div>
+        <button type="button" id="tracoPreStartClose" aria-label="fechar">×</button>
+      </header>
+      <div class="traco-prestart-tip"><b>ordem de hoje</b><small>confere as primeiras séries. quer mudar? organiza agora — ou durante o treino em “fila do treino”.</small></div>
+      <div class="traco-prestart-custom" id="tracoPreStartCustom" ${tracoGymHasCustomSetOrder(workoutId)?'':'hidden'}>✓ ordem personalizada ativa</div>
+      <div class="traco-prestart-list" id="tracoPreStartList">${tracoGymPreStartRows(workoutId)}</div>
+      <button type="button" class="traco-prestart-organize" id="tracoPreStartOrganize">
+        <span><b>ajustar ordem das séries</b><small>mover qualquer série antes de começar</small></span><i>↕</i>
+      </button>
+      <button type="button" class="cta-lime traco-prestart-go" id="tracoPreStartGo">começar assim</button>
+    </section>
+  </div>`);
+  $('#tracoPreStartClose').onclick=tracoGymClosePreStart;
+  $('#tracoPreStart').onclick=e=>{if(e.target.id==='tracoPreStart')tracoGymClosePreStart();};
+  $('#tracoPreStartOrganize').onclick=()=>tracoGymOpenSetOrderEditor(workoutId);
+  $('#tracoPreStartGo').onclick=()=>{
+    tracoGymClosePreStart();
+    tracoGymStartBypass=true;
+    try{tracoGymBaseStartSession(workoutId);}finally{tracoGymStartBypass=false;}
+  };
+}
+
+const tracoGymBaseStartSession=startSession;
+startSession=function(workoutId){
+  const draft=load(K.draft,null);
+  if(tracoGymStartBypass||(draft&&draft.workoutId===workoutId&&!draft.finishedAt)){
+    return tracoGymBaseStartSession(workoutId);
+  }
+  tracoGymOpenPreStart(workoutId);
 };
 
 /* HOME */
