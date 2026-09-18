@@ -3,119 +3,155 @@
  * Final UX layer: gym-first, fast touch targets, achievement color, clearer copy.
  * Internal v60_* storage keys remain for backwards compatibility.
  */
-const TRACO_GYM_UX_VERSION='2.3.1';
+const TRACO_GYM_UX_VERSION='2.3.2';
 const TRACO_ACHIEVEMENT='#F4C542';
 const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
-const TRACO_WORKOUT_ORDER_KEY='traco_workout_order_v1';
-const TRACO_WORKOUT_DEFAULT_ORDER=Object.fromEntries(workoutPlan.map(w=>[w.id,w.exercises.map(ex=>ex.id)]));
+const TRACO_SET_ORDER_KEY='traco_set_order_v1';
+const TRACO_LEGACY_WORKOUT_ORDER_KEY='traco_workout_order_v1';
 
-function tracoGymEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));}
-function tracoGymCalendar(){
-  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/><path d="m9 15 2 2 4-5"/></svg>';
+function tracoGymQueueToken(exerciseId,setIndex){return `${exerciseId}::${setIndex}`;}
+function tracoGymQueueParts(token){
+  const cut=String(token).lastIndexOf('::');
+  return {exerciseId:String(token).slice(0,cut),setIndex:Number(String(token).slice(cut+2))};
 }
-function tracoGymShuffle(){
-  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="m4 20 17-17"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/></svg>';
+function tracoGymPlanQueue(workout){
+  if(!workout)return [];
+  return workout.exercises.flatMap(ex=>Array.from({length:Math.max(0,Number(ex.sets)||0)},(_,i)=>tracoGymQueueToken(ex.id,i)));
 }
-function tracoGymLastWorkout(id){
-  const row=sessions().filter(s=>s.finishedAt&&s.workoutId===id).sort((a,b)=>b.startedAt-a.startedAt)[0];
-  if(!row)return 'ainda não feito';
-  const then=new Date(row.startedAt),now=new Date(); then.setHours(0,0,0,0); now.setHours(0,0,0,0);
-  const days=Math.max(0,Math.round((now-then)/86400000));
-  if(days===0)return 'feito hoje';
-  if(days===1)return 'feito ontem';
-  return `feito há ${days} dias`;
+function tracoGymSessionQueue(session){
+  if(!session)return [];
+  return (session.exercises||[]).flatMap(ex=>(ex.sets||[]).map((_,i)=>tracoGymQueueToken(ex.id,i)));
 }
-function tracoGymExerciseHistoryCount(){
-  const ids=new Set();
-  sessions().filter(s=>s.finishedAt).forEach(s=>(s.exercises||[]).forEach(ex=>{
-    if((ex.sets||[]).some(set=>set.done&&Number(set.weight)>0))ids.add(ex.id);
-  }));
-  return ids.size;
+function tracoGymSetOrders(){
+  try{return JSON.parse(localStorage.getItem(TRACO_SET_ORDER_KEY)||'{}')||{};}catch{return {};}
 }
-function tracoGymClearAll(){
-  if(!confirm('apagar treinos, medidas, XP, preferências e histórico deste aparelho?'))return;
-  if(!confirm('tem certeza? exporte um backup antes se quiser guardar seus dados.'))return;
-  const keep=new Set(['traco_theme','traco_performance_console_v1']);
-  Object.keys(localStorage).forEach(k=>{
-    if((k.startsWith('v60_')||k.startsWith('traco_'))&&!keep.has(k))localStorage.removeItem(k);
+function tracoGymNormalizeQueue(queue,canonical){
+  const allowed=new Set(canonical),used=new Set(),next=[];
+  (Array.isArray(queue)?queue:[]).forEach(token=>{
+    if(allowed.has(token)&&!used.has(token)){used.add(token);next.push(token);}
   });
-  toast('dados apagados deste aparelho'); haptic();
-  setTimeout(()=>location.reload(),450);
+  canonical.forEach(token=>{if(!used.has(token))next.push(token);});
+  return next;
 }
-function tracoGymExecutionButton(ex){
-  const hasVideo=typeof v60VideoFor==='function'&&Boolean(v60VideoFor(ex));
-  const offline=navigator.onLine===false;
-  return `<button class="traco-execution-trigger" id="openExerciseGuide" type="button" aria-label="ver execução de ${tracoGymEsc(ex.name)}">
-    <span class="traco-execution-play">${iconSvg('play')}</span>
-    <span><b>ver execução</b><small>${offline?'guia técnico disponível offline':hasVideo?'vídeo 1:1 + guia técnico':'guia técnico do movimento'}</small></span>
-    <i>↗</i>
-  </button>`;
+function tracoGymMigrateLegacyExerciseOrder(){
+  if(localStorage.getItem(TRACO_SET_ORDER_KEY))return;
+  let legacy={};try{legacy=JSON.parse(localStorage.getItem(TRACO_LEGACY_WORKOUT_ORDER_KEY)||'{}')||{};}catch{}
+  const migrated={};
+  workoutPlan.forEach(workout=>{
+    const ids=legacy[workout.id];
+    if(!Array.isArray(ids)||!ids.length)return;
+    const byId=new Map(workout.exercises.map(ex=>[ex.id,ex]));
+    const ordered=[...ids.map(id=>byId.get(id)).filter(Boolean),...workout.exercises.filter(ex=>!ids.includes(ex.id))];
+    migrated[workout.id]=ordered.flatMap(ex=>Array.from({length:Math.max(0,Number(ex.sets)||0)},(_,i)=>tracoGymQueueToken(ex.id,i)));
+  });
+  if(Object.keys(migrated).length)localStorage.setItem(TRACO_SET_ORDER_KEY,JSON.stringify(migrated));
 }
-
-function tracoGymWorkoutOrders(){
-  try{return JSON.parse(localStorage.getItem(TRACO_WORKOUT_ORDER_KEY)||'{}')||{};}catch{return {};}
+function tracoGymPlanQueueFor(workoutId){
+  const workout=workoutPlan.find(w=>w.id===workoutId);if(!workout)return [];
+  const canonical=tracoGymPlanQueue(workout);
+  return tracoGymNormalizeQueue(tracoGymSetOrders()[workoutId],canonical);
 }
-function tracoGymApplyExerciseOrder(workoutId,ids){
-  const workout=workoutPlan.find(w=>w.id===workoutId);if(!workout||!Array.isArray(ids))return;
-  const map=new Map(workout.exercises.map(ex=>[ex.id,ex]));
-  const ordered=ids.map(id=>map.get(id)).filter(Boolean);
-  const used=new Set(ordered.map(ex=>ex.id));
-  const missing=workout.exercises.filter(ex=>!used.has(ex.id));
-  workout.exercises.splice(0,workout.exercises.length,...ordered,...missing);
+function tracoGymHasCustomSetOrder(workoutId){
+  const workout=workoutPlan.find(w=>w.id===workoutId);if(!workout)return false;
+  const canonical=tracoGymPlanQueue(workout);
+  const saved=tracoGymSetOrders()[workoutId];
+  return Array.isArray(saved)&&tracoGymNormalizeQueue(saved,canonical).join('|')!==canonical.join('|');
 }
-function tracoGymApplySavedExerciseOrders(){
-  const saved=tracoGymWorkoutOrders();
-  workoutPlan.forEach(w=>tracoGymApplyExerciseOrder(w.id,saved[w.id]));
+function tracoGymEnsureSessionQueue(session){
+  if(!session)return [];
+  const canonical=tracoGymSessionQueue(session);
+  if(!Array.isArray(session.tracoSetQueue)||!session.tracoSetQueue.length){
+    const planned=tracoGymPlanQueueFor(session.workoutId);
+    session.tracoSetQueue=tracoGymNormalizeQueue(planned,canonical);
+  }else{
+    session.tracoSetQueue=tracoGymNormalizeQueue(session.tracoSetQueue,canonical);
+  }
+  return session.tracoSetQueue;
 }
-function tracoGymHasCustomOrder(workoutId){
-  const saved=tracoGymWorkoutOrders()[workoutId];
-  const base=TRACO_WORKOUT_DEFAULT_ORDER[workoutId]||[];
-  return Array.isArray(saved)&&saved.length&&saved.join('|')!==base.join('|');
+function tracoGymSetForToken(session,token){
+  const {exerciseId,setIndex}=tracoGymQueueParts(token);
+  const exerciseIndex=(session?.exercises||[]).findIndex(ex=>ex.id===exerciseId);
+  const ex=exerciseIndex>=0?session.exercises[exerciseIndex]:null;
+  const set=ex?.sets?.[setIndex];
+  return {exerciseId,setIndex,exerciseIndex,ex,set};
+}
+function tracoGymNextQueueToken(session){
+  const queue=tracoGymEnsureSessionQueue(session);
+  return queue.find(token=>{
+    const item=tracoGymSetForToken(session,token);
+    return item.set&&!item.set.done;
+  })||null;
+}
+function tracoGymSyncQueueCursor(session){
+  if(!session)return null;
+  const token=tracoGymNextQueueToken(session);
+  if(!token)return null;
+  const item=tracoGymSetForToken(session,token);
+  if(item.exerciseIndex>=0)state.currentExercise=item.exerciseIndex;
+  return {...item,token};
+}
+function tracoGymQueueProgress(session){
+  const queue=tracoGymEnsureSessionQueue(session);
+  const done=queue.filter(token=>Boolean(tracoGymSetForToken(session,token).set?.done)).length;
+  return {done,total:queue.length,remaining:Math.max(0,queue.length-done)};
 }
 function tracoGymCloseOrderEditor(){
   document.querySelector('#tracoOrderEditor')?.remove();
   document.body.classList.remove('traco-order-open');
 }
-function tracoGymOpenOrderEditor(workoutId){
+function tracoGymOrderRowMeta(source,token){
+  const {exerciseId,setIndex}=tracoGymQueueParts(token);
+  const ex=(source.exercises||[]).find(item=>item.id===exerciseId);
+  const total=Array.isArray(ex?.sets)?ex.sets.length:Math.max(0,Number(ex?.sets)||0);
+  return {ex,setIndex,total};
+}
+function tracoGymOpenSetOrderEditor(workoutId,{session=null}={}){
   const workout=workoutPlan.find(w=>w.id===workoutId);if(!workout)return;
-  let ids=workout.exercises.map(ex=>ex.id);
-  const byId=()=>new Map(workout.exercises.map(ex=>[ex.id,ex]));
+  const source=session||workout;
+  const canonical=session?tracoGymSessionQueue(session):tracoGymPlanQueue(workout);
+  const activeQueue=session?tracoGymEnsureSessionQueue(session).slice():tracoGymPlanQueueFor(workoutId);
+  const fixed=session?activeQueue.filter(token=>tracoGymSetForToken(session,token).set?.done):[];
+  let ids=session?activeQueue.filter(token=>!tracoGymSetForToken(session,token).set?.done):activeQueue.slice();
 
   document.querySelector('#tracoOrderEditor')?.remove();
   document.body.classList.add('traco-order-open');
   document.body.insertAdjacentHTML('beforeend',`<div class="traco-order-backdrop" id="tracoOrderEditor">
-    <section class="traco-order-sheet" role="dialog" aria-modal="true" aria-label="organizar exercícios">
+    <section class="traco-order-sheet" role="dialog" aria-modal="true" aria-label="organizar séries">
       <header class="traco-order-head">
-        <div><span>ordem do treino</span><h3>organizar exercícios</h3><small>${tracoGymEsc(workout.short)}</small></div>
+        <div><span>${session?'fila deste treino':'ordem padrão'}</span><h3>organizar séries</h3><small>${tracoGymEsc(workout.short)}</small></div>
         <button type="button" id="tracoOrderClose" aria-label="fechar">×</button>
       </header>
-      <p class="traco-order-help">move com as setas. a ordem salva vira a sequência do próximo treino.</p>
+      <p class="traco-order-help">${session?'as séries concluídas ficam preservadas. reorganize só o que ainda falta.':'cada linha é uma série. você pode alternar exercícios e montar superséries do seu jeito.'}</p>
+      ${session&&fixed.length?`<div class="traco-order-done-note">✓ ${fixed.length} ${fixed.length===1?'série concluída':'séries concluídas'} · não entram na reorganização</div>`:''}
       <div class="traco-order-list" id="tracoOrderList"></div>
       <div class="traco-order-actions">
-        <button type="button" class="traco-order-reset" id="tracoOrderReset">restaurar original</button>
-        <button type="button" class="cta-lime" id="tracoOrderSave">salvar ordem</button>
+        <button type="button" class="traco-order-reset" id="tracoOrderReset">${session?'usar ordem salva':'restaurar original'}</button>
+        <button type="button" class="cta-lime" id="tracoOrderSave">${session?'aplicar fila':'salvar ordem'}</button>
       </div>
     </section>
   </div>`);
 
   const renderRows=()=>{
-    const map=byId(),list=$('#tracoOrderList');
-    list.innerHTML=ids.map((id,i)=>{
-      const ex=map.get(id);if(!ex)return '';
-      return `<article class="traco-order-row" data-order-id="${tracoGymEsc(id)}">
+    const list=$('#tracoOrderList');
+    list.innerHTML=ids.map((token,i)=>{
+      const {ex,setIndex,total}=tracoGymOrderRowMeta(source,token);if(!ex)return '';
+      return `<article class="traco-order-row" data-order-token="${tracoGymEsc(token)}">
         <span class="traco-order-position">${String(i+1).padStart(2,'0')}</span>
-        <span class="traco-order-exercise"><b>${tracoGymEsc(ex.name)}</b><small>${tracoGymEsc(ex.equipment||'')}</small></span>
+        <span class="traco-order-exercise">
+          <b>${tracoGymEsc(ex.name)}</b>
+          <small>série ${setIndex+1} de ${total} · ${tracoGymEsc(ex.equipment||'')}</small>
+        </span>
         <span class="traco-order-controls">
-          <button type="button" data-order-up="${i}" aria-label="subir ${tracoGymEsc(ex.name)}" ${i===0?'disabled':''}>↑</button>
-          <button type="button" data-order-down="${i}" aria-label="descer ${tracoGymEsc(ex.name)}" ${i===ids.length-1?'disabled':''}>↓</button>
+          <button type="button" data-order-up="${i}" aria-label="subir ${tracoGymEsc(ex.name)} série ${setIndex+1}" ${i===0?'disabled':''}>↑</button>
+          <button type="button" data-order-down="${i}" aria-label="descer ${tracoGymEsc(ex.name)} série ${setIndex+1}" ${i===ids.length-1?'disabled':''}>↓</button>
         </span>
       </article>`;
     }).join('');
-    $('[data-order-up]').forEach(btn=>btn.onclick=()=>{
+    $$('[data-order-up]').forEach(btn=>btn.onclick=()=>{
       const i=Number(btn.dataset.orderUp);if(i<=0)return;
       [ids[i-1],ids[i]]=[ids[i],ids[i-1]];haptic();renderRows();
     });
-    $('[data-order-down]').forEach(btn=>btn.onclick=()=>{
+    $$('[data-order-down]').forEach(btn=>btn.onclick=()=>{
       const i=Number(btn.dataset.orderDown);if(i<0||i>=ids.length-1)return;
       [ids[i],ids[i+1]]=[ids[i+1],ids[i]];haptic();renderRows();
     });
@@ -125,24 +161,49 @@ function tracoGymOpenOrderEditor(workoutId){
   $('#tracoOrderClose').onclick=tracoGymCloseOrderEditor;
   $('#tracoOrderEditor').onclick=e=>{if(e.target.id==='tracoOrderEditor')tracoGymCloseOrderEditor();};
   $('#tracoOrderReset').onclick=()=>{
-    const base=TRACO_WORKOUT_DEFAULT_ORDER[workoutId]||[];
-    const current=new Set(workout.exercises.map(ex=>ex.id));
-    ids=[...base.filter(id=>current.has(id)),...workout.exercises.map(ex=>ex.id).filter(id=>!base.includes(id))];
+    if(session){
+      const planned=tracoGymNormalizeQueue(tracoGymPlanQueueFor(workoutId),canonical);
+      ids=planned.filter(token=>!tracoGymSetForToken(session,token).set?.done);
+    }else{
+      ids=canonical.slice();
+    }
     haptic();renderRows();
   };
   $('#tracoOrderSave').onclick=()=>{
-    const all=tracoGymWorkoutOrders();
-    const base=TRACO_WORKOUT_DEFAULT_ORDER[workoutId]||[];
-    if(ids.join('|')===base.join('|'))delete all[workoutId];else all[workoutId]=ids.slice();
-    localStorage.setItem(TRACO_WORKOUT_ORDER_KEY,JSON.stringify(all));
-    tracoGymApplyExerciseOrder(workoutId,ids);
-    const draft=load(K.draft,null);
+    if(session){
+      session.tracoSetQueue=[...fixed,...ids];
+      save(K.draft,session);
+      tracoGymSyncQueueCursor(session);
+      tracoGymCloseOrderEditor();
+      toast('fila atualizada');
+      haptic();
+      renderSession();
+      return;
+    }
+    const all=tracoGymSetOrders();
+    if(ids.join('|')===canonical.join('|'))delete all[workoutId];else all[workoutId]=ids.slice();
+    localStorage.setItem(TRACO_SET_ORDER_KEY,JSON.stringify(all));
     tracoGymCloseOrderEditor();
-    toast(draft&&draft.workoutId===workoutId&&!draft.finishedAt?'ordem salva · vale no próximo treino':'ordem do treino salva');
+    toast('ordem das séries salva');
     haptic();
     renderWorkouts();
   };
 }
+
+tracoGymMigrateLegacyExerciseOrder();
+
+const tracoGymBaseCurrentSetIndex=currentSetIndex;
+currentSetIndex=function(ex){
+  const session=state.activeSession;
+  if(session?.tracoSetQueue){
+    const token=tracoGymNextQueueToken(session);
+    if(token){
+      const item=tracoGymSetForToken(session,token);
+      if(item.ex?.id===ex?.id&&Number.isInteger(item.setIndex)&&item.setIndex>=0&&item.setIndex<(ex.sets||[]).length)return item.setIndex;
+    }
+  }
+  return tracoGymBaseCurrentSetIndex(ex);
+};
 
 /* HOME */
 const tracoGymBaseHome=renderHome;
@@ -172,6 +233,7 @@ renderHome=function(){
 /* ACTIVE WORKOUT */
 const tracoGymBaseSession=renderSession;
 renderSession=function(){
+  if(state.activeSession){tracoGymEnsureSessionQueue(state.activeSession);tracoGymSyncQueueCursor(state.activeSession);save(K.draft,state.activeSession);}
   tracoGymBaseSession();
   const main=document.querySelector('.perf-session'); if(!main||!state.activeSession)return;
   const ex=state.activeSession.exercises[state.currentExercise];
@@ -186,8 +248,16 @@ renderSession=function(){
   if(back){back.classList.add('traco-session-nav');back.setAttribute('aria-label','voltar um exercício');back.insertAdjacentHTML('beforeend','<small>anterior</small>');}
   if(close){close.classList.add('traco-session-nav');close.setAttribute('aria-label','sair e cancelar treino');close.insertAdjacentHTML('beforeend','<small>sair</small>');}
 
-  $$('.perf-value-panel button').forEach(btn=>btn.classList.add('traco-gym-stepper'));
-  const progress=main.querySelector('.perf-session-progress'); if(progress)progress.classList.add('traco-progress-visible');
+  $('.perf-value-panel button').forEach(btn=>btn.classList.add('traco-gym-stepper'));
+  const progress=main.querySelector('.perf-session-progress');
+  if(progress){
+    progress.classList.add('traco-progress-visible');
+    const qp=tracoGymQueueProgress(state.activeSession);
+    const bar=progress.querySelector('span');if(bar)bar.style.width=(qp.total?Math.round(qp.done/qp.total*100):0)+'%';
+    const label=progress.querySelector('small');if(label)label.textContent=`série ${Math.min(qp.done+1,qp.total)}/${qp.total} · exercício ${state.currentExercise+1}/${state.activeSession.exercises.length}`;
+    progress.insertAdjacentHTML('afterend',`<button type="button" class="traco-active-queue" id="tracoActiveQueue"><span><b>fila do treino</b><small>${qp.remaining} ${qp.remaining===1?'série restante':'séries restantes'}</small></span><i>↕</i></button>`);
+    $('#tracoActiveQueue').onclick=()=>tracoGymOpenSetOrderEditor(state.activeSession.workoutId,{session:state.activeSession});
+  }
 };
 
 const tracoGymBaseCompleteSet=completeCurrentSet;
@@ -230,10 +300,10 @@ renderWorkouts=function(){
   if(block&&selected&&!block.querySelector('.traco-organize-exercises')){
     const preview=block.querySelector('.exercise-preview');
     preview?.insertAdjacentHTML('beforebegin',`<button type="button" class="traco-organize-exercises" id="tracoOrganizeExercises">
-      <span><b>organizar exercícios</b><small>${tracoGymHasCustomOrder(selected.id)?'ordem personalizada ativa':'mudar a sequência deste treino'}</small></span>
+      <span><b>organizar séries</b><small>${tracoGymHasCustomSetOrder(selected.id)?'ordem personalizada ativa':'mudar a ordem de todas as séries'}</small></span>
       <i>↕</i>
     </button>`);
-    $('#tracoOrganizeExercises').onclick=()=>tracoGymOpenOrderEditor(selected.id);
+    $('#tracoOrganizeExercises').onclick=()=>tracoGymOpenSetOrderEditor(selected.id);
   }
 };
 
@@ -324,5 +394,4 @@ renderFinish=function(){
   localStorage.setItem(TRACO_LAST_LEVEL_KEY,String(xp.level));
 };
 
-tracoGymApplySavedExerciseOrders();
 render();
