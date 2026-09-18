@@ -473,28 +473,18 @@ jobs:
           if(css.includes('.traco-prestart-page .traco-prestart-go{\n  position:fixed !important')) throw new Error('Pre-start start button still fixed');
           console.log('iPhone hotfix OK: normal scroll + pre-start + reliable workout entry');
           NODE
-      - name: Validate active workout adjust and Sep 18 record
+      - name: Validate active workout order and Sep 18 record
         run: |
           node <<'NODE'
           const fs=require('fs');
           const ux=fs.readFileSync('traco-gym-ux.js','utf8');
-          const css=fs.readFileSync('traco-gym-ux.css','utf8');
+          const perf=fs.readFileSync('traco-performance.js','utf8');
           const smart=fs.readFileSync('v60-smart-sequence.js','utf8');
-
-          for(const required of [
-            'traco-start-order-card',
-            'ordem de hoje',
-            'ajustar ordem',
-            "$('[data-pick-exercise]').forEach",
-            'tracoGymRepairOverlayState();'
-          ]){
-            if(!ux.includes(required)) throw new Error(`Missing active-workout hotfix: ${required}`);
+          for(const required of ['tracoGymOpenSetOrderEditor','tracoGymMoveExerciseNext','tracoGymRepairOverlayState();']){
+            if(!ux.includes(required)) throw new Error(`Missing active-workout order behavior: ${required}`);
           }
-          for(const required of [
-            '.traco-adjust-workout',
-            'obvious active workout adjustment'
-          ]){
-            if(!css.includes(required)) throw new Error(`Missing adjust-workout style: ${required}`);
+          for(const required of ['perf-native-exercise-list','data-native-exercise-index']){
+            if(!perf.includes(required)) throw new Error(`Missing native active-workout UI: ${required}`);
           }
           for(const required of [
             "V60_REPORTED_TODAY_KEY='v60_reported_history_20260918_v1'",
@@ -504,10 +494,8 @@ jobs:
             "['mesa-flexora','mesa flexora','Mesa flexora',3,10,20,null]",
             "['elevacao-pelvica','elevação pélvica','Máquina / barra',3,10,20,'por lado']",
             "v60BootstrapReportedToday();"
-          ]){
-            if(!smart.includes(required)) throw new Error(`Missing Sep 18 workout seed: ${required}`);
-          }
-          console.log('Active adjust + Sep 18 workout record OK');
+          ]){if(!smart.includes(required)) throw new Error(`Missing Sep 18 workout seed: ${required}`);}
+          console.log('Native active workout + Sep 18 record OK');
           NODE
       - name: Validate offline-ready PWA
         run: |
