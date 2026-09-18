@@ -449,6 +449,7 @@ renderSession=function(){
   }
   tracoGymBaseSession();
   const main=document.querySelector('.perf-session'); if(!main||!state.activeSession)return;
+  main.setAttribute('data-traco-gym-version','254');
   const ex=state.activeSession.exercises[state.currentExercise];
 
   const media=main.querySelector('.perf-media-block');
