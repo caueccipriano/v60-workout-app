@@ -3,7 +3,7 @@
  * Final UX layer: gym-first, fast touch targets, achievement color, clearer copy.
  * Internal v60_* storage keys remain for backwards compatibility.
  */
-const TRACO_GYM_UX_VERSION='2.3.13';
+const TRACO_GYM_UX_VERSION='2.3.14';
 const TRACO_ACHIEVEMENT='#F4C542';
 const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
 const TRACO_SET_ORDER_KEY='traco_set_order_v1';
@@ -314,14 +314,7 @@ function tracoGymOpenPreStart(workoutId){
   $('#tracoPreStartClose').onclick=tracoGymClosePreStart;
   $('#tracoPreStartOrganize').onclick=()=>tracoGymOpenSetOrderEditor(workoutId);
   $('#tracoPreStartGo').onclick=()=>{
-    try{
-      tracoGymPreStartWorkoutId=null;
-      tracoGymClearTransientOverlays();
-      tracoGymBaseStartSession(workoutId);
-    }catch(error){
-      console.error('Traço direct start failed',error);
-      toast('não consegui abrir o treino · tenta de novo');
-    }
+    tracoGymDirectStart(workoutId);
   };
 }
 
@@ -338,7 +331,11 @@ function tracoGymDirectStart(workoutId){
     return null;
   }
 }
-startSession=tracoGymDirectStart;
+startSession=function(workoutId){
+  const draft=load(K.draft,null);
+  if(draft&&draft.workoutId===workoutId&&!draft.finishedAt)return tracoGymDirectStart(workoutId);
+  tracoGymOpenPreStart(workoutId);
+};
 
 /* HOME */
 const tracoGymBaseHome=renderHome;
@@ -348,7 +345,7 @@ renderHome=function(){
   const xp=xpStats();
   const homeWorkout=typeof v60RecommendedWorkout==='function'?v60RecommendedWorkout():todayWorkout();
   const draft=load(K.draft,null);
-  if($('#startToday'))$('#startToday').onclick=()=>tracoGymDirectStart(homeWorkout.id);
+  if($('#startToday'))$('#startToday').onclick=()=>startSession(homeWorkout.id);
   if($('#resumeWorkout')&&draft)$('#resumeWorkout').onclick=()=>tracoGymDirectStart(draft.workoutId);
 
   const metricCards=[...main.querySelectorAll('.perf-metrics article')];
