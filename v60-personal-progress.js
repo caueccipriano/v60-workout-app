@@ -140,7 +140,7 @@ renderHistory=function(){
   const ss=v60CompletedSessions(),cards=[...document.querySelectorAll('.history-card')];
   cards.forEach((card,i)=>{
     const sess=ss[i],p=card.querySelector('p');
-    if(sess?.manualConfirmed&&p){
+    if(sess?.manualConfirmed&&sess?.excludeFromVolume&&p){
       const loads=(sess.exercises||[]).filter(ex=>(ex.sets||[]).some(set=>set.weight!=='')).length;
       const knownReps=(sess.exercises||[]).some(ex=>(ex.sets||[]).some(set=>set.reps!==''));
       p.textContent=`${loads} cargas registradas · ${knownReps?'reps parciais':'reps pendentes'}`;
