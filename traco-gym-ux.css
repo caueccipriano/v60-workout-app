@@ -639,3 +639,51 @@ body.traco-order-open{overflow:hidden}
     width:44px;min-width:44px;height:48px;
   }
 }
+
+
+/* Traço 2.3.2 — full set queue */
+.traco-active-queue{
+  width:100%;
+  min-height:50px;
+  margin:8px 0 12px;
+  padding:9px 11px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  border:1px solid #333339;
+  border-radius:11px;
+  background:#111113;
+  color:var(--traco-text);
+  text-align:left;
+}
+.traco-active-queue:active{background:#19191C}
+.traco-active-queue span{min-width:0}
+.traco-active-queue b,
+.traco-active-queue small{display:block}
+.traco-active-queue b{font-size:10px}
+.traco-active-queue small{margin-top:3px;color:var(--traco-muted);font-size:8px}
+.traco-active-queue i{
+  flex:none;
+  width:34px;height:34px;
+  display:grid;place-items:center;
+  border-radius:9px;
+  background:#25110F;
+  color:var(--traco-action);
+  font:800 17px/1 var(--traco-numbers);
+  font-style:normal;
+}
+.traco-order-done-note{
+  margin:0 12px 8px;
+  padding:8px 10px;
+  border:1px solid #4C421C;
+  border-radius:9px;
+  background:#1B180E;
+  color:var(--traco-achievement-text);
+  font-size:8px;
+  line-height:1.35;
+}
+.traco-order-row[data-order-token] .traco-order-exercise small{
+  white-space:normal;
+  line-height:1.3;
+}
