@@ -460,7 +460,7 @@ jobs:
             "const TRACO_GYM_UX_VERSION='2.3.14'",
             'function tracoGymDirectStart',
             'function tracoGymOpenPreStart',
-            'startSession=function(workoutId)',
+            'startSession=tracoGymDirectStart;',
             "if($('#startToday'))$('#startToday').onclick=()=>startSession(homeWorkout.id)",
             "if($('#resumeWorkout')&&draft)$('#resumeWorkout').onclick=()=>tracoGymDirectStart(draft.workoutId)",
             "tracoGymDirectStart(workoutId);",
