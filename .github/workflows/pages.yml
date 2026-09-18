@@ -334,7 +334,7 @@ jobs:
           ]){
             if(!css.includes(required)) throw new Error(`Missing gym UX design rule: ${required}`);
           }
-          if(!index.includes('traco-gym-ux.css?v=251')||!index.includes('traco-gym-ux.js?v=251')) throw new Error('Gym UX assets not loaded last');
+          if(!index.includes('traco-gym-ux.css?v=252')||!index.includes('traco-gym-ux.js?v=252')) throw new Error('Gym UX assets not loaded last');
           if(!sw.includes("'./traco-gym-ux.js'")||!sw.includes("'./traco-gym-ux.css'")||!sw.includes("'./privacy.html'")||!sw.includes("'./support.html'")) throw new Error('Gym UX/support not offline-cached');
           console.log('Traço 2.3 Gym UX Pass OK');
           NODE
