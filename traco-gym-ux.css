@@ -1613,3 +1613,42 @@ html[data-design="performance"] .perf-value-panel label small{
   }
   html[data-design="performance"] .perf-value-panel input{font-size:25px !important}
 }
+
+
+/* TRAÇO 2.4 — daily workout exercise navigator */
+.traco-today-exercises{
+  width:100%;
+  min-height:58px;
+  margin:10px 0 0;
+  padding:10px 13px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  border:1px solid #34343A;
+  border-radius:12px;
+  background:#111113;
+  color:var(--traco-text);
+  text-align:left;
+}
+.traco-today-exercises:active{background:#19191C;transform:scale(.995)}
+.traco-today-exercises span:first-child small,
+.traco-today-exercises span:first-child b{display:block}
+.traco-today-exercises span:first-child small{
+  color:var(--traco-action);
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.13em;
+}
+.traco-today-exercises span:first-child b{margin-top:5px;font-size:11px}
+.traco-today-exercises-action{
+  flex:none;
+  color:#B7BAC0;
+  font-size:9px;
+  font-weight:800;
+}
+.traco-today-exercises-action i{margin-left:4px;font-style:normal;color:var(--traco-action)}
+.traco-exercise-picker-sheet{max-height:min(82dvh,720px)}
+.traco-exercise-choice{min-height:58px}
+.traco-exercise-choice.is-current{border-color:var(--traco-action) !important;background:rgba(255,59,48,.08) !important}
+.traco-exercise-choice.is-complete{opacity:.62}
