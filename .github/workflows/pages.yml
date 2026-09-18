@@ -449,6 +449,7 @@ jobs:
             if(!css.includes(required)) throw new Error(`Missing active exercise switcher style: ${required}`);
           }
 
+          if(ux.includes("$('.perf-value-panel button').forEach")||ux.includes("$('[data-today-exercise]').forEach")) throw new Error('Session enhancer must use multi-element selector for forEach handlers');
           if(!ux.includes("exerciseConsole.insertAdjacentHTML('afterend',navigatorHTML)")) throw new Error('Must mount daily workout list below exercise console');
           if(!ux.includes("TRACO_GYM_UX_VERSION='2.4.0'")) throw new Error('Visible app version must be 2.4.0');
           const brand=fs.readFileSync('traco-brand.js','utf8');
