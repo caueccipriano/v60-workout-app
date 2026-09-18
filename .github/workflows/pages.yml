@@ -458,7 +458,9 @@ jobs:
             "el.style.removeProperty('touch-action')",
             "toast('abrindo o treino direto')",
             "if(!document.querySelector('#tracoPreStart'))throw new Error('pre-start não abriu')",
-            'tracoGymClearTransientOverlays();\nrender();'
+            'tracoGymClearTransientOverlays',
+            'tracoGymRepairOverlayState',
+            'render();'
           ]){
             if(!ux.includes(required)) throw new Error(`Missing definitive scroll/entry safeguard: ${required}`);
           }
