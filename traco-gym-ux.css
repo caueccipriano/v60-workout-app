@@ -1763,3 +1763,16 @@ html[data-theme="light"] .perf-native-exercise-row b{color:#111113!important;-we
 html[data-theme="light"] .perf-native-exercise-row small{color:#696c72!important;-webkit-text-fill-color:#696c72!important}
 html[data-theme="light"] .perf-more .traco-about-card,html[data-theme="light"] .perf-more .traco-about-card *{color:#111113!important;-webkit-text-fill-color:#111113!important}
 html[data-theme="light"] .perf-more .traco-about-card .traco-about-mark,html[data-theme="light"] .perf-more .traco-about-card [class*="icon"]{color:var(--traco-action)!important;-webkit-text-fill-color:var(--traco-action)!important}
+
+/* 2.4.2 — final light-mode contrast pass */
+html[data-theme="light"] .perf-progress .xp-card,html[data-theme="light"] .perf-progress .xp-card *,html[data-theme="light"] .perf-progress .level-card,html[data-theme="light"] .perf-progress .level-card *{color:#111113!important;-webkit-text-fill-color:#111113!important}
+html[data-theme="light"] .perf-progress .level-card [class*="muted"],html[data-theme="light"] .perf-progress .xp-card [class*="muted"]{color:#6d7076!important;-webkit-text-fill-color:#6d7076!important}
+html[data-theme="light"] .perf-more .traco-more-hero{background:#151515!important}
+html[data-theme="light"] .perf-more .traco-more-hero,html[data-theme="light"] .perf-more .traco-more-hero *{color:#f7f7f4!important;-webkit-text-fill-color:#f7f7f4!important}
+html[data-theme="light"] .perf-more .traco-more-hero p,html[data-theme="light"] .perf-more .traco-more-hero small{color:#b6b79d!important;-webkit-text-fill-color:#b6b79d!important}
+html[data-theme="light"] .perf-more .traco-about-card{color:#111113!important}
+html[data-theme="light"] .perf-more .traco-about-card b{color:#111113!important;-webkit-text-fill-color:#111113!important}
+html[data-theme="light"] .perf-more .traco-about-card small{color:#73767c!important;-webkit-text-fill-color:#73767c!important}
+html[data-theme="light"] .perf-workouts .workout-select:not(.selected) b,html[data-theme="light"] .perf-workouts .workout-select:not(.selected) i{color:#111113!important;-webkit-text-fill-color:#111113!important}
+html[data-theme="light"] .perf-workouts .workout-select:not(.selected) small{color:#777a80!important;-webkit-text-fill-color:#777a80!important}
+html[data-theme="light"] .perf-value-panel input{color:#111113!important;-webkit-text-fill-color:#111113!important;opacity:1!important}
