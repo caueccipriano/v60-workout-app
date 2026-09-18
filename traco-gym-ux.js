@@ -14,11 +14,23 @@ function tracoGymRepairOverlayState(){
   const hasOrder=Boolean(document.querySelector('#tracoOrderEditor'));
   document.body.classList.toggle('traco-prestart-open',hasPre);
   document.body.classList.toggle('traco-order-open',hasOrder);
+  if(!hasPre&&!hasOrder){
+    document.body.style.overflow='';
+    document.body.style.position='';
+    document.body.style.touchAction='';
+    document.documentElement.style.overflow='';
+    document.documentElement.style.touchAction='';
+  }
 }
 function tracoGymClearTransientOverlays(){
   document.querySelector('#tracoPreStart')?.remove();
   document.querySelector('#tracoOrderEditor')?.remove();
   document.body.classList.remove('traco-prestart-open','traco-order-open');
+  document.body.style.overflow='';
+  document.body.style.position='';
+  document.body.style.touchAction='';
+  document.documentElement.style.overflow='';
+  document.documentElement.style.touchAction='';
 }
 window.addEventListener('pageshow',()=>setTimeout(tracoGymRepairOverlayState,0));
 
@@ -228,7 +240,7 @@ function tracoGymPreStartQueue(workoutId){
   const workout=workoutPlan.find(w=>w.id===workoutId);if(!workout)return [];
   return tracoGymPlanQueueFor(workoutId);
 }
-function tracoGymPreStartRows(workoutId,limit=7){
+function tracoGymPreStartRows(workoutId,limit=4){
   const workout=workoutPlan.find(w=>w.id===workoutId);if(!workout)return '';
   const queue=tracoGymPreStartQueue(workoutId);
   const source={exercises:workout.exercises};
