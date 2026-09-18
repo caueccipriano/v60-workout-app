@@ -607,3 +607,164 @@ html[data-theme="dark"] .traco-undo-bar{
 html[data-theme="dark"] .traco-undo-bar button{
   background:#FF6B21;color:#111;
 }
+
+
+/* Traço 2.0.1 — editor mobile reliability */
+.traco-editor-backdrop,
+.traco-editor-sheet,
+.traco-editor-sheet *{
+  box-sizing:border-box;
+}
+.traco-editor-sheet{
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+}
+.traco-editor-exercise,
+.traco-editor-exercises,
+.traco-editor-sets{
+  width:100%;
+  min-width:0;
+  max-width:100%;
+}
+.traco-editor-set{
+  grid-template-columns:24px minmax(0,1fr) minmax(0,1fr) 40px;
+  gap:7px;
+  min-width:0;
+}
+.traco-editor-set>label{min-width:0}
+.traco-editor-stepper{
+  display:grid;
+  grid-template-columns:32px minmax(0,1fr) 32px;
+  align-items:center;
+  gap:4px;
+  width:100%;
+  min-width:0;
+  margin-top:4px;
+}
+.traco-editor-stepper button{
+  width:32px;
+  height:44px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--surface-soft);
+  color:var(--text);
+  font-size:20px;
+  font-weight:800;
+  line-height:1;
+  padding:0;
+}
+.traco-editor-stepper input{
+  width:100%;
+  min-width:0;
+  height:44px;
+  margin:0;
+  padding:0 4px;
+  text-align:center;
+  font-size:16px !important;
+  font-weight:700;
+  -moz-appearance:textfield;
+}
+.traco-editor-stepper input::-webkit-outer-spin-button,
+.traco-editor-stepper input::-webkit-inner-spin-button{
+  -webkit-appearance:none;
+  margin:0;
+}
+.traco-remove-set{
+  width:40px;
+  height:44px;
+  align-self:end;
+  border-radius:10px;
+}
+.traco-editor-date input,
+.traco-body-edit-grid input,
+.measure-form input,
+.measure-form select,
+.measure-form textarea{
+  font-size:16px !important;
+}
+.traco-editor-actions{
+  width:auto;
+  max-width:none;
+}
+.traco-editor-actions .cta-lime,
+.traco-editor-actions .traco-danger-btn{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+@media(max-width:430px){
+  .traco-editor-sheet{
+    width:100%;
+    max-width:100%;
+    padding-left:14px;
+    padding-right:14px;
+  }
+  .traco-editor-head{
+    margin-left:-14px;
+    margin-right:-14px;
+    padding-left:14px;
+    padding-right:14px;
+  }
+  .traco-editor-actions{
+    margin-left:-14px;
+    margin-right:-14px;
+    padding-left:14px;
+    padding-right:14px;
+  }
+  .traco-editor-set{
+    grid-template-columns:22px minmax(0,1fr) minmax(0,1fr) 36px;
+    gap:5px;
+  }
+  .traco-editor-stepper{
+    grid-template-columns:28px minmax(0,1fr) 28px;
+    gap:3px;
+  }
+  .traco-editor-stepper button{
+    width:28px;
+    height:44px;
+    border-radius:9px;
+    font-size:18px;
+  }
+  .traco-remove-set{
+    width:36px;
+    height:44px;
+  }
+  .traco-editor-ex-title{
+    align-items:flex-start;
+  }
+  .traco-editor-ex-title>div{
+    min-width:0;
+  }
+  .traco-editor-ex-title b{
+    overflow-wrap:anywhere;
+  }
+}
+@media(max-width:365px){
+  .traco-editor-set{
+    grid-template-columns:1fr 36px;
+    grid-template-areas:
+      "num remove"
+      "weight weight"
+      "reps reps";
+    gap:7px;
+    padding-top:8px;
+    border-top:1px solid var(--line);
+  }
+  .traco-set-number{grid-area:num}
+  .traco-editor-set>label:nth-of-type(1){grid-area:weight}
+  .traco-editor-set>label:nth-of-type(2){grid-area:reps}
+  .traco-remove-set{grid-area:remove}
+  .traco-editor-stepper{
+    grid-template-columns:44px minmax(0,1fr) 44px;
+  }
+  .traco-editor-stepper button{
+    width:44px;
+  }
+}
+
+/* iOS: prevent automatic zoom on editable controls */
+@supports (-webkit-touch-callout:none){
+  input,select,textarea{
+    font-size:16px;
+  }
+}
