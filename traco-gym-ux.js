@@ -12,9 +12,11 @@ const TRACO_LEGACY_WORKOUT_ORDER_KEY='traco_workout_order_v1';
 function tracoGymRepairOverlayState(){
   const hasPre=Boolean(document.querySelector('#tracoPreStart'));
   const hasOrder=Boolean(document.querySelector('#tracoOrderEditor'));
+  const hasPicker=Boolean(document.querySelector('#tracoExercisePicker'));
   document.body.classList.toggle('traco-prestart-open',hasPre);
   document.body.classList.toggle('traco-order-open',hasOrder);
-  if(!hasPre&&!hasOrder){
+  document.body.classList.toggle('traco-exercise-picker-open',hasPicker);
+  if(!hasPre&&!hasOrder&&!hasPicker){
     document.body.style.overflow='';
     document.body.style.position='';
     document.body.style.touchAction='';
@@ -25,7 +27,8 @@ function tracoGymRepairOverlayState(){
 function tracoGymClearTransientOverlays(){
   document.querySelector('#tracoPreStart')?.remove();
   document.querySelector('#tracoOrderEditor')?.remove();
-  document.body.classList.remove('traco-prestart-open','traco-order-open');
+  document.querySelector('#tracoExercisePicker')?.remove();
+  document.body.classList.remove('traco-prestart-open','traco-order-open','traco-exercise-picker-open');
   document.body.style.overflow='';
   document.body.style.position='';
   document.body.style.touchAction='';
