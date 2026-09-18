@@ -607,12 +607,12 @@ jobs:
             'leg-press-alto':{provider:'youtube',id:'iQhP0kkadSI'},
             'core-leg-raise-ter':{provider:'youtube',id:'0tzBVqiDwSs'},
             'crunch':{provider:'youtube',id:'nCHypnGvcq4'},
-            'crunch-2':{provider:'vimeo',id:'760008287'},
-            'core-crunch-seg':{provider:'vimeo',id:'760008287'},
-            'supino-inclinado':{provider:'vimeo',id:'756783757'},
-            'rosca-polia':{provider:'vimeo',id:'760001419'},
-            'rosca-martelo':{provider:'vimeo',id:'756794163'},
-            'rosca-unilateral':{provider:'vimeo',id:'760001492'}
+            'crunch-2':{provider:'youtube',id:'3qjoXDTuyOE'},
+            'core-crunch-seg':{provider:'youtube',id:'3qjoXDTuyOE'},
+            'supino-inclinado':{provider:'youtube',id:'oe7N2GUzHIw'},
+            'rosca-polia':{provider:'youtube',id:'C2RhWTlwx_U'},
+            'rosca-martelo':{provider:'youtube',id:'0IAM2YtviQY'},
+            'rosca-unilateral':{provider:'youtube',id:'C2RhWTlwx_U'}
           };
           for(const [id,spec] of Object.entries(critical)){
             const needle=`'${id}':{provider:'${spec.provider}',id:'${spec.id}'`;
