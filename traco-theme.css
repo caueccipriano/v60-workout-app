@@ -800,3 +800,16 @@ html[data-theme="dark"] .traco-undo-bar button{
 html[data-theme="dark"] .measure-form .unit-input::before{
   color:#A3A39F;
 }
+
+
+/* Traço 1.2.1 — centraliza a data da nova medição */
+.measure-form input[type="date"]{
+  text-align:center;
+  text-align-last:center;
+  padding-left:42px;
+  padding-right:42px;
+}
+.measure-form input[type="date"]::-webkit-date-and-time-value{
+  text-align:center;
+  width:100%;
+}
