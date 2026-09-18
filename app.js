@@ -221,7 +221,8 @@ function tracoSessionEditorClose(){document.querySelector('#tracoSessionEditor')
 function tracoSessionEditorRender(draft){
   document.querySelector('#tracoSessionEditor')?.remove();
   document.body.classList.add('traco-editor-open');
-  const date=tracoDateKey(draft.startedAt);
+  const date=draft._editDate||tracoDateKey(draft.startedAt);
+  const completeState=draft._completeState ?? !draft.excludeFromVolume;
   document.body.insertAdjacentHTML('beforeend',`<div class="traco-editor-backdrop" id="tracoSessionEditor">
     <section class="traco-editor-sheet" role="dialog" aria-modal="true" aria-label="editar treino">
       <div class="traco-editor-head"><div><span>histórico</span><h3>editar treino</h3><small>${tracoEsc(draft.wName)}</small></div><button class="traco-editor-x" id="tracoSessionClose" aria-label="fechar">×</button></div>
@@ -231,49 +232,78 @@ function tracoSessionEditorRender(draft){
           <div class="traco-editor-ex-title"><div><b>${tracoEsc(ex.name)}</b><small>${tracoEsc(ex.equipment||'')}</small></div><button type="button" data-add-set="${ei}">+ série</button></div>
           <div class="traco-editor-sets">
             ${(ex.sets||[]).map((set,si)=>`<div class="traco-editor-set" data-set-index="${si}">
-              <span>${si+1}</span>
-              <label>kg<input type="number" step="0.5" inputmode="decimal" data-weight value="${tracoEsc(set.weight)}"></label>
-              <label>reps<input type="number" inputmode="numeric" data-reps value="${tracoEsc(set.reps)}"></label>
+              <span class="traco-set-number">${si+1}</span>
+              <label>kg<div class="traco-editor-stepper"><button type="button" data-editor-step="weight:-2.5" aria-label="diminuir carga">−</button><input type="number" step="0.5" inputmode="decimal" data-weight value="${tracoEsc(set.weight)}"><button type="button" data-editor-step="weight:2.5" aria-label="aumentar carga">+</button></div></label>
+              <label>reps<div class="traco-editor-stepper"><button type="button" data-editor-step="reps:-1" aria-label="diminuir repetições">−</button><input type="number" step="1" inputmode="numeric" data-reps value="${tracoEsc(set.reps)}"><button type="button" data-editor-step="reps:1" aria-label="aumentar repetições">+</button></div></label>
               <button type="button" class="traco-remove-set" data-remove-set="${ei}:${si}" aria-label="remover série">×</button>
             </div>`).join('')}
           </div>
         </article>`).join('')}
       </div>
-      ${draft.manualConfirmed?`<label class="traco-complete-toggle"><input id="tracoSessionComplete" type="checkbox" ${draft.excludeFromVolume?'':'checked'}><span><b>dados completos</b><small>usar este treino no volume e nos PRs</small></span></label>`:''}
+      ${draft.manualConfirmed?`<label class="traco-complete-toggle"><input id="tracoSessionComplete" type="checkbox" ${completeState?'checked':''}><span><b>dados completos</b><small>usar este treino no volume e nos PRs</small></span></label>`:''}
       <div class="traco-editor-actions"><button class="traco-danger-btn" id="tracoDeleteSession">excluir treino</button><button class="cta-lime" id="tracoSaveSession">salvar alterações</button></div>
     </section>
   </div>`);
+
   const modal=document.querySelector('#tracoSessionEditor');
   modal._draft=draft;
   $('#tracoSessionClose').onclick=tracoSessionEditorClose;
   modal.onclick=e=>{if(e.target===modal)tracoSessionEditorClose();};
-  $('[data-add-set]').forEach(btn=>btn.onclick=()=>{
+
+  // IMPORTANT: querySelectorAll ($$), not querySelector ($).
+  $$('[data-add-set]').forEach(btn=>btn.onclick=()=>{
     tracoSessionSyncDraft(modal._draft);
     const ex=modal._draft.exercises[Number(btn.dataset.addSet)];
+    if(!ex)return;
     ex.sets.push({n:ex.sets.length+1,weight:'',reps:'',done:false});
     tracoSessionEditorRender(modal._draft);
   });
-  $('[data-remove-set]').forEach(btn=>btn.onclick=()=>{
+
+  $$('[data-remove-set]').forEach(btn=>btn.onclick=()=>{
     tracoSessionSyncDraft(modal._draft);
     const [ei,si]=btn.dataset.removeSet.split(':').map(Number);
     const ex=modal._draft.exercises[ei];
+    if(!ex)return;
     if(ex.sets.length<=1)return toast('mantém pelo menos uma série');
-    ex.sets.splice(si,1);ex.sets.forEach((set,i)=>set.n=i+1);
+    ex.sets.splice(si,1);
+    ex.sets.forEach((set,i)=>set.n=i+1);
     tracoSessionEditorRender(modal._draft);
   });
+
+  $$('[data-editor-step]').forEach(btn=>btn.onclick=()=>{
+    const row=btn.closest('.traco-editor-set');
+    if(!row)return;
+    const [kind,raw]=btn.dataset.editorStep.split(':');
+    const delta=Number(raw);
+    const input=kind==='weight'?row.querySelector('[data-weight]'):row.querySelector('[data-reps]');
+    if(!input)return;
+    const precision=kind==='weight'?1:0;
+    const next=Math.max(0,Number(input.value||0)+delta);
+    input.value=precision?next.toFixed(1).replace(/\.0$/,''):String(Math.round(next));
+    input.dispatchEvent(new Event('input',{bubbles:true}));
+    haptic();
+  });
+
+  $('#tracoSessionDate').oninput=e=>{draft._editDate=e.target.value;};
+  if($('#tracoSessionComplete'))$('#tracoSessionComplete').onchange=e=>{draft._completeState=e.target.checked;};
   $('#tracoSaveSession').onclick=()=>tracoSaveSessionEdit(modal._draft);
   $('#tracoDeleteSession').onclick=()=>tracoDeleteSession(draft.id);
 }
+
 function tracoSessionSyncDraft(draft){
-  const modal=document.querySelector('#tracoSessionEditor');if(!modal)return draft;
+  const modal=document.querySelector('#tracoSessionEditor');
+  if(!modal)return draft;
+  draft._editDate=$('#tracoSessionDate')?.value||draft._editDate||tracoDateKey(draft.startedAt);
+  if($('#tracoSessionComplete'))draft._completeState=$('#tracoSessionComplete').checked;
   draft.exercises.forEach((ex,ei)=>{
-    const card=modal.querySelector(`[data-ex-index="${ei}"]`);if(!card)return;
-    [...card.querySelectorAll('.traco-editor-set')].forEach((row,si)=>{
-      if(!ex.sets[si])return;
-      ex.sets[si].weight=row.querySelector('[data-weight]').value;
-      ex.sets[si].reps=row.querySelector('[data-reps]').value;
-      ex.sets[si].done=Boolean(ex.sets[si].weight||ex.sets[si].reps);
-      ex.sets[si].n=si+1;
+    const card=modal.querySelector(`[data-ex-index="${ei}"]`);
+    if(!card)return;
+    const rows=[...card.querySelectorAll('.traco-editor-set')];
+    ex.sets=rows.map((row,si)=>{
+      const previous=ex.sets[si]||{};
+      const weight=row.querySelector('[data-weight]')?.value??'';
+      const reps=row.querySelector('[data-reps]')?.value??'';
+      return {...previous,n:si+1,weight,reps,done:Boolean(weight||reps)};
     });
   });
   return draft;
@@ -285,26 +315,37 @@ function tracoOpenSessionEditor(id){
 }
 function tracoSaveSessionEdit(draft){
   tracoSessionSyncDraft(draft);
-  const date=$('#tracoSessionDate')?.value;if(!date)return toast('escolhe uma data');
+  const date=draft._editDate||$('#tracoSessionDate')?.value;
+  if(!date)return toast('escolhe uma data');
   if(tracoHasDuplicateSession(date,draft.workoutId,draft.id)&&!confirm('Já existe este treino nessa data. Deseja manter os dois?'))return;
-  const completeToggle=$('#tracoSessionComplete');
   const used=(draft.exercises||[]).flatMap(ex=>ex.sets||[]).filter(set=>set.done||set.weight||set.reps);
   const incomplete=used.some(set=>!Number(set.weight)||!Number(set.reps));
-  if(completeToggle?.checked&&incomplete)return toast('preenche carga e reps das séries usadas');
-  draft.excludeFromVolume=incomplete||(completeToggle? !completeToggle.checked:false);
+  const wantsComplete=draft.manualConfirmed?(draft._completeState??!draft.excludeFromVolume):true;
+  if(wantsComplete&&incomplete)return toast('preenche carga e reps das séries usadas');
+  draft.excludeFromVolume=incomplete||(draft.manualConfirmed&&!wantsComplete);
   if(incomplete)draft.partialEdited=true;else delete draft.partialEdited;
   const oldDate=tracoDateKey(draft.startedAt);
-  const old=new Date(draft.startedAt),newStart=new Date(date+'T12:00:00');
-  draft.startedAt=newStart.getTime();
-  if(draft.finishedAt){
-    const dur=Math.max(1,Number(draft.duration)||Math.floor((draft.finishedAt-old.getTime())/1000)||1);
-    draft.duration=dur;draft.finishedAt=draft.startedAt+dur*1000;
-  }
+  const oldStart=draft.startedAt;
+  const newStart=new Date(date+'T12:00:00').getTime();
+  if(!Number.isFinite(newStart))return toast('data inválida');
+  const previousDuration=Math.max(1,Number(draft.duration)||Math.floor(((draft.finishedAt||oldStart+1000)-oldStart)/1000)||1);
+  draft.startedAt=newStart;
+  if(draft.finishedAt){draft.duration=previousDuration;draft.finishedAt=newStart+previousDuration*1000;}
+  delete draft._editDate;
+  delete draft._completeState;
   const all=sessions(),idx=all.findIndex(s=>String(s.id)===String(draft.id));
   if(idx<0)return toast('treino não encontrado');
-  all[idx]=draft;save(K.sessions,all);
-  tracoRecomputePRs();tracoSyncAttendance(oldDate,date);
-  tracoSessionEditorClose();toast(draft.excludeFromVolume?'treino salvo como parcial':'treino atualizado');haptic();renderHistory();
+  all[idx]=JSON.parse(JSON.stringify(draft));
+  save(K.sessions,all);
+  tracoRecomputePRs();
+  tracoSyncAttendance(oldDate,date);
+  const persisted=sessions().find(s=>String(s.id)===String(draft.id));
+  if(!persisted)return toast('erro ao salvar treino');
+  tracoSessionEditorClose();
+  toast(draft.excludeFromVolume?'treino salvo como parcial':'treino atualizado');
+  haptic();
+  state.page='history';
+  renderHistory();
 }
 function tracoDeleteSession(id){
   if(!confirm('excluir este treino do histórico?'))return;
