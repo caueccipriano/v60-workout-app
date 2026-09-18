@@ -484,7 +484,7 @@ jobs:
           }
 
           for(const required of [
-            'Traço 2.4.0 — definitive normal-page scroll recovery',
+            'Traço 2.3.14 — definitive normal-page scroll recovery',
             '.traco-prestart-page .traco-prestart-go',
             'position:static !important',
             'overflow-y:auto !important',
