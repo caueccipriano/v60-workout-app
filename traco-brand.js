@@ -1,4 +1,4 @@
-window.TRACO_BRAND={name:'Traço',version:'2.0.1',legacyDataPrefix:'v60_'};
+window.TRACO_BRAND={name:'Traço',version:'2.1.0',legacyDataPrefix:'v60_'};
 const TRACO_THEME_KEY='traco_theme';
 
 function tracoTheme(){
@@ -36,7 +36,7 @@ exportData=function(){
   }
   const data={
     brand:'Traço',
-    version:'2.0.1',
+    version:'2.1.0',
     sessions:sessions(),
     body:body(),
     settings:settings(),
@@ -91,12 +91,12 @@ renderSettings=function(){
   tracoBaseRenderSettings();
   const intro=document.querySelector('.settings-intro');
   if(intro&&!document.querySelector('.traco-about-card')){
-    intro.insertAdjacentHTML('afterend','<section class="traco-about-card"><img src="./assets/traco-icon-180.png" alt=""><div><span>seu app</span><b>Traço</b><small>treino · evolução · constância · versão 2.0.1</small></div></section>');
+    intro.insertAdjacentHTML('afterend','<section class="traco-about-card"><img src="./assets/traco-icon-180.png" alt=""><div><span>seu app</span><b>Traço</b><small>treino · evolução · constância · versão 2.1.0</small></div></section>');
   }
   const about=document.querySelector('.traco-about-card');
   if(about&&!document.querySelector('.traco-theme-card')){
     const current=tracoTheme();
-    about.insertAdjacentHTML('afterend',`<section class="traco-theme-card"><div class="traco-theme-copy"><span>aparência</span><b>tema</b><small>claro em aço ou escuro em preto + laranja</small></div><div class="traco-theme-segment" role="radiogroup" aria-label="tema do Traço"><button class="traco-theme-option ${current==='light'?'is-active':''}" data-traco-theme="light" role="radio" aria-checked="${current==='light'}">claro</button><button class="traco-theme-option ${current==='dark'?'is-active':''}" data-traco-theme="dark" role="radio" aria-checked="${current==='dark'}">escuro</button></div></section>`);
+    about.insertAdjacentHTML('afterend',`<section class="traco-theme-card"><div class="traco-theme-copy"><span>aparência</span><b>tema</b><small>claro em aço ou escuro em preto + vermelho</small></div><div class="traco-theme-segment" role="radiogroup" aria-label="tema do Traço"><button class="traco-theme-option ${current==='light'?'is-active':''}" data-traco-theme="light" role="radio" aria-checked="${current==='light'}">claro</button><button class="traco-theme-option ${current==='dark'?'is-active':''}" data-traco-theme="dark" role="radio" aria-checked="${current==='dark'}">escuro</button></div></section>`);
   }
   document.querySelectorAll('[data-traco-theme]').forEach(btn=>{
     btn.onclick=()=>tracoSetTheme(btn.dataset.tracoTheme);
