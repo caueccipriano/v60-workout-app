@@ -3,7 +3,8 @@ function v60V4SetCount(ex){if(Array.isArray(ex?.sets))return ex.sets.length;cons
 
 function v60V4Scene(ex){
   const id=String(ex?.id||'');
-  const W='#FAFAFA', M='rgba(250,250,250,.28)', D='rgba(9,16,55,.28)', L='#C4D82E', H='rgba(196,216,46,.34)';
+  const dark=document.documentElement?.dataset?.theme==='dark';
+  const W='#FAFAFA', M=dark?'rgba(250,250,250,.22)':'rgba(250,250,250,.28)', D=dark?'rgba(0,0,0,.34)':'rgba(9,16,55,.28)', L=dark?'#FF6B21':'#C4D82E', H=dark?'rgba(255,107,33,.34)':'rgba(196,216,46,.34)';
   const line=(x1,y1,x2,y2,sw=5,c=W)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>`;
   const rect=(x,y,w,h,r=5,c=M)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${c}"/>`;
   const circ=(x,y,r,fill='none',stroke=W,sw=4)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
@@ -222,7 +223,8 @@ function v60V4Scene(ex){
 
 function v60V4MotionSvg(ex,large=false){
   const g=v60GuideFor(ex), scene=v60V4Scene(ex), setCount=v60V4SetCount(ex);
-  const palette={blue:['#2138B0','#101845'],lime:['#8DA114','#33410A'],orange:['#E8492A','#7D2413']}[g.accent]||['#2138B0','#101845'];
+  const dark=document.documentElement?.dataset?.theme==='dark';
+  const palette=dark?['#1B1B1B','#080808']:({blue:['#2138B0','#101845'],lime:['#8DA114','#33410A'],orange:['#E8492A','#7D2413']}[g.accent]||['#2138B0','#101845']);
   const gid=`v60-v4-${String(ex.id||'exercise').replace(/[^a-z0-9-]/gi,'-')}-${large?'lg':'sm'}`;
   return `<svg class="v60-v4-motion-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 360" role="img" aria-label="guia animado de ${v60V4Esc(ex.name)}">
     <defs><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${palette[0]}"/><stop offset="100%" stop-color="${palette[1]}"/></linearGradient></defs>
