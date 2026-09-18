@@ -320,9 +320,9 @@ function tracoGymOpenPreStart(workoutId){
 
 const tracoGymBaseStartSession=startSession;
 function tracoGymDirectStart(workoutId){
-  tracoGymClearTransientOverlays();
-  tracoGymPreStartWorkoutId=null;
   try{
+    tracoGymClearTransientOverlays();
+    tracoGymPreStartWorkoutId=null;
     return tracoGymBaseStartSession(workoutId);
   }catch(error){
     console.error('Traço workout start failed',error);
@@ -331,11 +331,9 @@ function tracoGymDirectStart(workoutId){
     return null;
   }
 }
-startSession=function(workoutId){
-  const draft=load(K.draft,null);
-  if(draft&&draft.workoutId===workoutId&&!draft.finishedAt)return tracoGymDirectStart(workoutId);
-  tracoGymOpenPreStart(workoutId);
-};
+// Keep workout entry deterministic on iPhone/PWA. The pre-start organizer remains
+// available from the workout queue, but must never sit in front of session creation.
+startSession=tracoGymDirectStart;
 
 /* HOME */
 const tracoGymBaseHome=renderHome;
