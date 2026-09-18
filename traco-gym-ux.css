@@ -474,7 +474,7 @@ html[data-design="performance"] select:focus-visible{
   font-style:normal;
 }
 
-body.traco-order-open{overflow:hidden}
+body.traco-order-open{overflow:auto}
 .traco-order-backdrop{
   position:fixed;
   inset:0;
@@ -690,7 +690,7 @@ body.traco-order-open{overflow:hidden}
 
 
 /* Traço 2.3.3 — pre-start workout organizer */
-body.traco-prestart-open{overflow:hidden}
+body.traco-prestart-open{overflow:auto}
 .traco-prestart-backdrop{
   position:fixed;
   inset:0;
@@ -705,7 +705,11 @@ body.traco-prestart-open{overflow:hidden}
 .traco-prestart-sheet{
   width:min(560px,100%);
   max-height:min(90dvh,840px);
-  overflow:auto;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  touch-action:pan-y;
   padding:18px 16px max(16px,env(safe-area-inset-bottom));
   border:1px solid #333339;
   border-bottom:0;
@@ -856,9 +860,13 @@ body.traco-prestart-open{overflow:hidden}
   font-style:normal;
 }
 .traco-prestart-go{
+  position:sticky;
+  bottom:max(0px,env(safe-area-inset-bottom));
+  z-index:4;
   width:100%;
   min-height:56px;
   margin-top:9px;
+  box-shadow:0 -10px 28px rgba(9,9,9,.78);
   border-radius:12px;
   font-size:11px;
   font-weight:900;
@@ -932,4 +940,25 @@ body.traco-order-open{
   .traco-prestart-tip{
     margin-top:9px;
   }
+}
+
+
+/* Traço 2.3.4 — iOS overlay scroll safety */
+html,body{
+  overflow-x:hidden;
+}
+body.traco-prestart-open,
+body.traco-order-open{
+  overflow-y:auto !important;
+  position:static !important;
+  touch-action:auto !important;
+}
+.traco-prestart-backdrop,
+.traco-order-backdrop{
+  touch-action:pan-y;
+}
+.traco-prestart-sheet,
+.traco-order-list{
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
 }
