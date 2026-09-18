@@ -76,6 +76,7 @@ const TRACO_VIDEO_LIBRARY=Object.freeze({
   'crunch-2':{provider:'youtube',id:'3qjoXDTuyOE',source:'Bodybuilding.com',variant:'kneeling rope cable crunch'},
   'core-crunch-seg':{provider:'youtube',id:'3qjoXDTuyOE',source:'Bodybuilding.com',variant:'kneeling rope cable crunch'},
   'core-pallof-ter':{provider:'youtube',id:'SFJprbDnaS0',source:'Muscle & Strength',variant:'standing Pallof press at chest height'},
+  'core-leg-raise-ter':{provider:'youtube',id:'0tzBVqiDwSs',source:'Fit Father Project',variant:'lying leg raise on flat bench'},
   'core-woodchop-qui':{provider:'youtube',id:'0VWnOjUO7ks',source:'Muscle & Strength',variant:'high-cable wood chop'},
   'core-dead-bug-qui':{provider:'youtube',id:'eEhoSeBFoBk',source:'Muscle & Strength',variant:'dead bug on floor'}
 });
