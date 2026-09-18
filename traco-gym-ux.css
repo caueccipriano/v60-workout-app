@@ -1370,17 +1370,6 @@ html[data-design="performance"] body.traco-exercise-picker-open{
   max-height:none !important;
   touch-action:pan-y !important;
 }
-.traco-prestart-page .traco-prestart-go{
-  position:fixed !important;
-  left:16px;
-  right:16px;
-  bottom:calc(14px + env(safe-area-inset-bottom));
-  z-index:145;
-  width:auto !important;
-  max-width:528px;
-  margin:0 auto !important;
-  box-shadow:0 12px 38px rgba(0,0,0,.48);
-}
 
 
 /* Traço 2.3.12 — direct workout entry + in-session order setup */
