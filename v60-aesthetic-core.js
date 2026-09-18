@@ -33,7 +33,7 @@ function v60InstallAestheticCorePlan(){
 
 function v60CoreSceneReverseCrunch(){
   const dark=document.documentElement?.dataset?.theme==='dark';
-  const W='#FAFAFA',M=dark?'rgba(250,250,250,.22)':'rgba(250,250,250,.28)',L=dark?'#FF6B21':'#C4D82E',H=dark?'rgba(255,107,33,.34)':'rgba(196,216,46,.34)';
+  const W='#FAFAFA',M=dark?'rgba(250,250,250,.22)':'rgba(250,250,250,.28)',L=dark?'#FF3B30':'#E9342C',H=dark?'rgba(255,59,48,.34)':'rgba(233,52,44,.28)';
   const line=(x1,y1,x2,y2,sw=5,c=W)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>`;
   const circ=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${W}" stroke-width="4"/>`;
   const bench=`${line(240,245,470,245,14,M)}${line(265,245,250,305,8,M)}${line(445,245,460,305,8,M)}`;
@@ -45,7 +45,7 @@ function v60CoreSceneReverseCrunch(){
 }
 function v60CoreScenePallof(){
   const dark=document.documentElement?.dataset?.theme==='dark';
-  const W='#FAFAFA',M=dark?'rgba(250,250,250,.22)':'rgba(250,250,250,.28)',L=dark?'#FF6B21':'#C4D82E',H=dark?'rgba(255,107,33,.34)':'rgba(196,216,46,.34)';
+  const W='#FAFAFA',M=dark?'rgba(250,250,250,.22)':'rgba(250,250,250,.28)',L=dark?'#FF3B30':'#E9342C',H=dark?'rgba(255,59,48,.34)':'rgba(233,52,44,.28)';
   const line=(x1,y1,x2,y2,sw=5,c=W)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>`;
   const tower=`<rect x="145" y="60" width="22" height="250" rx="7" fill="${M}"/>${line(156,72,156,296,3,M)}${line(156,165,325,165,3,M)}`;
   const base=`<circle cx="370" cy="122" r="10" fill="none" stroke="${W}" stroke-width="4"/>${line(370,136,370,218,6)}${line(370,218,345,292)}${line(370,218,397,292)}<ellipse cx="370" cy="178" rx="18" ry="34" fill="${H}"/>`;
@@ -56,7 +56,7 @@ function v60CoreScenePallof(){
 }
 function v60CoreSceneLegRaise(){
   const dark=document.documentElement?.dataset?.theme==='dark';
-  const W='#FAFAFA',M=dark?'rgba(250,250,250,.22)':'rgba(250,250,250,.28)',L=dark?'#FF6B21':'#C4D82E',H=dark?'rgba(255,107,33,.34)':'rgba(196,216,46,.34)';
+  const W='#FAFAFA',M=dark?'rgba(250,250,250,.22)':'rgba(250,250,250,.28)',L=dark?'#FF3B30':'#E9342C',H=dark?'rgba(255,59,48,.34)':'rgba(233,52,44,.28)';
   const line=(x1,y1,x2,y2,sw=5,col=W)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${sw}" stroke-linecap="round"/>`;
   const circ=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${W}" stroke-width="4"/>`;
   const bench=`${line(235,246,475,246,14,M)}${line(260,246,245,305,8,M)}${line(450,246,465,305,8,M)}`;
@@ -68,7 +68,7 @@ function v60CoreSceneLegRaise(){
 }
 function v60CoreSceneDeadBug(){
   const dark=document.documentElement?.dataset?.theme==='dark';
-  const W='#FAFAFA',M=dark?'rgba(250,250,250,.22)':'rgba(250,250,250,.28)',L=dark?'#FF6B21':'#C4D82E',H=dark?'rgba(255,107,33,.34)':'rgba(196,216,46,.34)';
+  const W='#FAFAFA',M=dark?'rgba(250,250,250,.22)':'rgba(250,250,250,.28)',L=dark?'#FF3B30':'#E9342C',H=dark?'rgba(255,59,48,.34)':'rgba(233,52,44,.28)';
   const line=(x1,y1,x2,y2,sw=5,col=W)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${sw}" stroke-linecap="round"/>`;
   const mat=`<rect x="225" y="260" width="280" height="14" rx="7" fill="${M}"/>`;
   const base=`<circle cx="290" cy="226" r="10" fill="none" stroke="${W}" stroke-width="4"/>${line(301,230,383,245,6)}<ellipse cx="367" cy="245" rx="24" ry="13" fill="${H}"/>`;
@@ -80,7 +80,7 @@ function v60CoreSceneDeadBug(){
 
 function v60CoreSceneWoodchop(){
   const dark=document.documentElement?.dataset?.theme==='dark';
-  const W='#FAFAFA',M=dark?'rgba(250,250,250,.22)':'rgba(250,250,250,.28)',L=dark?'#FF6B21':'#C4D82E',H=dark?'rgba(255,107,33,.34)':'rgba(196,216,46,.34)';
+  const W='#FAFAFA',M=dark?'rgba(250,250,250,.22)':'rgba(250,250,250,.28)',L=dark?'#FF3B30':'#E9342C',H=dark?'rgba(255,59,48,.34)':'rgba(233,52,44,.28)';
   const line=(x1,y1,x2,y2,sw=5,c=W)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>`;
   const tower=`<rect x="145" y="60" width="22" height="250" rx="7" fill="${M}"/>${line(156,72,156,296,3,M)}${line(156,92,315,128,3,M)}`;
   const base=`<circle cx="370" cy="120" r="10" fill="none" stroke="${W}" stroke-width="4"/>${line(370,134,370,220,6)}${line(370,220,344,292)}${line(370,220,400,292)}<ellipse cx="370" cy="178" rx="20" ry="34" fill="${H}"/>`;
