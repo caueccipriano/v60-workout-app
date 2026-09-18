@@ -468,7 +468,7 @@ jobs:
           }
           for(const required of [
             '.traco-adjust-workout',
-            'Traço 2.3.9 — obvious active workout adjustment'
+            'obvious active workout adjustment'
           ]){
             if(!css.includes(required)) throw new Error(`Missing adjust-workout style: ${required}`);
           }
