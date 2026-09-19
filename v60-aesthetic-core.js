@@ -17,7 +17,7 @@ function v60InstallAestheticCorePlan(){
     ter.exercises.push(v60CoreExercise('core-pallof-ter','Pallof press','Polia / crossover',3,10,12,45,'↔️'));
   }
   if(ter&&!ter.exercises.some(e=>e.id==='core-leg-raise-ter')){
-    ter.exercises.push(v60CoreExercise('core-leg-raise-ter','reverse crunch no chão','Solo / colchonete',3,12,15,45,'◼️'));
+    ter.exercises.push({...v60CoreExercise('core-leg-raise-ter','reverse crunch no chão','Solo / colchonete',3,12,15,45,'◼️'),usesLoad:false});
   }
   const wed=qua?.exercises.find(e=>e.id==='crunch');
   if(wed)Object.assign(wed,{name:'crunch ajoelhado na polia',equipment:'Polia alta + corda',sets:3,min:10,max:15,rest:45,icon:'◼️',core:true});
@@ -25,7 +25,7 @@ function v60InstallAestheticCorePlan(){
     qui.exercises.push(v60CoreExercise('core-woodchop-qui','Pallof press','Polia / crossover',3,10,12,45,'↔️'));
   }
   if(qui&&!qui.exercises.some(e=>e.id==='core-dead-bug-qui')){
-    qui.exercises.push(v60CoreExercise('core-dead-bug-qui','reverse crunch no chão','Solo / colchonete',3,12,15,45,'◼️'));
+    qui.exercises.push({...v60CoreExercise('core-dead-bug-qui','reverse crunch no chão','Solo / colchonete',3,12,15,45,'◼️'),usesLoad:false});
   }
   const fri=sex?.exercises.find(e=>e.id==='crunch-2');
   if(fri)Object.assign(fri,{name:'crunch ajoelhado na polia',equipment:'Polia alta + corda',sets:3,min:10,max:15,rest:45,icon:'◼️',core:true});
@@ -112,7 +112,7 @@ function v60SyncCoreSession(){
   const existing=new Map((s.exercises||[]).map(e=>[e.id,e]));
   s.exercises=plan.exercises.map(p=>{
     const old=existing.get(p.id);
-    if(old)return {...p,...old,name:p.name,equipment:p.equipment,min:p.min,max:p.max,rest:p.rest,icon:p.icon,core:p.core||old.core};
+    if(old)return {...p,...old,name:p.name,equipment:p.equipment,min:p.min,max:p.max,rest:p.rest,icon:p.icon,core:p.core||old.core,usesLoad:p.usesLoad,sets:(old.sets||[]).map((set,i)=>({...set,n:i+1,weight:p.usesLoad===false?'':(set.weight??'')}))};
     const ex={...p,sets:Array.from({length:p.sets},(_,i)=>({n:i+1,weight:'',reps:'',done:false}))};
     if(typeof v60SeedExerciseSets==='function')v60SeedExerciseSets(ex);
     return ex;
