@@ -1878,3 +1878,12 @@ html[data-design="performance"] .perf-value-panel label input{
   font-size:22px!important;
   letter-spacing:-.025em!important;
 }
+
+
+/* Traço 2.4.1 — skip exercise + bodyweight/core without load */
+html[data-design="performance"] .perf-skip-exercise{width:100%;margin-top:10px;min-height:46px;border:1px solid rgba(255,255,255,.16);border-radius:12px;background:transparent;color:#a7a9ae;font:800 11px/1 var(--traco-ui,sans-serif);letter-spacing:.06em;text-transform:uppercase}
+html[data-design="performance"] .perf-skip-exercise:active{transform:scale(.985);border-color:var(--traco-action);color:var(--traco-action)}
+html[data-design="performance"] .perf-inputs.is-no-load{grid-template-columns:minmax(0,1fr)}
+html[data-design="performance"] .perf-inputs.is-no-load .perf-value-panel{max-width:none}
+html[data-theme="light"][data-design="performance"] .perf-skip-exercise{border-color:#d2cfc8;color:#666970}
+.traco-editor-no-load{display:flex;align-items:center;justify-content:center;min-height:42px;padding:0 12px;border-radius:10px;background:rgba(255,255,255,.06);color:#8f9298;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
