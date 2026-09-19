@@ -13,9 +13,9 @@ const workoutPlan = [
     ['flexora','flexora sentada','Máquina flexora',4,10,15,60,'🦿'],
     ['abdutora','abdutora','Máquina abdutora',3,15,20,60,'↔️'],
     ['panturrilha','panturrilha no leg press','Leg press',4,12,20,60,'🦶'] ]},
-  { id:'qua', day:3, name:'costas + bíceps + ombro posterior', short:'costas + bíceps', exercises:[
+  { id:'qua', day:3, name:'costas + bíceps · foco largura', short:'costas + bíceps', exercises:[
     ['puxada-aberta','puxada alta aberta','Máquina de puxada',4,8,12,90,'🔻'],
-    ['remada-baixa','remada baixa','Polia baixa / crossover',3,8,12,90,'🚣'],
+    ['remada-baixa','remada baixa','Polia baixa / crossover',2,8,12,90,'🚣'],
     ['pullover','pullover braços estendidos','Polia alta',3,10,15,60,'⬇️'],
     ['crucifixo-inverso','crucifixo inverso','Duas polias do crossover',3,12,15,60,'🪽'],
     ['rosca-polia','rosca bíceps na polia','Polia baixa',3,10,15,60,'💪'],
@@ -28,11 +28,12 @@ const workoutPlan = [
     ['face-pull','face pull','Polia alta + corda',3,12,15,60,'🎯'],
     ['triceps-overhead-2','tríceps acima da cabeça','Polia alta + corda',3,10,15,60,'🔝'],
     ['rosca-unilateral','rosca bíceps unilateral','Polia baixa',3,10,15,60,'💪'] ]},
-  { id:'sex', day:5, name:'posterior + costas + ombros + abdômen', short:'posterior + costas', exercises:[
+  { id:'sex', day:5, name:'posterior + dorsal + ombros · foco V', short:'posterior + dorsal', exercises:[
     ['rdl','stiff / RDL','Smith',3,8,12,90,'↘️'],
     ['flexora-2','flexora sentada','Máquina flexora',4,10,15,60,'🦿'],
     ['leg-press-alto','leg press — pés mais altos','Leg press 45°',3,10,12,90,'🦵'],
-    ['puxada-neutra','puxada neutra / fechada','Máquina de puxada',3,10,12,90,'🔻'],
+    ['puxada-neutra','puxada neutra / fechada','Máquina de puxada',4,8,12,90,'🔻'],
+    ['pullover','pullover braços estendidos','Polia alta',3,10,15,60,'⬇️'],
     ['elevacao-lateral-3','elevação lateral unilateral','Polia',4,12,20,60,'🪽'],
     ['abdutora-2','abdutora','Máquina abdutora',2,15,20,60,'↔️'],
     ['crunch-2','crunch na polia','Polia alta',3,10,15,60,'◼️'] ]}
