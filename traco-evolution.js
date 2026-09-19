@@ -443,14 +443,24 @@
   function publishBridges(){
     const phase=read('traco_shape_phase_v1',null),stats=window.TracoBodyCoach?.weeklyStats?.()||{},rec=dailyRecommendation(),latest=latestBody(),m=milestones();
     const eu={
-      version:2,app:'traco',updatedAt:new Date().toISOString(),phase:phase?.name||null,
-      today:rec.text,workoutsThisWeek:Number(stats.workouts||0),cardioMinutes:Number(stats.cardio||0),
-      body:{weight:latest?.weight||null,waist:latest?.waist||null,shoulders:latest?.shoulders||null,chest:latest?.chest||null},
-      milestones:m.slice(-5),experiment:read('traco_experiments_v1',[]).find(e=>!e.finishedAt)?.name||null
+      version:2,app:'traco',title:'Traço',updatedAt:new Date().toISOString(),
+      status:Number(stats.workouts||0)>=4?'ritmo forte':'em progresso',
+      summary:[phase?.name?'fase '+phase.name:null,Number(stats.workouts||0)+' treinos na semana',rec.workout?.short?'próximo '+rec.workout.short:null].filter(Boolean).join(' · '),
+      metrics:{
+        workoutsThisWeek:Number(stats.workouts||0),
+        cardioMinutesThisWeek:Number(stats.cardio||0),
+        shapePhase:phase?.name||null,
+        todayRecommendation:rec.text,
+        waistCm:Number(latest?.waist||0)||null,
+        shouldersCm:Number(latest?.shoulders||0)||null,
+        chestCm:Number(latest?.chest||0)||null,
+        activeExperiment:read('traco_experiments_v1',[]).find(e=>!e.finishedAt)?.name||null,
+        milestones:m.slice(-5).join(' · ')||null
+      }
     };
     localStorage.setItem(EU_BRIDGE_KEY,JSON.stringify(eu));
     const folego={
-      version:1,app:'traco',updatedAt:new Date().toISOString(),
+      version:1,app:'traco',title:'Traço',updatedAt:new Date().toISOString(),
       suggestedCategories:[
         {id:'academia',label:'academia/Wellhub',kind:'fitness'},
         {id:'mercado-shape',label:'mercado · projeto corporal',kind:'food'},
@@ -459,7 +469,10 @@
       ],
       note:'Categorias opcionais para relacionar gastos do projeto corporal ao Traço.'
     };
-    localStorage.setItem(FOLEGO_BRIDGE_KEY,JSON.stringify(folego));
+    const folegoRaw=JSON.stringify(folego);
+    localStorage.setItem(FOLEGO_BRIDGE_KEY,folegoRaw);
+    // shared_preferences no Flutter Web usa o prefixo flutter. no localStorage.
+    localStorage.setItem('flutter.'+FOLEGO_BRIDGE_KEY,folegoRaw);
     window.dispatchEvent(new CustomEvent('traco:bridge',{detail:{eu,folego}}));
   }
 
