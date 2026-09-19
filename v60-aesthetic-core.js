@@ -14,18 +14,18 @@ function v60InstallAestheticCorePlan(){
     seg.exercises.push(v60CoreExercise('core-crunch-seg','crunch na polia','Polia alta + corda',3,10,15,45,'◼️'));
   }
   if(ter&&!ter.exercises.some(e=>e.id==='core-pallof-ter')){
-    ter.exercises.push(v60CoreExercise('core-pallof-ter','Pallof press','Polia / crossover',2,12,15,45,'↔️'));
+    ter.exercises.push(v60CoreExercise('core-pallof-ter','Pallof press','Polia / crossover',3,10,12,45,'↔️'));
   }
   if(ter&&!ter.exercises.some(e=>e.id==='core-leg-raise-ter')){
-    ter.exercises.push(v60CoreExercise('core-leg-raise-ter','elevação de pernas no banco','Banco reto',2,10,15,45,'⬆️'));
+    ter.exercises.push(v60CoreExercise('core-leg-raise-ter','reverse crunch no chão','Solo / colchonete',3,12,15,45,'◼️'));
   }
   const wed=qua?.exercises.find(e=>e.id==='crunch');
-  if(wed)Object.assign(wed,{name:'abdominal reverso no banco',equipment:'Banco reto',sets:3,min:12,max:15,rest:45,icon:'◼️',core:true});
+  if(wed)Object.assign(wed,{name:'crunch ajoelhado na polia',equipment:'Polia alta + corda',sets:3,min:10,max:15,rest:45,icon:'◼️',core:true});
   if(qui&&!qui.exercises.some(e=>e.id==='core-woodchop-qui')){
-    qui.exercises.push(v60CoreExercise('core-woodchop-qui','woodchop na polia','Polia alta / crossover',2,15,20,40,'↘️'));
+    qui.exercises.push(v60CoreExercise('core-woodchop-qui','Pallof press','Polia / crossover',3,10,12,45,'↔️'));
   }
   if(qui&&!qui.exercises.some(e=>e.id==='core-dead-bug-qui')){
-    qui.exercises.push(v60CoreExercise('core-dead-bug-qui','dead bug','Solo / colchonete',2,10,12,40,'◼️'));
+    qui.exercises.push(v60CoreExercise('core-dead-bug-qui','reverse crunch no chão','Solo / colchonete',3,12,15,45,'◼️'));
   }
   const fri=sex?.exercises.find(e=>e.id==='crunch-2');
   if(fri)Object.assign(fri,{name:'crunch ajoelhado na polia',equipment:'Polia alta + corda',sets:3,min:10,max:15,rest:45,icon:'◼️',core:true});
@@ -34,14 +34,14 @@ function v60InstallAestheticCorePlan(){
 function v60CoreSceneReverseCrunch(){
   const dark=document.documentElement?.dataset?.theme==='dark';
   const W='#FAFAFA',M=dark?'rgba(250,250,250,.22)':'rgba(250,250,250,.28)',L=dark?'#FF3B30':'#E9342C',H=dark?'rgba(255,59,48,.34)':'rgba(233,52,44,.28)';
-  const line=(x1,y1,x2,y2,sw=5,c=W)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>`;
+  const line=(x1,y1,x2,y2,sw=5,col=W)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${sw}" stroke-linecap="round"/>`;
   const circ=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${W}" stroke-width="4"/>`;
-  const bench=`${line(240,245,470,245,14,M)}${line(265,245,250,305,8,M)}${line(445,245,460,305,8,M)}`;
-  const base=`${circ(300,216,10)}${line(311,220,390,235,6)}${line(390,235,430,236,5)}`;
-  const a=`${base}${line(430,236,475,265)}${line(430,236,470,286)}<ellipse cx="382" cy="235" rx="25" ry="13" fill="${H}"/>`;
-  const b=`${base}${line(430,236,410,195)}${line(430,236,436,190)}<ellipse cx="382" cy="235" rx="25" ry="13" fill="${H}"/>`;
-  const motion=`<path d="M 503 270 Q 510 226 468 194" stroke="${L}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M 481 197 L 468 194 L 471 208" stroke="${L}" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
-  return {equipment:`${bench}<text x="318" y="332" fill="rgba(250,250,250,.64)" font-family="Arial" font-size="10" font-weight="800">BANCO RETO</text>`,a,b,motion,note:'enrola o quadril; não embala as pernas'};
+  const mat=`<rect x="220" y="267" width="300" height="14" rx="7" fill="${M}"/>`;
+  const base=`${circ(290,232,10)}${line(301,236,390,252,6)}<ellipse cx="375" cy="251" rx="26" ry="13" fill="${H}"/>`;
+  const a=`${base}${line(390,252,445,267)}${line(445,267,488,286)}`;
+  const b=`${base}${line(390,252,420,210)}${line(420,210,445,180)}`;
+  const motion=`<path d="M 505 284 Q 520 230 466 183" stroke="${L}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M 480 185 L 466 183 L 470 198" stroke="${L}" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  return {equipment:`${mat}<text x="302" y="332" fill="rgba(250,250,250,.64)" font-family="Arial" font-size="10" font-weight="800">SOLO / COLCHONETE</text>`,a,b,motion,note:'enrola o quadril para cima; não embala as pernas'};
 }
 function v60CoreScenePallof(){
   const dark=document.documentElement?.dataset?.theme==='dark';
@@ -97,11 +97,11 @@ if(typeof v60V4Scene==='function'){
   v60V4Scene=function(ex){
     const id=String(ex?.id||'');
     if(id==='core-crunch-seg')return v60CoreBaseScene({...ex,id:'crunch-2'});
-    if(id==='crunch')return v60CoreSceneReverseCrunch();
+    if(id==='crunch')return v60CoreBaseScene({...ex,id:'crunch-2'});
     if(id==='core-pallof-ter')return v60CoreScenePallof();
-    if(id==='core-leg-raise-ter')return v60CoreSceneLegRaise();
-    if(id==='core-woodchop-qui')return v60CoreSceneWoodchop();
-    if(id==='core-dead-bug-qui')return v60CoreSceneDeadBug();
+    if(id==='core-leg-raise-ter')return v60CoreSceneReverseCrunch();
+    if(id==='core-woodchop-qui')return v60CoreScenePallof();
+    if(id==='core-dead-bug-qui')return v60CoreSceneReverseCrunch();
     return v60CoreBaseScene(ex);
   };
 }
@@ -147,7 +147,7 @@ const v60CoreBaseRenderWorkouts=renderWorkouts;
 renderWorkouts=function(){
   v60CoreBaseRenderWorkouts();
   const main=document.querySelector('.workouts-page');
-  if(main&&!main.querySelector('.v60-core-program-note'))main.insertAdjacentHTML('beforeend','<section class="v60-core-program-note"><b>7 estímulos de core em 5 dias</b><span>crunch na polia + elevação de pernas + infra + anti-rotação + rotação controlada + anti-extensão · sem flexão lateral pesada</span></section>');
+  if(main&&!main.querySelector('.v60-core-program-note'))main.insertAdjacentHTML('beforeend','<section class="v60-core-program-note"><b>7 estímulos de core em 5 dias</b><span>crunch na polia + reverse crunch no chão + Pallof press · abdômen e anti-rotação sem flexão lateral pesada</span></section>');
 };
 
 if(state.activeSession)v60SyncCoreSession();
