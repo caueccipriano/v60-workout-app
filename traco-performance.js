@@ -85,7 +85,7 @@ renderHome=function(){
 renderSession=function(){
   const s=state.activeSession;
   if(!s){state.page='home';render();return;}
-  const ex=s.exercises[state.currentExercise],si=currentSetIndex(ex),set=ex.sets[si];
+  const ex=s.exercises[state.currentExercise],si=currentSetIndex(ex),set=ex.sets[si],usesLoad=typeof tracoExerciseUsesLoad==='function'?tracoExerciseUsesLoad(ex):true;
   const item=typeof v60SequenceItem==='function'?v60SequenceItem(s.workoutId):{letter:''};
   const progress=((state.currentExercise+(si/ex.sets.length))/s.exercises.length)*100;
   const guide=typeof v60GuidePreview==='function'?v60GuidePreview(ex):'';
@@ -99,12 +99,13 @@ renderSession=function(){
     <div class="perf-session-progress"><span style="width:${progress}%"></span><small>${state.currentExercise+1}/${s.exercises.length} exercícios</small></div>
     <section class="perf-exercise-console">
       <div class="perf-exercise-top"><span class="perf-exercise-index">0${state.currentExercise+1}</span><div><small>${tracoPerfEsc(ex.equipment)}</small><h1>${tracoPerfEsc(ex.name)}</h1><p>série ${si+1} de ${ex.sets.length}</p>${ex.core?'<span class="perf-core-chip">CORE · CINTURA</span>':''}</div></div>
-      <div class="perf-inputs">
-        <div class="perf-value-panel"><span>CARGA</span><div><button type="button" data-adjust="weight:-2.5">−</button><label><input id="weightInput" type="number" inputmode="decimal" step="0.5" value="${tracoPerfEsc(set.weight)}" placeholder="0"><small>kg</small></label><button type="button" data-adjust="weight:2.5">+</button></div></div>
+      <div class="perf-inputs ${usesLoad?'':'is-no-load'}">
+        ${usesLoad?`<div class="perf-value-panel"><span>CARGA</span><div><button type="button" data-adjust="weight:-2.5">−</button><label><input id="weightInput" type="number" inputmode="decimal" step="0.5" value="${tracoPerfEsc(set.weight)}" placeholder="0"><small>kg</small></label><button type="button" data-adjust="weight:2.5">+</button></div></div>`:''}
         <div class="perf-value-panel"><span>REPETIÇÕES</span><div><button type="button" data-adjust="reps:-1">−</button><label><input id="repsInput" type="number" inputmode="numeric" value="${tracoPerfEsc(set.reps)}" placeholder="0"><small>reps</small></label><button type="button" data-adjust="reps:1">+</button></div></div>
       </div>
       <div class="perf-set-track">${ex.sets.map((x,i)=>`<span class="${x.done?'done':''} ${i===si?'current':''}"><b>${i+1}</b></span>`).join('')}</div>
       <button class="perf-complete-set" id="completeSet"><span>concluir série</span><b>→</b></button>
+      <button class="perf-skip-exercise" id="skipExercise" type="button">pular exercício</button>
     </section>
     <section class="perf-native-exercise-list" id="perfNativeExerciseList">
       <header><div><small>TREINO EM ANDAMENTO</small><h2>lista de exercícios</h2><p>toque no exercício que você quer fazer agora</p></div></header>
@@ -120,11 +121,12 @@ renderSession=function(){
 
   $('#openExerciseGuide') && ($('#openExerciseGuide').onclick=()=>v60ShowGuide(ex));
   const weight=$('#weightInput'),reps=$('#repsInput');
-  weight.oninput=e=>{set.weight=e.target.value;save(K.draft,s);};
+  if(weight)weight.oninput=e=>{set.weight=e.target.value;save(K.draft,s);};
   reps.oninput=e=>{set.reps=e.target.value;save(K.draft,s);};
   $$('[data-adjust]').forEach(btn=>btn.onclick=()=>{
     const [kind,raw]=btn.dataset.adjust.split(':'),delta=Number(raw);
     const input=kind==='weight'?weight:reps;
+    if(!input)return;
     const step=kind==='weight'?0.5:1;
     const current=Number(input.value||0);
     input.value=String(Math.max(0,Math.round((current+delta)/step)*step));
@@ -132,6 +134,7 @@ renderSession=function(){
   });
   document.querySelectorAll('[data-native-exercise-index]').forEach(btn=>btn.onclick=()=>{const next=Number(btn.dataset.nativeExerciseIndex);if(Number.isInteger(next)&&next>=0&&next<s.exercises.length){state.currentExercise=next;save(K.draft,s);renderSession();}});
     $('#completeSet').onclick=completeCurrentSet;
+  if($('#skipExercise'))$('#skipExercise').onclick=()=>{if(confirm('pular este exercício?'))skipCurrentExercise();};
   $('#cancelSession').onclick=()=>{typeof v60CloseGuide==='function'&&v60CloseGuide();cancelSession();};
   $('#sessionBack').onclick=()=>{typeof v60CloseGuide==='function'&&v60CloseGuide();if(state.currentExercise>0){state.currentExercise--;renderSession();}else{state.page='home';render();}};
   $('#finishEarly').onclick=()=>{if(confirm('encerrar o treino agora?')){typeof v60CloseGuide==='function'&&v60CloseGuide();finishSession();}};
