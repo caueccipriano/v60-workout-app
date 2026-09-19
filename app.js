@@ -58,6 +58,7 @@ function toast(msg){const t=$('#toast');if(!t)return;t.textContent=msg;t.classLi
 function fmtClock(sec){const m=Math.floor(sec/60),s=sec%60;return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}
 function volumeOfSession(s){if(s?.excludeFromVolume)return 0;return s.exercises.reduce((sum,ex)=>sum+ex.sets.reduce((a,set)=>a+(set.done?Number(set.weight||0)*Number(set.reps||0):0),0),0)}
 function formatLoad(v){if(v>=1000)return `${(v/1000).toFixed(v>=10000?1:2).replace('.',',')}t`;return `${Math.round(v)}kg`}
+function tracoExerciseUsesLoad(ex){return ex?.usesLoad!==false;}
 function hasPartialVolume(ss=[]){return ss.some(s=>s?.excludeFromVolume)}
 function recordedLoadCount(ss=[]){
   return ss.reduce((sum,s)=>sum+(s.exercises||[]).filter(ex=>(ex.sets||[]).some(set=>set.done&&Number(set.weight)>0)).length,0);
@@ -129,7 +130,19 @@ function renderWorkouts(){
   $$('[data-workout]').forEach(el=>el.onclick=()=>{state.selectedWorkout=el.dataset.workout;renderWorkouts()});$('#startSelected').onclick=()=>startSession(selected.id);
 }
 
-function hydrateDraft(raw){const w=workoutPlan.find(x=>x.id===raw.workoutId);if(!raw.exercises||!w)return raw;raw.exercises=raw.exercises.map((ex,i)=>({...w.exercises[i],...ex}));return raw;}
+function hydrateDraft(raw){
+  const w=workoutPlan.find(x=>x.id===raw.workoutId);if(!raw.exercises||!w)return raw;
+  const existing=new Map(raw.exercises.map(ex=>[ex.id,ex]));
+  raw.wName=w.name;
+  raw.exercises=w.exercises.map(plan=>{
+    const old=existing.get(plan.id);
+    const count=Math.max(1,Number(plan.sets)||old?.sets?.length||1);
+    const oldSets=Array.isArray(old?.sets)?old.sets:[];
+    const sets=Array.from({length:count},(_,i)=>({...oldSets[i],n:i+1,weight:tracoExerciseUsesLoad(plan)?(oldSets[i]?.weight??''):'',reps:oldSets[i]?.reps??'',done:Boolean(oldSets[i]?.done),skipped:Boolean(oldSets[i]?.skipped)}));
+    return {...plan,...old,name:plan.name,equipment:plan.equipment,min:plan.min,max:plan.max,rest:plan.rest,icon:plan.icon,usesLoad:plan.usesLoad,sets};
+  });
+  return raw;
+}
 function startSession(workoutId){
   const w=workoutPlan.find(x=>x.id===workoutId),draft=load(K.draft,null);
   if(draft&&draft.workoutId===workoutId&&!draft.finishedAt){state.activeSession=hydrateDraft(draft);}else{
@@ -140,23 +153,23 @@ function startSession(workoutId){
 }
 function sessionElapsed(){return state.activeSession?Math.floor((Date.now()-state.activeSession.startedAt)/1000):0}
 function currentSetIndex(ex){const i=ex.sets.findIndex(s=>!s.done);return i<0?ex.sets.length-1:i}
-function lastSetText(exId){const last=lastExercisePerf(exId);if(!last)return 'primeira vez — cria sua referência';const done=last.sets.filter(s=>s.done);if(!done.length)return 'sem série registrada';const best=done.reduce((a,b)=>Number(b.weight||0)>Number(a.weight||0)?b:a,done[0]);if(best.weight&&best.reps)return `${best.weight}kg × ${best.reps} — bora bater`;if(best.weight)return `${best.weight}kg · sem reps registradas`;return 'sem carga registrada';}
+function lastSetText(exId){const last=lastExercisePerf(exId);if(!last)return 'primeira vez — cria sua referência';const done=last.sets.filter(s=>s.done&&!s.skipped);if(!done.length)return 'sem série registrada';if(!tracoExerciseUsesLoad(last)){const best=Math.max(0,...done.map(s=>Number(s.reps||0)));return best?`${best} reps — bora bater`:'feito sem carga';}const best=done.reduce((a,b)=>Number(b.weight||0)>Number(a.weight||0)?b:a,done[0]);if(best.weight&&best.reps)return `${best.weight}kg × ${best.reps} — bora bater`;if(best.weight)return `${best.weight}kg · sem reps registradas`;return 'sem carga registrada';}
 function renderSession(){
   const s=state.activeSession;if(!s){state.page='home';render();return}const ex=s.exercises[state.currentExercise],si=currentSetIndex(ex),set=ex.sets[si];
   shell(`<div class="session-topbar"><button class="plain-icon" id="sessionBack">${iconSvg('back')}</button><span>exercício ${state.currentExercise+1} de ${s.exercises.length}</span><button class="plain-icon" id="cancelSession">${iconSvg('close')}</button></div>
     <div class="session-progress"><span style="width:${((state.currentExercise+(si/ex.sets.length))/s.exercises.length)*100}%"></span></div>
     <section class="exercise-hero"><span class="exercise-badge">${ex.icon}</span><h1>${ex.name}</h1><small>${ex.equipment}</small></section>
     <div class="series-label">série ${si+1} de ${ex.sets.length}</div>
-    <section class="input-grid"><label><span>carga (kg)</span><input id="weightInput" type="number" inputmode="decimal" step="0.5" value="${set.weight}" placeholder="0"></label><label><span>repetições</span><input id="repsInput" type="number" inputmode="numeric" value="${set.reps}" placeholder="0"></label></section>
+    <section class="input-grid ${tracoExerciseUsesLoad(ex)?'':'is-no-load'}">${tracoExerciseUsesLoad(ex)?`<label><span>carga (kg)</span><input id="weightInput" type="number" inputmode="decimal" step="0.5" value="${set.weight}" placeholder="0"></label>`:''}<label><span>repetições</span><input id="repsInput" type="number" inputmode="numeric" value="${set.reps}" placeholder="0"></label></section>
     <button class="cta-lime session-cta" id="completeSet">concluir série</button>
     <div class="record-strip">${iconSvg('trophy')}<span>última vez: <b>${lastSetText(ex.id)}</b></span></div>
     <div class="set-dots">${ex.sets.map((x,i)=>`<span class="${x.done?'done':''} ${i===si?'current':''}">${i+1}</span>`).join('')}</div>
     <div class="session-footer"><span id="sessionTime">${fmtClock(sessionElapsed())}</span><button class="text-link" id="finishEarly">encerrar treino</button></div>`,{showNav:false,classes:'session-page'});
-  $('#weightInput').oninput=e=>{set.weight=e.target.value;save(K.draft,s)};$('#repsInput').oninput=e=>{set.reps=e.target.value;save(K.draft,s)};$('#completeSet').onclick=completeCurrentSet;$('#cancelSession').onclick=cancelSession;
+  if($('#weightInput'))$('#weightInput').oninput=e=>{set.weight=e.target.value;save(K.draft,s)};$('#repsInput').oninput=e=>{set.reps=e.target.value;save(K.draft,s)};$('#completeSet').onclick=completeCurrentSet;$('#cancelSession').onclick=cancelSession;
   $('#sessionBack').onclick=()=>{if(state.currentExercise>0){state.currentExercise--;renderSession()}else{state.page='home';render()}};$('#finishEarly').onclick=()=>{if(confirm('encerrar o treino agora?'))finishSession()};
   clearInterval(state.sessionClock);state.sessionClock=setInterval(()=>{const el=$('#sessionTime');if(el)el.textContent=fmtClock(sessionElapsed())},1000);if(state.restRemaining>0)showRestOverlay();
 }
-function completeCurrentSet(){const s=state.activeSession,ex=s.exercises[state.currentExercise],si=currentSetIndex(ex),set=ex.sets[si];if(!set.weight&&!set.reps){toast('faltou carga e reps nessa série');return}if(!set.weight){toast('faltou preencher a carga');return}if(!set.reps){toast('faltou preencher as reps');return}set.done=true;save(K.draft,s);haptic();const exDone=ex.sets.every(x=>x.done),allDone=s.exercises.every(x=>x.sets.every(z=>z.done));if(allDone){finishSession();return}if(exDone)state.currentExercise=Math.min(state.currentExercise+1,s.exercises.length-1);startRest(ex.rest||settings().defaultRest||60);}
+function completeCurrentSet(){const s=state.activeSession,ex=s.exercises[state.currentExercise],si=currentSetIndex(ex),set=ex.sets[si],usesLoad=tracoExerciseUsesLoad(ex);if(!set.reps){toast('faltou preencher as reps');return}if(usesLoad&&!set.weight){toast('faltou preencher a carga');return}if(!usesLoad)set.weight='';set.done=true;set.skipped=false;save(K.draft,s);haptic();const exDone=ex.sets.every(x=>x.done),allDone=s.exercises.every(x=>x.sets.every(z=>z.done));if(allDone){finishSession();return}if(exDone)state.currentExercise=Math.min(state.currentExercise+1,s.exercises.length-1);startRest(ex.rest||settings().defaultRest||60);}
 function startRest(seconds){state.restRemaining=seconds;showRestOverlay();beginRestTicker()}
 function showRestOverlay(){let el=$('#restOverlay');if(!el){document.body.insertAdjacentHTML('beforeend',`<div class="rest-overlay" id="restOverlay"><div class="rest-inner"><span>DESCANSO</span><strong id="restTime">${fmtClock(state.restRemaining)}</strong><p>respira. a próxima já tá pronta.</p><button id="skipRest">pular descanso</button></div></div>`);el=$('#restOverlay')}el.classList.add('show');$('#skipRest').onclick=stopRest;}
 function beginRestTicker(){clearInterval(state.restTimer);state.restTimer=setInterval(()=>{state.restRemaining--;const el=$('#restTime');if(el)el.textContent=fmtClock(Math.max(0,state.restRemaining));if(state.restRemaining<=0){stopRest();toast('bora pra próxima série');haptic()}},1000)}
@@ -233,7 +246,7 @@ function tracoSessionEditorRender(draft){
           <div class="traco-editor-sets">
             ${(ex.sets||[]).map((set,si)=>`<div class="traco-editor-set" data-set-index="${si}">
               <span class="traco-set-number">${si+1}</span>
-              <label>kg<div class="traco-editor-stepper"><button type="button" data-editor-step="weight:-2.5" aria-label="diminuir carga">−</button><input type="number" step="0.5" inputmode="decimal" data-weight value="${tracoEsc(set.weight)}"><button type="button" data-editor-step="weight:2.5" aria-label="aumentar carga">+</button></div></label>
+              ${tracoExerciseUsesLoad(ex)?`<label>kg<div class="traco-editor-stepper"><button type="button" data-editor-step="weight:-2.5" aria-label="diminuir carga">−</button><input type="number" step="0.5" inputmode="decimal" data-weight value="${tracoEsc(set.weight)}"><button type="button" data-editor-step="weight:2.5" aria-label="aumentar carga">+</button></div></label>`:'<span class="traco-editor-no-load">sem carga</span>'}
               <label>reps<div class="traco-editor-stepper"><button type="button" data-editor-step="reps:-1" aria-label="diminuir repetições">−</button><input type="number" step="1" inputmode="numeric" data-reps value="${tracoEsc(set.reps)}"><button type="button" data-editor-step="reps:1" aria-label="aumentar repetições">+</button></div></label>
               <button type="button" class="traco-remove-set" data-remove-set="${ei}:${si}" aria-label="remover série">×</button>
             </div>`).join('')}
@@ -301,9 +314,9 @@ function tracoSessionSyncDraft(draft){
     const rows=[...card.querySelectorAll('.traco-editor-set')];
     ex.sets=rows.map((row,si)=>{
       const previous=ex.sets[si]||{};
-      const weight=row.querySelector('[data-weight]')?.value??'';
+      const weight=tracoExerciseUsesLoad(ex)?(row.querySelector('[data-weight]')?.value??''):'';
       const reps=row.querySelector('[data-reps]')?.value??'';
-      return {...previous,n:si+1,weight,reps,done:Boolean(weight||reps)};
+      return {...previous,n:si+1,weight,reps,done:Boolean(reps||(tracoExerciseUsesLoad(ex)&&weight))};
     });
   });
   return draft;
@@ -319,7 +332,7 @@ function tracoSaveSessionEdit(draft){
   if(!date)return toast('escolhe uma data');
   if(tracoHasDuplicateSession(date,draft.workoutId,draft.id)&&!confirm('Já existe este treino nessa data. Deseja manter os dois?'))return;
   const used=(draft.exercises||[]).flatMap(ex=>ex.sets||[]).filter(set=>set.done||set.weight||set.reps);
-  const incomplete=used.some(set=>!Number(set.weight)||!Number(set.reps));
+  const incomplete=(draft.exercises||[]).some(ex=>(ex.sets||[]).some(set=>(set.done||set.weight||set.reps)&&!set.skipped&&(!Number(set.reps)||(tracoExerciseUsesLoad(ex)&&!Number(set.weight)))));
   const wantsComplete=draft.manualConfirmed?(draft._completeState??!draft.excludeFromVolume):true;
   if(wantsComplete&&incomplete)return toast('preenche carga e reps das séries usadas');
   draft.excludeFromVolume=incomplete||(draft.manualConfirmed&&!wantsComplete);
