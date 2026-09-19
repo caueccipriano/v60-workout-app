@@ -341,7 +341,7 @@
   const FEELINGS=['me senti seco','barriga bonita','barriga inchada','flancos me incomodaram','flancos discretos','braço cheio','peito cheio','ombro bonito','me senti forte','me senti leve','me senti cansado','sem diferença'];
   function perceptionMarkup(){
     const d=todayEvolution();
-    return '<section class="evo-perception"><span>COMO VOCÊ SE VÊ HOJE?</span><h3>toque no que combina</h3><div>'+FEELINGS.map(x=>'<button data-feeling="'+esc(x)+'" class="'+(d.feelings||[]).includes(x)?'is-on':''+'">'+esc(x)+'</button>').join('')+'</div><textarea id="evoBodyNote" placeholder="nota opcional…">'+esc(d.note||'')+'</textarea></section>';
+    return '<section class="evo-perception"><span>COMO VOCÊ SE VÊ HOJE?</span><h3>toque no que combina</h3><div>'+FEELINGS.map(x=>'<button data-feeling="'+esc(x)+'" class="'+((d.feelings||[]).includes(x)?'is-on':'')+'">'+esc(x)+'</button>').join('')+'</div><textarea id="evoBodyNote" placeholder="nota opcional…">'+esc(d.note||'')+'</textarea></section>';
   }
   function bindPerception(){
     qsa('[data-feeling]').forEach(btn=>btn.onclick=()=>{
@@ -361,7 +361,7 @@
   function miniPlanMarkup(){
     const fav=favorites();
     return '<section class="evo-mini-plan"><span>ROTEIRO DE ALIMENTAÇÃO</span><h3>mini dietinha flexível</h3><p>estrutura, não cardápio rígido: proteína em 3–4 refeições, fruta/vegetal e carboidrato compatível com sua fome/treino.</p><div>'+
-      Object.entries(DEFAULT_MEALS).map(([k,arr])=>'<article><b>'+({breakfast:'café',lunch:'almoço',snack:'lanche',dinner:'jantar'}[k])+'</b>'+arr.map(x=>'<button data-fav="'+k+'|'+esc(x)+'" class="'+(fav[k]||[]).includes(x)?'is-on':''+'">'+esc(x)+'</button>').join('')+'</article>').join('')+
+      Object.entries(DEFAULT_MEALS).map(([k,arr])=>'<article><b>'+({breakfast:'café',lunch:'almoço',snack:'lanche',dinner:'jantar'}[k])+'</b>'+arr.map(x=>'<button data-fav="'+k+'|'+esc(x)+'" class="'+(((fav[k]||[]).includes(x))?'is-on':'')+'">'+esc(x)+'</button>').join('')+'</article>').join('')+
       '</div></section>';
   }
   function hungerSos(){
