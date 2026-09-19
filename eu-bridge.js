@@ -72,13 +72,31 @@
       .slice()
       .sort((a, b) => Number(b.finishedAt || 0) - Number(a.finishedAt || 0))[0];
 
+    const phase = read('traco_shape_phase_v1', null);
+    const bodyRows = read('v60_body', []).slice().sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+    const latestBody = bodyRows[0] || {};
+    const experiments = read('traco_experiments_v1', []);
+    const activeExperiment = experiments.find((item) => !item?.finishedAt) || null;
+    const evolutionDaily = read('traco_evolution_daily_v1', {});
+    const todayEvolution = evolutionDaily[dayKey(Date.now())] || {};
+    const recommendation = typeof window.TracoEvolution?.smartWorkout === 'function'
+      ? window.TracoEvolution.smartWorkout()
+      : null;
+    const readiness = typeof window.TracoLab?.readiness === 'function'
+      ? window.TracoLab.readiness()
+      : null;
+
     const payload = {
       version: 1,
       app: 'traco',
       title: 'Traço',
       updatedAt: new Date().toISOString(),
       status: week.length >= goal ? 'meta batida' : 'em progresso',
-      summary: `${week.length}/${goal} treinos na semana · ${sessions.length} no histórico`,
+      summary: [
+        phase?.name ? 'fase ' + phase.name : null,
+        `${week.length}/${goal} treinos na semana`,
+        recommendation?.short ? 'próximo ' + recommendation.short : null
+      ].filter(Boolean).join(' · '),
       metrics: {
         workoutsThisWeek: week.length,
         weeklyGoal: goal,
@@ -86,7 +104,15 @@
         streakDays: streak(sessions),
         cardioMinutesThisWeek: cardioMinutes,
         totalPrs: prCount,
-        lastWorkoutAt: latest?.finishedAt || null
+        lastWorkoutAt: latest?.finishedAt || null,
+        shapePhase: phase?.name || null,
+        activeExperiment: activeExperiment?.name || null,
+        nextWorkout: recommendation?.short || null,
+        readinessScore: readiness?.score ?? null,
+        waistCm: Number(latestBody?.waist || 0) || null,
+        shouldersCm: Number(latestBody?.shoulders || 0) || null,
+        chestCm: Number(latestBody?.chest || 0) || null,
+        bodyFeeling: Array.isArray(todayEvolution?.feelings) ? todayEvolution.feelings.join(', ') : null
       }
     };
 
