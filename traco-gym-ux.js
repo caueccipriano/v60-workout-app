@@ -496,7 +496,8 @@ renderSession=function(){
 const tracoGymBaseCompleteSet=completeCurrentSet;
 completeCurrentSet=function(){
   const s=state.activeSession,ex=s?.exercises?.[state.currentExercise],si=ex?currentSetIndex(ex):-1,set=si>=0?ex.sets[si]:null;
-  if(!set||!set.weight||!set.reps){tracoGymBaseCompleteSet();return;}
+  const usesLoad=typeof tracoExerciseUsesLoad==='function'?tracoExerciseUsesLoad(ex):true;
+  if(!set||!set.reps||(usesLoad&&!set.weight)){tracoGymBaseCompleteSet();return;}
   const btn=$('#completeSet'),dot=$$('.perf-set-track span')[si];
   if(btn){btn.disabled=true;btn.classList.add('traco-saved');btn.innerHTML='<span>série salva</span><b>✓</b>';}
   if(dot){dot.classList.add('done','traco-flash');const b=dot.querySelector('b');if(b)b.textContent='✓';}
