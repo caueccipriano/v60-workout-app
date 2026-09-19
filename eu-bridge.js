@@ -1,5 +1,6 @@
 (()=> {
-  const BRIDGE_KEY = 'eu_bridge_traco_v1';
+  const BRIDGE_KEY = 'eu_bridge_traco_v2';
+  const LEGACY_BRIDGE_KEY = 'eu_bridge_traco_v1';
 
   const read = (key, fallback) => {
     try {
@@ -87,7 +88,8 @@
       : null;
 
     const payload = {
-      version: 1,
+      version: 2,
+      schema: 'eu.bridge/2',
       app: 'traco',
       title: 'Traço',
       updatedAt: new Date().toISOString(),
@@ -95,6 +97,8 @@
       summary: [
         phase?.name ? 'fase ' + phase.name : null,
         `${week.length}/${goal} treinos na semana`,
+        streak(sessions) ? streak(sessions) + ' dias de consistência' : null,
+        readiness?.score != null ? 'readiness ' + readiness.score : null,
         recommendation?.short ? 'próximo ' + recommendation.short : null
       ].filter(Boolean).join(' · '),
       metrics: {
@@ -116,7 +120,9 @@
       }
     };
 
-    localStorage.setItem(BRIDGE_KEY, JSON.stringify(payload));
+    const encoded = JSON.stringify(payload);
+    localStorage.setItem(BRIDGE_KEY, encoded);
+    localStorage.setItem(LEGACY_BRIDGE_KEY, encoded);
   };
 
   window.addEventListener('load', publish);
