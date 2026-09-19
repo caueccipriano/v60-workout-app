@@ -243,12 +243,18 @@
   async function renderPhotoCompare(){
     const target=qs('#tracoPhotoCompare');if(!target)return;
     try{
-      const rows=(await allPhotos()).sort(function(a,b){return a.id-b.id;});
+      const rows=(await allPhotos()).sort(function(a,b){
+        const da=String(a.date||''),db=String(b.date||'');
+        if(da!==db)return da.localeCompare(db);
+        return Number(a.id||0)-Number(b.id||0);
+      });
       if(rows.length<2){target.innerHTML='<p>salve pelo menos 2 check-ins fotográficos para liberar a comparação.</p>';return;}
-      const old=rows[0],now=rows[rows.length-1];
-      target.innerHTML='<div class="traco-photo-compare-head"><div><span>primeiro</span><b>'+esc(old.date)+'</b></div><div><span>atual</span><b>'+esc(now.date)+'</b></div></div>'+
-        '<div class="traco-photo-compare-grid"><article><img src="'+old.front+'" alt="frente antiga"><img src="'+now.front+'" alt="frente atual"></article><article><img src="'+old.side+'" alt="perfil antigo"><img src="'+now.side+'" alt="perfil atual"></article><article><img src="'+old.back+'" alt="costas antiga"><img src="'+now.back+'" alt="costas atual"></article></div>'+
-        '<div class="traco-overlay-box"><span>sobreposição das costas</span><div><img src="'+old.back+'" alt=""><img id="tracoOverlayNow" src="'+now.back+'" alt=""></div><label>foto atual <input id="tracoOverlayRange" type="range" min="0" max="100" value="50"></label></div>';
+      const baseline=rows.find(function(row){return row.baselineOfficial;})||rows[0];
+      const candidates=rows.filter(function(row){return row.id!==baseline.id;});
+      const now=candidates[candidates.length-1]||rows[rows.length-1];
+      target.innerHTML='<div class="traco-photo-compare-head"><div><span>'+(baseline.baselineOfficial?'baseline oficial':'primeiro')+'</span><b>'+esc(baseline.date)+'</b></div><div><span>atual</span><b>'+esc(now.date)+'</b></div></div>'+
+        '<div class="traco-photo-compare-grid"><article><img src="'+baseline.front+'" alt="frente antiga"><img src="'+now.front+'" alt="frente atual"></article><article><img src="'+baseline.side+'" alt="perfil antigo"><img src="'+now.side+'" alt="perfil atual"></article><article><img src="'+baseline.back+'" alt="costas antiga"><img src="'+now.back+'" alt="costas atual"></article></div>'+
+        '<div class="traco-overlay-box"><span>sobreposição das costas</span><div><img src="'+baseline.back+'" alt=""><img id="tracoOverlayNow" src="'+now.back+'" alt=""></div><label>foto atual <input id="tracoOverlayRange" type="range" min="0" max="100" value="50"></label></div>';
       const range=qs('#tracoOverlayRange'),top=qs('#tracoOverlayNow');if(range&&top)range.oninput=function(){top.style.opacity=Number(range.value)/100;};
     }catch(e){target.innerHTML='<p>comparação de fotos indisponível neste navegador.</p>';}
   }
