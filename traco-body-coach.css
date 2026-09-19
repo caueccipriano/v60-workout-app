@@ -1,0 +1,58 @@
+/*
+ * Traço Corpo 1.0
+ */
+#tracoBodyCoach{display:grid;gap:14px;margin:18px 0}
+.traco-daily-card,.traco-habit-card,.traco-week-shape,.traco-flank-card,.traco-moving-card,.traco-pattern-card,.traco-plateau-card,.traco-goal-card,.traco-choice-card,.traco-photo-compare-card{border-radius:20px;padding:16px;background:#111113;border:1px solid #2d2d31;color:#f8f8f5}
+.traco-daily-card header,.traco-week-shape header,.traco-flank-card header,.traco-moving-card header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.traco-daily-card header>div,.traco-week-shape header>div{min-width:0}
+.traco-daily-card header span,.traco-habit-card header span,.traco-week-shape header span,.traco-flank-card header span,.traco-moving-card header span,.traco-pattern-card>span,.traco-plateau-card>span,.traco-goal-card>span,.traco-choice-card summary span,.traco-photo-compare-card>span{display:block;font-size:8px;font-weight:900;letter-spacing:.14em;color:var(--traco-action)}
+.traco-daily-card h3,.traco-habit-card h3,.traco-week-shape h3,.traco-flank-card h3,.traco-moving-card h3,.traco-pattern-card h3,.traco-plateau-card h3,.traco-goal-card h3,.traco-photo-compare-card h3{margin:5px 0 3px;font-size:21px;letter-spacing:-.025em}
+.traco-daily-card header small,.traco-habit-card header small,.traco-week-shape header small{font-size:9px;color:#8f9298}
+.traco-daily-card header>b{flex:0 0 auto;min-width:52px;height:36px;border-radius:999px;background:#202024;display:grid;place-items:center;font-size:12px;color:#fff}
+.traco-priority-limit{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:13px 0 10px}
+.traco-priority-limit article{padding:11px;border-radius:13px;background:#18181a;border:1px solid #29292d;display:grid;gap:6px}
+.traco-priority-limit article span{font-size:8px;text-transform:uppercase;font-weight:900;color:#9b9ea3}
+.traco-priority-limit article:first-child span{color:#c4d82e}
+.traco-priority-limit article i{font-size:8px;line-height:1.35;font-style:normal;color:#d1d2d4}
+.traco-daily-card>p{margin:0;font-size:9px;line-height:1.45;color:#92959a}
+.traco-daily-card.is-compact{margin:14px 0}
+.traco-daily-card.is-compact .traco-priority-limit{display:none}
+.traco-daily-card.is-compact>p{margin-top:9px}
+.traco-daily-card.is-compact>button{margin-top:11px;width:100%;height:40px;border:1px solid #33343a;border-radius:11px;background:#1a1a1d;color:#f7f7f4;font-size:9px;font-weight:900;text-transform:uppercase}
+.traco-habit-card{display:grid;gap:12px}
+.traco-protein-step{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border-radius:13px;background:#18181a;border:1px solid #2b2b30}
+.traco-protein-step>div:first-child{display:grid;gap:3px}.traco-protein-step span{font-size:9px;color:#95989e}.traco-protein-step b{font-size:26px}
+.traco-protein-step>div:last-child{display:flex;gap:7px}.traco-protein-step button{width:38px;height:38px;border:1px solid #37373c;border-radius:10px;background:#202024;color:#fff;font-size:20px}
+.traco-habit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.traco-habit-grid button,.traco-life-actions button{min-height:42px;border:1px solid #33343a;border-radius:11px;background:#18181a;color:#a2a4a9;font-size:8px;font-weight:800;padding:8px}
+.traco-habit-grid button.is-on,.traco-life-actions button.is-on{border-color:var(--traco-action);background:rgba(255,59,48,.08);color:#fff}
+.traco-habit-grid button[data-body-toggle="fruitVeg"].is-on,.traco-habit-grid button[data-body-toggle="water"].is-on,.traco-habit-grid button[data-body-toggle="planned"].is-on{border-color:#c4d82e;background:rgba(196,216,46,.08);color:#edf6a5}
+.traco-recovery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.traco-recovery-grid label{position:relative;display:grid;gap:5px;font-size:8px;color:#979aa0}
+.traco-recovery-grid input,.traco-recovery-grid select{width:100%;height:40px;border:1px solid #33343a;border-radius:10px;background:#18181a;color:#fff;padding:0 9px;font-size:10px;outline:none}
+.traco-recovery-grid label>span{position:absolute;right:8px;bottom:12px;font-size:7px;color:#74777c;pointer-events:none}
+.traco-life-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.traco-no-punishment{margin:0;font-size:9px;line-height:1.45;color:#92959a}
+.traco-week-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:13px}
+.traco-week-grid article{padding:11px;border-radius:12px;background:#18181a;border:1px solid #29292d}
+.traco-week-grid b{display:block;font-size:20px}.traco-week-grid span{display:block;margin-top:4px;font-size:8px;color:#8f9298}
+.traco-flank-card>div,.traco-moving-card>div{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:13px 0}
+.traco-flank-card article,.traco-moving-card article{padding:11px;border-radius:12px;background:#18181a;border:1px solid #29292d}
+.traco-flank-card article b,.traco-moving-card article b{display:block;font-size:17px}.traco-flank-card article span,.traco-moving-card article span,.traco-moving-card article small{display:block;margin-top:4px;font-size:8px;color:#8f9298}
+.traco-flank-card>p,.traco-moving-card>p,.traco-pattern-card>p,.traco-plateau-card>p,.traco-goal-card>p{margin:0;font-size:9px;line-height:1.5;color:#92959a}
+.traco-pattern-card,.traco-plateau-card,.traco-goal-card{display:grid;gap:7px}
+.traco-plateau-card{border-color:rgba(255,59,48,.24)}
+.traco-goal-card>div{display:flex;gap:6px;flex-wrap:wrap}.traco-goal-card>div b{font-size:8px;border-radius:999px;background:#1c1c1f;border:1px solid #303036;padding:7px 9px}
+.traco-choice-card{padding:0;overflow:hidden}
+.traco-choice-card summary{list-style:none;padding:15px 16px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:3px;cursor:pointer}
+.traco-choice-card summary::-webkit-details-marker{display:none}.traco-choice-card summary>b{grid-column:1;font-size:16px}.traco-choice-card summary>i{grid-column:2;grid-row:1/3;font-style:normal;font-size:20px;color:var(--traco-action)}
+.traco-choice-card[open] summary>i{transform:rotate(45deg)}
+.traco-choice-card>div{padding:0 16px 16px;display:grid;gap:9px}.traco-choice-card article{padding:11px;border-radius:12px;background:#18181a}.traco-choice-card h4{margin:0 0 7px;font-size:10px;color:#d5d6d8}.traco-choice-card p{margin:4px 0;font-size:8px;color:#93969b}.traco-choice-card small{font-size:8px;line-height:1.4;color:#7f8288}
+.traco-photo-compare-card{display:grid;gap:10px}.traco-photo-compare-card #tracoPhotoCompare>p{font-size:9px;color:#8d9096}
+.traco-photo-compare-head{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 8px}.traco-photo-compare-head>div{display:flex;justify-content:space-between;padding:8px 10px;border-radius:10px;background:#18181a;font-size:8px}.traco-photo-compare-head span{color:#8d9096}
+.traco-photo-compare-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.traco-photo-compare-grid article{display:grid;grid-template-columns:1fr 1fr;gap:2px;border-radius:11px;overflow:hidden;background:#1b1b1e}.traco-photo-compare-grid img{width:100%;aspect-ratio:3/4;object-fit:cover}
+.traco-overlay-box{margin-top:10px}.traco-overlay-box>span{display:block;font-size:8px;color:#92959a;margin-bottom:7px}.traco-overlay-box>div{position:relative;width:100%;aspect-ratio:3/4;max-height:420px;overflow:hidden;border-radius:13px;background:#18181a}.traco-overlay-box>div img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}.traco-overlay-box>div img:last-child{opacity:.5}.traco-overlay-box label{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:10px;margin-top:8px;font-size:8px;color:#92959a}.traco-overlay-box input{width:100%}
+html[data-theme="light"] .traco-daily-card,html[data-theme="light"] .traco-habit-card,html[data-theme="light"] .traco-week-shape,html[data-theme="light"] .traco-flank-card,html[data-theme="light"] .traco-moving-card,html[data-theme="light"] .traco-pattern-card,html[data-theme="light"] .traco-plateau-card,html[data-theme="light"] .traco-goal-card,html[data-theme="light"] .traco-choice-card,html[data-theme="light"] .traco-photo-compare-card{background:#F5F3EE;border-color:#D7D4CC;color:#111113}
+html[data-theme="light"] .traco-priority-limit article,html[data-theme="light"] .traco-protein-step,html[data-theme="light"] .traco-week-grid article,html[data-theme="light"] .traco-flank-card article,html[data-theme="light"] .traco-moving-card article,html[data-theme="light"] .traco-choice-card article{background:#FCFBF8;border-color:#DAD7D0}
+html[data-theme="light"] .traco-habit-grid button,html[data-theme="light"] .traco-life-actions button,html[data-theme="light"] .traco-recovery-grid input,html[data-theme="light"] .traco-recovery-grid select{background:#FCFBF8;border-color:#DAD7D0;color:#111113}
+@media(max-width:390px){.traco-week-grid{grid-template-columns:1fr 1fr}.traco-recovery-grid{grid-template-columns:1fr}.traco-priority-limit{grid-template-columns:1fr}.traco-photo-compare-grid{gap:4px}}
