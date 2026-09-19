@@ -168,9 +168,8 @@
   }
   function setRir(value){
     const s=state.activeSession,ex=s&&s.exercises&&s.exercises[state.currentExercise];if(!s||!ex)return;
-    const last=lastCompletedSet(ex);
-    if(!last)return toast('conclui uma série primeiro');
-    last.rir=value;ex.rirLast=value;save(K.draft,s);haptic();renderSession();
+    const set=workingSet(ex)||lastCompletedSet(ex);if(!set)return;
+    set.rir=value;ex.rirLast=value;save(K.draft,s);haptic();renderSession();
   }
   function addCardio(minutes){
     const s=state.activeSession;if(!s)return;
@@ -191,8 +190,8 @@
     const consoleEl=main.querySelector('.perf-exercise-console');if(!consoleEl)return;
     if(qs('#tracoCoachPanel'))return;
     const sug=coachSuggestion(ex);
-    const last=lastCompletedSet(ex);
-    const currentRir=(last&&last.rir)||ex.rirLast||'';
+    const active=workingSet(ex),last=lastCompletedSet(ex);
+    const currentRir=(active&&active.rir)||(last&&last.rir)||ex.rirLast||'';
     const canApply=sug.weight!=null||sug.reps!=null;
     consoleEl.insertAdjacentHTML('beforeend',
       '<section class="traco-coach-panel" id="tracoCoachPanel">'+
@@ -203,7 +202,7 @@
       '<button id="tracoCoachSub"><b>⇄</b><span>substituir</span></button>'+
       '<button id="tracoCoachFocus"><b>◉</b><span>'+(focusEnabled()?'modo normal':'modo foco')+'</span></button>'+
       '</div>'+
-      '<div class="traco-coach-rir"><span>como ficou a última série?</span><div>'+
+      '<div class="traco-coach-rir"><span>como ficou esta série?</span><div>'+
       '<button data-rir="easy" class="'+(currentRir==='easy'?'is-active':'')+'">fácil</button>'+
       '<button data-rir="right" class="'+(currentRir==='right'?'is-active':'')+'">certo</button>'+
       '<button data-rir="heavy" class="'+(currentRir==='heavy'?'is-active':'')+'">pesado</button>'+
