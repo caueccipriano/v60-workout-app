@@ -44,7 +44,7 @@ jobs:
           const version=JSON.parse(fs.readFileSync('version.json','utf8'));
           const index=fs.readFileSync('index.html','utf8');
           if(manifest.short_name!=='Traço') throw new Error('Manifest brand mismatch');
-          if(version.name!=='Traço'||version.version!=='2.4.0') throw new Error('Version brand mismatch');
+          if(version.name!=='Traço'||version.version!=='2.4.1') throw new Error('Version brand mismatch');
           if(!index.includes('<title>Traço</title>')) throw new Error('Document title mismatch');
           for(const file of ['assets/icon.svg','assets/traco-icon-180.png','assets/traco-icon-192.png','assets/traco-icon-512.png','traco-brand.js','traco-brand.css','traco-theme.css','traco-performance.js','traco-performance.css','traco-gym-ux.js','traco-gym-ux.css','privacy.html','terms.html','support.html','DESIGN_SYSTEM.md']){
             if(!fs.existsSync(file)) throw new Error(`Missing brand asset: ${file}`);
@@ -73,8 +73,8 @@ jobs:
           for(const required of ['TRACO_THEME_KEY','tracoSetTheme','data-traco-theme="dark"','version:\'2.4.0\'']){
             if(!brand.includes(required)) throw new Error(`Missing persistent theme feature: ${required}`);
           }
-          if(!index.includes("localStorage.getItem('traco_theme')")||!index.includes('traco-theme.css?v=251')||!index.includes('traco-performance.css?v=251')) throw new Error('First-paint theme bootstrap missing');
-          if(!sw.includes("'./traco-theme.css'")||!sw.includes("'./traco-performance.css'")||!sw.includes("'./traco-performance.js'")||!sw.includes("'./traco-gym-ux.js'")||!sw.includes("'./traco-gym-ux.css'")||!sw.includes("const CACHE = 'traco-v49'")) throw new Error('Theme/cache integration missing');
+          if(!index.includes("localStorage.getItem('traco_theme')")||!index.includes('traco-theme.css?v=264')||!index.includes('traco-performance.css?v=264')) throw new Error('First-paint theme bootstrap missing');
+          if(!sw.includes("'./traco-theme.css'")||!sw.includes("'./traco-performance.css'")||!sw.includes("'./traco-performance.js'")||!sw.includes("'./traco-gym-ux.js'")||!sw.includes("'./traco-gym-ux.css'")||!sw.includes("const CACHE = 'traco-v50'")) throw new Error('Theme/cache integration missing');
           if(!guides.includes("dark?'#FF3B30':'#E9342C'")) throw new Error('Exercise guide dark palette missing');
           if(!core.includes("dark?'#FF3B30':'#E9342C'")) throw new Error('Core guide dark palette missing');
           console.log('Dark theme + body mobile layout OK: black/red, persistent, first-paint safe');
@@ -581,8 +581,8 @@ jobs:
             'abdutora-2':{provider:'youtube',id:'7pbZA7ncuq8'},
             'core-pallof-ter':{provider:'youtube',id:'SFJprbDnaS0'},
             'leg-press-alto':{provider:'youtube',id:'iQhP0kkadSI'},
-            'core-leg-raise-ter':{provider:'youtube',id:'0tzBVqiDwSs'},
-            'crunch':{provider:'youtube',id:'nCHypnGvcq4'},
+            'core-leg-raise-ter':{provider:'youtube',id:'lmSP-c1X_iY'},
+            'crunch':{provider:'youtube',id:'3qjoXDTuyOE'},
             'crunch-2':{provider:'youtube',id:'3qjoXDTuyOE'},
             'core-crunch-seg':{provider:'youtube',id:'3qjoXDTuyOE'},
             'supino-inclinado':{provider:'youtube',id:'oe7N2GUzHIw'},
@@ -598,10 +598,10 @@ jobs:
           if(!media.includes("'core-pallof-ter':{name:\"Pallof press\",equipment:\"Polia / crossover\",scene:'pallofPress',verified:true}")) throw new Error('Pallof exact audit missing');
           if(!guides.includes("'abdutora':abductor")||!guides.includes("'abdutora-2':abductor")) throw new Error('Abductor scene mapping missing');
           if(!core.includes("if(id==='core-pallof-ter')return v60CoreScenePallof()")) throw new Error('Pallof scene mapping missing');
-          if(!media.includes("'core-leg-raise-ter':{name:\"elevação de pernas no banco\",equipment:\"Banco reto\",scene:'legRaiseBench',verified:true}")) throw new Error('Leg raise exact audit missing');
-          if(!media.includes("'core-dead-bug-qui':{name:\"dead bug\",equipment:\"Solo / colchonete\",scene:'deadBug',verified:true}")) throw new Error('Dead bug exact audit missing');
-          if(!core.includes("if(id==='core-leg-raise-ter')return v60CoreSceneLegRaise()")) throw new Error('Leg raise scene mapping missing');
-          if(!core.includes("if(id==='core-dead-bug-qui')return v60CoreSceneDeadBug()")) throw new Error('Dead bug scene mapping missing');
+          if(!media.includes("'core-leg-raise-ter':{name:\"reverse crunch no chão\",equipment:\"Solo / colchonete\",scene:'reverseCrunchFloor',verified:true}")) throw new Error('Reverse crunch floor exact audit missing');
+          if(!media.includes("'core-dead-bug-qui':{name:\"reverse crunch no chão\",equipment:\"Solo / colchonete\",scene:'reverseCrunchFloor',verified:true}")) throw new Error('Thursday reverse crunch exact audit missing');
+          if(!core.includes("if(id==='core-leg-raise-ter')return v60CoreSceneReverseCrunch()")) throw new Error('Reverse crunch scene mapping missing');
+          if(!core.includes("if(id==='core-dead-bug-qui')return v60CoreSceneReverseCrunch()")) throw new Error('Thursday reverse crunch scene mapping missing');
           if(!guides.includes("'elevacao-lateral-2':()=>cableLateral(true)")||!guides.includes("'elevacao-lateral-3':()=>cableLateral(true)")) throw new Error('Cable lateral variant mismatch');
           if(!app.includes("['abdutora','abdutora','Máquina abdutora'")||!app.includes("['abdutora-2','abdutora','Máquina abdutora'")) throw new Error('Abductor equipment naming mismatch');
           console.log('Exact exercise media audit OK: 37/37; no equivalent stock clips');
