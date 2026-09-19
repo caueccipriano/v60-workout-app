@@ -2,8 +2,8 @@ const workoutPlan = [
   { id:'seg', day:1, name:'peito + ombros + tríceps · foco estético', short:'peito + ombro', exercises:[
     ['supino-inclinado','supino inclinado','Smith + banco a ~30°',4,8,10,90,'🏋️'],
     ['desenvolvimento','desenvolvimento sentado','Halteres + banco',3,8,12,90,'⬆️'],
-    ['elevacao-lateral','elevação lateral unilateral','Polia baixa / crossover',4,12,15,60,'🪽'],
-    ['crucifixo-baixo-alto','crossover alto → baixo','Crossover',3,10,15,60,'↘️'],
+    ['elevacao-lateral','elevação lateral unilateral','Polia baixa / crossover',4,12,20,60,'🪽'],
+    ['crucifixo-baixo-alto','crossover alto → baixo','Crossover',4,10,15,60,'↘️'],
     ['triceps-pushdown','tríceps pushdown','Polia alta + barra/corda',3,10,15,60,'💪'],
     ['triceps-overhead','tríceps acima da cabeça','Polia alta + corda',3,10,15,60,'🔝'] ]},
   { id:'ter', day:2, name:'pernas completas', short:'pernas', exercises:[
@@ -24,7 +24,7 @@ const workoutPlan = [
   { id:'qui', day:4, name:'peitão + ombros + braços · foco inferior', short:'peito + braços', exercises:[
     ['supino-reto','supino reto','Smith + banco reto',3,8,12,90,'🏋️'],
     ['crucifixo-reto','crossover alto → baixo','Crossover',3,12,15,60,'↘️'],
-    ['elevacao-lateral-2','elevação lateral unilateral','Polia',4,12,15,60,'🪽'],
+    ['elevacao-lateral-2','elevação lateral unilateral','Polia',4,12,20,60,'🪽'],
     ['face-pull','face pull','Polia alta + corda',3,12,15,60,'🎯'],
     ['triceps-overhead-2','tríceps acima da cabeça','Polia alta + corda',3,10,15,60,'🔝'],
     ['rosca-unilateral','rosca bíceps unilateral','Polia baixa',3,10,15,60,'💪'] ]},
@@ -33,7 +33,7 @@ const workoutPlan = [
     ['flexora-2','flexora sentada','Máquina flexora',4,10,15,60,'🦿'],
     ['leg-press-alto','leg press — pés mais altos','Leg press 45°',3,10,12,90,'🦵'],
     ['puxada-neutra','puxada neutra / fechada','Máquina de puxada',3,10,12,90,'🔻'],
-    ['elevacao-lateral-3','elevação lateral unilateral','Polia',3,12,15,60,'🪽'],
+    ['elevacao-lateral-3','elevação lateral unilateral','Polia',4,12,20,60,'🪽'],
     ['abdutora-2','abdutora','Máquina abdutora',2,15,20,60,'↔️'],
     ['crunch-2','crunch na polia','Polia alta',3,10,15,60,'◼️'] ]}
 ].map(w=>({...w, exercises:w.exercises.map(e=>({id:e[0],name:e[1],equipment:e[2],sets:e[3],min:e[4],max:e[5],rest:e[6],icon:e[7]}))}));
