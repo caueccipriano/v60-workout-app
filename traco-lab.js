@@ -345,6 +345,25 @@
     const tl=trafficLight();
     return '<section class="lab-wrapped-card"><header><span>SEU WRAPPED DA SEMANA</span><b class="'+tl.color+'">'+tl.title+'</b></header><h3>'+Number(bs.workouts||0)+' treinos · '+Number(bs.cardio||0)+' min cardio</h3><div><span>proteína '+Number(bs.protein||0)+'/7</span><span>água '+Number(bs.water||0)+'/7</span><span>'+prs+' PR'+(prs===1?'':'s')+'</span></div><p>'+esc(tl.text)+'</p></section>';
   }
+  function antiFlankMarkup(){
+    const bs=window.TracoBodyCoach?.weeklyStats?.()||{adherence:0,protein:0,cardio:0};
+    const latest=latestBody(),rows=body().slice().sort((a,b)=>a.date.localeCompare(b.date));
+    let waistTrend='coletando',hipTrend='coletando';
+    if(rows.length>=2){
+      const first=rows[Math.max(0,rows.length-3)],last=rows[rows.length-1];
+      if(first.waist&&last.waist){const d=Number(last.waist)-Number(first.waist);waistTrend=d<-.3?'descendo':d>.3?'subindo':'estável'}
+      if(first.hip&&last.hip){const d=Number(last.hip)-Number(first.hip);hipTrend=d<-.3?'descendo':d>.3?'subindo':'estável'}
+    }
+    const strength=recentSessions(14).some(s=>(s.prs||[]).length>0)?'progredindo':'manter';
+    const habits=Number(bs.adherence||0)>=70?'consistentes':Number(bs.adherence||0)>=45?'oscilando':'baixos';
+    const activity=Number(bs.cardio||0)>=45?'boa':Number(bs.cardio||0)>0?'parcial':'baixa';
+    return '<section class="lab-antiflank-card"><span>PLANO ANTI-FLANCO</span><h3>4 pilares · sem exercício mágico</h3><div>'+
+      '<article><b>'+esc(waistTrend)+' / '+esc(hipTrend)+'</b><small>cintura + lombar</small></article>'+
+      '<article><b>'+esc(habits)+'</b><small>base alimentar</small></article>'+
+      '<article><b>'+esc(activity)+'</b><small>cardio/atividade</small></article>'+
+      '<article><b>'+esc(strength)+'</b><small>dorsal/ombros preservados</small></article>'+
+      '</div><p>o objetivo é reduzir a região gradualmente sem sacrificar o volume que cria seu V.</p></section>';
+  }
 
   /* EXPERIMENTS */
   const expPresets={
@@ -458,7 +477,7 @@
   function decorateBody(){
     const main=qs('.body-page');if(!main||qs('.lab-recovery-card'))return;
     const coach=qs('#tracoBodyCoach');
-    const html=recoveryMarkup()+hungerMarkup()+foodCoachMarkup()+mealBuilderMarkup()+groceryMarkup()+experimentMarkup()+timelineMarkup()+photoLabMarkup()+
+    const html=recoveryMarkup()+antiFlankMarkup()+hungerMarkup()+foodCoachMarkup()+mealBuilderMarkup()+groceryMarkup()+experimentMarkup()+timelineMarkup()+photoLabMarkup()+
       '<section class="lab-camera-entry"><div><span>FOTOS PADRONIZADAS</span><b>câmera com molde de pose</b><small>mesma altura, distância e enquadramento</small></div><button id="labGuidedCamera">abrir câmera</button></section>';
     if(coach)coach.insertAdjacentHTML('beforebegin',html);else main.insertAdjacentHTML('beforeend',html);
     bindRecovery();
