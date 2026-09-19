@@ -11,21 +11,21 @@ function v60InstallAestheticCorePlan(){
   const sex=workoutPlan.find(w=>w.id==='sex');
 
   if(seg&&!seg.exercises.some(e=>e.id==='core-crunch-seg')){
-    seg.exercises.push(v60CoreExercise('core-crunch-seg','crunch na polia','Polia alta + corda',3,10,15,45,'◼️'));
+    seg.exercises.push(v60CoreExercise('core-crunch-seg','crunch na polia','Polia alta + corda',2,10,15,45,'◼️'));
   }
   if(ter&&!ter.exercises.some(e=>e.id==='core-pallof-ter')){
-    ter.exercises.push(v60CoreExercise('core-pallof-ter','Pallof press','Polia / crossover',3,10,12,45,'↔️'));
+    ter.exercises.push(v60CoreExercise('core-pallof-ter','Pallof press','Polia / crossover',2,10,12,45,'↔️'));
   }
   if(ter&&!ter.exercises.some(e=>e.id==='core-leg-raise-ter')){
-    ter.exercises.push({...v60CoreExercise('core-leg-raise-ter','reverse crunch no chão','Solo / colchonete',3,12,15,45,'◼️'),usesLoad:false});
+    ter.exercises.push({...v60CoreExercise('core-leg-raise-ter','reverse crunch no chão','Solo / colchonete',2,12,15,45,'◼️'),usesLoad:false});
   }
   const wed=qua?.exercises.find(e=>e.id==='crunch');
-  if(wed)Object.assign(wed,{name:'crunch ajoelhado na polia',equipment:'Polia alta + corda',sets:3,min:10,max:15,rest:45,icon:'◼️',core:true});
+  if(wed)Object.assign(wed,{name:'crunch ajoelhado na polia',equipment:'Polia alta + corda',sets:2,min:10,max:15,rest:45,icon:'◼️',core:true});
   if(qui&&!qui.exercises.some(e=>e.id==='core-woodchop-qui')){
-    qui.exercises.push(v60CoreExercise('core-woodchop-qui','Pallof press','Polia / crossover',3,10,12,45,'↔️'));
+    qui.exercises.push(v60CoreExercise('core-woodchop-qui','Pallof press','Polia / crossover',2,10,12,45,'↔️'));
   }
   if(qui&&!qui.exercises.some(e=>e.id==='core-dead-bug-qui')){
-    qui.exercises.push({...v60CoreExercise('core-dead-bug-qui','reverse crunch no chão','Solo / colchonete',3,12,15,45,'◼️'),usesLoad:false});
+    qui.exercises.push({...v60CoreExercise('core-dead-bug-qui','reverse crunch no chão','Solo / colchonete',2,12,15,45,'◼️'),usesLoad:false});
   }
   const fri=sex?.exercises.find(e=>e.id==='crunch-2');
   if(fri)Object.assign(fri,{name:'crunch ajoelhado na polia',equipment:'Polia alta + corda',sets:3,min:10,max:15,rest:45,icon:'◼️',core:true});
@@ -147,7 +147,7 @@ const v60CoreBaseRenderWorkouts=renderWorkouts;
 renderWorkouts=function(){
   v60CoreBaseRenderWorkouts();
   const main=document.querySelector('.workouts-page');
-  if(main&&!main.querySelector('.v60-core-program-note'))main.insertAdjacentHTML('beforeend','<section class="v60-core-program-note"><b>7 estímulos de core em 5 dias</b><span>crunch na polia + reverse crunch no chão + Pallof press · abdômen e anti-rotação sem flexão lateral pesada</span></section>');
+  if(main&&!main.querySelector('.v60-core-program-note'))main.insertAdjacentHTML('beforeend','<section class="v60-core-program-note"><b>7 estímulos de core em 5 dias</b><span>foco cintura: crunch na polia + reverse crunch no chão + Pallof press · simples, sem flexão lateral pesada</span></section>');
 };
 
 if(state.activeSession)v60SyncCoreSession();
