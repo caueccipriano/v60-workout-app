@@ -374,7 +374,20 @@
     planned:{name:'14 dias · refeições planejadas',metric:'planned',prompt:'mantive refeições planejadas hoje?'}
   };
   function experiments(){return read(EXP_KEY,[])}
-  function activeExperiment(){return experiments().find(e=>!e.finishedAt&&Date.now()<e.startedAt+14*86400000)||null}
+  function syncExperiments(){
+    const list=experiments();let changed=false;
+    list.forEach(e=>{
+      if(!e.finishedAt&&Date.now()>=e.startedAt+14*86400000){
+        const latest=latestBody();
+        e.finishedAt=Date.now();
+        e.result={weight:Number(latest?.weight||0)||null,waist:Number(latest?.waist||0)||null};
+        changed=true;
+      }
+    });
+    if(changed)write(EXP_KEY,list);
+    return list;
+  }
+  function activeExperiment(){return syncExperiments().find(e=>!e.finishedAt&&Date.now()<e.startedAt+14*86400000)||null}
   function startExperiment(key){
     const p=expPresets[key],list=experiments();if(!p)return;
     const latest=latestBody();
@@ -388,8 +401,17 @@
     write(EXP_KEY,list);renderBody();
   }
   function experimentMarkup(){
-    const e=activeExperiment();
-    if(!e)return '<section class="lab-exp-card"><span>EXPERIMENTOS DE 14 DIAS</span><h3>muda uma coisa por vez</h3><p>assim você aprende o que realmente ajuda sua rotina, sem alterar dez variáveis juntas.</p><div>'+Object.keys(expPresets).map(k=>'<button data-start-exp="'+k+'">'+expPresets[k].name+'</button>').join('')+'</div></section>';
+    const e=activeExperiment(),history=syncExperiments().filter(x=>x.finishedAt).sort((a,b)=>b.finishedAt-a.finishedAt),last=history[0];
+    if(!e){
+      let result='';
+      if(last){
+        const adherence=Math.round(Object.values(last.days||{}).filter(Boolean).length/14*100);
+        const wd=last.baseline?.waist&&last.result?.waist?Number(last.result.waist)-Number(last.baseline.waist):null;
+        const pd=last.baseline?.weight&&last.result?.weight?Number(last.result.weight)-Number(last.baseline.weight):null;
+        result='<article class="lab-exp-result"><b>último experimento</b><span>'+esc(last.name)+' · '+adherence+'% dos dias</span><small>'+((wd!=null)?((wd>0?'+':'')+wd.toFixed(1).replace('.',',')+' cm cintura'):'cintura sem comparação')+' · '+((pd!=null)?((pd>0?'+':'')+pd.toFixed(1).replace('.',',')+' kg'):'peso sem comparação')+'</small><em>isso descreve o período; não prova que uma única mudança causou o resultado.</em></article>';
+      }
+      return '<section class="lab-exp-card"><span>EXPERIMENTOS DE 14 DIAS</span><h3>muda uma coisa por vez</h3><p>assim você aprende o que realmente ajuda sua rotina, sem alterar dez variáveis juntas.</p>'+result+'<div>'+Object.keys(expPresets).map(k=>'<button data-start-exp="'+k+'">'+expPresets[k].name+'</button>').join('')+'</div></section>';
+    }
     const day=Math.min(14,Math.floor((Date.now()-e.startedAt)/86400000)+1),done=Object.values(e.days).filter(Boolean).length;
     return '<section class="lab-exp-card active"><span>EXPERIMENTO ATIVO</span><h3>'+esc(e.name)+'</h3><p>dia '+day+'/14 · '+done+' dias cumpridos</p><div class="lab-exp-track"><i style="width:'+Math.round(day/14*100)+'%"></i></div><b>'+esc(e.prompt)+'</b><div class="lab-exp-answer"><button data-exp-answer="1">sim</button><button data-exp-answer="0">não</button></div></section>';
   }
@@ -415,7 +437,14 @@
     body().forEach(x=>events.push({at:new Date(x.date+'T12:00:00').getTime(),type:'medidas',title:'check-in corporal',detail:[x.weight&&x.weight+' kg',x.waist&&x.waist+' cm cintura',x.shoulders&&x.shoulders+' cm ombros'].filter(Boolean).join(' · ')}));
     Object.values(bodyLogs()).forEach(x=>events.push({at:new Date(x.date+'T20:00:00').getTime(),type:'rotina',title:'hábitos do dia',detail:[Number(x.proteinMeals)>=3&&'proteína ✓',x.water&&'água ✓',x.sleepHours&&x.sleepHours+'h sono'].filter(Boolean).join(' · ')}));
     events.sort((a,b)=>b.at-a.at);
-    return '<details class="lab-timeline-card"><summary><span>LINHA DO TEMPO</span><b>história do shape</b><i>+</i></summary><div>'+events.slice(0,20).map(e=>'<article><time>'+new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'short'}).format(new Date(e.at))+'</time><div><b>'+esc(e.title)+'</b><small>'+esc(e.detail||e.type)+'</small></div></article>').join('')+'</div></details>';
+    return '<details class="lab-timeline-card"><summary><span>LINHA DO TEMPO</span><b>história do shape</b><i>+</i></summary><div>'+events.slice(0,20).map(e=>'<article><time>'+new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'short'}).format(new Date(e.at))+'</time><div><b>'+esc(e.title)+'</b><small>'+esc(e.detail||e.type)+'</small></div></article>').join('')+'<div id="labTimelinePhotos"></div></div></details>';
+  }
+  async function decorateTimelinePhotos(){
+    const target=qs('#labTimelinePhotos');if(!target)return;
+    try{
+      const rows=(await photoRows()).sort((a,b)=>b.id-a.id).slice(0,6);
+      target.innerHTML=rows.map(row=>'<article class="lab-timeline-photo"><time>'+new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'short'}).format(new Date(row.date+'T12:00:00'))+'</time><div><b>check-in fotográfico</b><small>'+esc(row.note||'frente · perfil · costas')+'</small></div></article>').join('');
+    }catch{target.innerHTML=''}
   }
   async function decoratePhotoLab(){
     const holder=qs('#tracoLabPhotoTools');if(!holder)return;
@@ -480,7 +509,7 @@
     const html=recoveryMarkup()+antiFlankMarkup()+hungerMarkup()+foodCoachMarkup()+mealBuilderMarkup()+groceryMarkup()+experimentMarkup()+timelineMarkup()+photoLabMarkup()+
       '<section class="lab-camera-entry"><div><span>FOTOS PADRONIZADAS</span><b>câmera com molde de pose</b><small>mesma altura, distância e enquadramento</small></div><button id="labGuidedCamera">abrir câmera</button></section>';
     if(coach)coach.insertAdjacentHTML('beforebegin',html);else main.insertAdjacentHTML('beforeend',html);
-    bindRecovery();
+    bindRecovery();decorateTimelinePhotos();
     qsa('[data-hunger-type]').forEach(btn=>btn.onclick=()=>{saveTodayLab({hungerType:btn.dataset.hungerType});renderBody()});
     qs('#labFoodAsk').onclick=()=>{qs('#labFoodAnswer').textContent=foodDecision(qs('#labFoodInput').value)};
     qs('#labBuildMeal').onclick=()=>{
