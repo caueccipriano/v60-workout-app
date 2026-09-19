@@ -325,13 +325,44 @@
   function photoSlotMarkup(key,label){
     return '<label class="traco-photo-slot" data-photo-slot="'+key+'"><input type="file" accept="image/*" data-photo-input="'+key+'"><span>'+label+'</span><small>mesma luz · mesma distância</small></label>';
   }
+  async function importStandardBaseline(file){
+    if(!file)throw new Error('arquivo ausente');
+    const pack=JSON.parse(await file.text());
+    if(pack.type!=='traco-photo-pack'||!Array.isArray(pack.photos)||!pack.photos.length)throw new Error('pacote inválido');
+    const incoming=pack.photos.map(function(row,index){
+      if(!row.front||!row.side||!row.back)throw new Error('trio incompleto');
+      return Object.assign({},row,{
+        id:Number(row.id)||Date.now()+index,
+        date:row.date||new Date().toISOString().slice(0,10),
+        baselineOfficial:true,
+        kind:'progress',
+        importedToStandardCheckin:true
+      });
+    });
+    const existing=await dbAll();
+    for(const row of incoming){
+      const duplicate=existing.find(function(item){
+        return item.baselineOfficial&&item.date===row.date&&item.front===row.front&&item.side===row.side&&item.back===row.back;
+      });
+      if(!duplicate)await dbPut(row);
+    }
+    return incoming[0];
+  }
+  function photoRecordMarkup(row,label){
+    const badge=row.baselineOfficial?'<em class="traco-photo-baseline-badge">BASELINE OFICIAL</em>':'';
+    return '<div class="traco-photo-record '+(row.baselineOfficial?'is-baseline':'')+'"><div class="traco-photo-record-head"><div><span>'+label+'</span><b>'+esc(row.date)+'</b></div>'+badge+'</div><div class="traco-photo-thumbs"><img src="'+row.front+'" alt="frente"><img src="'+row.side+'" alt="perfil"><img src="'+row.back+'" alt="costas"></div>'+(row.note?'<small>'+esc(row.note)+'</small>':'')+'</div>';
+  }
   async function refreshPhotoHistory(){
     const target=qs('#tracoPhotoHistory');if(!target)return;
     try{
       const rows=(await dbAll()).sort(function(a,b){return b.id-a.id;});
-      if(!rows.length){target.innerHTML='<p>a primeira sequência vira sua referência visual.</p>';return;}
-      const row=rows[0];
-      target.innerHTML='<div class="traco-photo-latest"><div><span>último check-in</span><b>'+esc(row.date)+'</b></div><div class="traco-photo-thumbs"><img src="'+row.front+'" alt="frente"><img src="'+row.side+'" alt="perfil"><img src="'+row.back+'" alt="costas"></div><small>'+rows.length+' check-in'+(rows.length>1?'s':'')+' salvo'+(rows.length>1?'s':'')+' neste aparelho</small></div>';
+      if(!rows.length){target.innerHTML='<p>a primeira sequência vira sua referência visual. se você já tem o pacote do baseline atual, importe logo acima.</p>';return;}
+      const latest=rows[0];
+      const baseline=rows.find(function(row){return row.baselineOfficial;})||rows[rows.length-1];
+      const parts=[];
+      if(baseline)parts.push(photoRecordMarkup(baseline,'baseline / antes'));
+      if(latest&&(!baseline||latest.id!==baseline.id))parts.push(photoRecordMarkup(latest,'último check-in'));
+      target.innerHTML=parts.join('')+'<small class="traco-photo-count">'+rows.length+' check-in'+(rows.length>1?'s':'')+' salvo'+(rows.length>1?'s':'')+' neste aparelho</small>';
     }catch(e){target.innerHTML='<p>fotos indisponíveis neste navegador.</p>';}
   }
   function bodyRatiosMarkup(){
@@ -349,7 +380,9 @@
       '<section class="traco-photo-card" id="tracoPhotoCheckin"><header><span>FOTOS PADRONIZADAS</span><h3>frente · perfil · costas</h3><small>relaxado, mesma luz, distância e altura da câmera.</small></header>'+
       '<label class="traco-photo-date">data<input id="tracoPhotoDate" type="date" value="'+new Date().toISOString().slice(0,10)+'"></label>'+
       '<div class="traco-photo-grid">'+photoSlotMarkup('front','frente')+photoSlotMarkup('side','perfil')+photoSlotMarkup('back','costas')+'</div>'+
-      '<button class="cta-lime" id="tracoPhotoSave">salvar check-in</button><div id="tracoPhotoHistory" class="traco-photo-history"></div></section>');
+      '<button class="cta-lime" id="tracoPhotoSave">salvar check-in</button>'+
+      '<div class="traco-standard-baseline-import"><div><span>JÁ TEM SEU “ANTES”?</span><b>usar baseline atual como fotos padronizadas</b><small>importe o pacote privado uma vez. ele entra aqui como frente + perfil + costas e vira seu baseline oficial.</small></div><label>importar baseline<input id="tracoStandardBaselineImport" type="file" accept="application/json"></label></div>'+
+      '<div id="tracoPhotoHistory" class="traco-photo-history"></div></section>');
     qsa('[data-photo-input]').forEach(function(input){
       input.onchange=async function(){
         const file=input.files&&input.files[0];if(!file)return;
@@ -365,9 +398,20 @@
       if(!photoDraft.front||!photoDraft.side||!photoDraft.back)return toast('faltam frente, perfil e costas');
       const date=qs('#tracoPhotoDate').value;if(!date)return toast('escolhe a data');
       try{
-        await dbPut({id:Date.now(),date:date,front:photoDraft.front,side:photoDraft.side,back:photoDraft.back});
+        await dbPut({id:Date.now(),date:date,front:photoDraft.front,side:photoDraft.side,back:photoDraft.back,kind:'progress'});
         photoDraft.front=photoDraft.side=photoDraft.back=null;toast('check-in fotográfico salvo');haptic();renderBody();
       }catch(e){toast('não consegui salvar as fotos');}
+    };
+    const baselineInput=qs('#tracoStandardBaselineImport');
+    if(baselineInput)baselineInput.onchange=async function(){
+      const file=baselineInput.files&&baselineInput.files[0];if(!file)return;
+      try{
+        const row=await importStandardBaseline(file);
+        toast('baseline oficial adicionado às fotos padronizadas');
+        haptic();
+        const date=qs('#tracoPhotoDate');if(date&&row&&row.date)date.value=row.date;
+        renderBody();
+      }catch(e){toast('não consegui importar esse baseline');}
     };
     refreshPhotoHistory();
   }
