@@ -132,7 +132,7 @@ startSession=function(workoutId){
 v60ExtrasPanel=function(){
   const extras=(state.activeSession?.extras||[]).filter(x=>x.type==='cardio');
   const total=extras.reduce((a,x)=>a+Number(x.minutes||0),0);
-  return `<section class="v60-extras-card v60-cardio-only"><div><span>cardio</span><b>${total?`${total} min registrados`:'opcional hoje'}</b></div><div class="v60-extra-actions"><button id="v60AddCardio" type="button">+ adicionar cardio</button></div>${extras.length?'<button class="v60-clear-extras" id="v60ClearExtras" type="button">limpar cardio</button>':''}</section>`;
+  return `<section class="v60-extras-card v60-cardio-only"><div><span>cardio</span><b>${total?`${total} min registrados`:'15–20 min moderado · 3–4x/sem'}</b></div><div class="v60-extra-actions"><button id="v60AddCardio" type="button">+ adicionar cardio</button></div>${extras.length?'<button class="v60-clear-extras" id="v60ClearExtras" type="button">limpar cardio</button>':''}</section>`;
 };
 
 const v60CoreBaseRenderSession=renderSession;
