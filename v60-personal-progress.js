@@ -51,11 +51,17 @@ completeCurrentSet=function(){
   const si=ex?currentSetIndex(ex):-1;
   const set=si>=0?ex.sets[si]:null;
   const usesLoad=typeof tracoExerciseUsesLoad==='function'?tracoExerciseUsesLoad(ex):true;
-  if(set&&set.reps&&(!usesLoad||set.weight)&&si+1<ex.sets.length){
-    const next=ex.sets[si+1];
-    if(!usesLoad)next.weight='';
-    else if(next.weight===''||next.weight==null)next.weight=set.weight;
-    if(next.reps===''||next.reps==null)next.reps=set.reps;
+  if(set&&set.reps&&(!usesLoad||set.weight)){
+    // A série recém-concluída vira a referência deste exercício durante o treino atual.
+    // Sobrescreve apenas séries ainda não concluídas, inclusive valores antigos semeados do histórico.
+    ex.sets.forEach((next,index)=>{
+      if(index===si||next.done)return;
+      next.weight=usesLoad?set.weight:'';
+      next.reps=set.reps;
+      next.carriedFromSet=si+1;
+    });
+    ex.lastWorkingWeight=usesLoad?set.weight:'';
+    ex.lastWorkingReps=set.reps;
     save(K.draft,s);
   }
   v60BaseCompleteCurrentSet();
