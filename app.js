@@ -58,7 +58,7 @@ function toast(msg){const t=$('#toast');if(!t)return;t.textContent=msg;t.classLi
 function fmtClock(sec){const m=Math.floor(sec/60),s=sec%60;return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}
 function volumeOfSession(s){if(s?.excludeFromVolume)return 0;return s.exercises.reduce((sum,ex)=>sum+ex.sets.reduce((a,set)=>a+(set.done?Number(set.weight||0)*Number(set.reps||0):0),0),0)}
 function formatLoad(v){if(v>=1000)return `${(v/1000).toFixed(v>=10000?1:2).replace('.',',')}t`;return `${Math.round(v)}kg`}
-function tracoExerciseUsesLoad(ex){return ex?.usesLoad!==false;}
+function tracoExerciseUsesLoad(ex){if(ex?.usesLoad===false)return false;const eq=String(ex?.equipment||'').toLowerCase(),name=String(ex?.name||'').toLowerCase();return !(/solo|colchonete|peso corporal/.test(eq)||/prancha|reverse crunch/.test(name));}
 function hasPartialVolume(ss=[]){return ss.some(s=>s?.excludeFromVolume)}
 function recordedLoadCount(ss=[]){
   return ss.reduce((sum,s)=>sum+(s.exercises||[]).filter(ex=>(ex.sets||[]).some(set=>set.done&&Number(set.weight)>0)).length,0);
