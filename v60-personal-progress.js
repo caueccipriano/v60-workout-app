@@ -15,6 +15,7 @@ function v60PreviousExercise(exId){
   return null;
 }
 function v60SeedExerciseSets(ex){
+  const usesLoad=typeof tracoExerciseUsesLoad==='function'?tracoExerciseUsesLoad(ex):true;
   const prev=v60PreviousExercise(ex.id);
   if(!prev?.sets?.length)return;
   const prevKnown=prev.sets.filter(x=>x.done&&x.weight!==''&&x.weight!=null);
@@ -23,7 +24,8 @@ function v60SeedExerciseSets(ex){
   ex.sets.forEach((set,i)=>{
     if(set.done)return;
     const source=prevKnown[i]||fallback;
-    if((set.weight===''||set.weight==null)&&source?.weight!=='')set.weight=source.weight;
+    if(!usesLoad)set.weight='';
+    else if((set.weight===''||set.weight==null)&&source?.weight!=='')set.weight=source.weight;
     if((set.reps===''||set.reps==null)&&source?.reps!==''&&source?.reps!=null)set.reps=source.reps;
   });
 }
@@ -48,9 +50,11 @@ completeCurrentSet=function(){
   const ex=s?.exercises?.[state.currentExercise];
   const si=ex?currentSetIndex(ex):-1;
   const set=si>=0?ex.sets[si]:null;
-  if(set&&set.weight&&set.reps&&si+1<ex.sets.length){
+  const usesLoad=typeof tracoExerciseUsesLoad==='function'?tracoExerciseUsesLoad(ex):true;
+  if(set&&set.reps&&(!usesLoad||set.weight)&&si+1<ex.sets.length){
     const next=ex.sets[si+1];
-    if(next.weight===''||next.weight==null)next.weight=set.weight;
+    if(!usesLoad)next.weight='';
+    else if(next.weight===''||next.weight==null)next.weight=set.weight;
     if(next.reps===''||next.reps==null)next.reps=set.reps;
     save(K.draft,s);
   }
