@@ -3,6 +3,7 @@ const V60_ATTENDANCE_KEY='v60_attendance_v1';
 const V60_SMART_MIGRATION_KEY='v60_smart_sequence_bootstrap_20260917';
 const V60_REPORTED_HISTORY_KEY='v60_reported_history_bootstrap_20260917_v1';
 const V60_REPORTED_TODAY_KEY='v60_reported_history_20260918_v1';
+const V60_REPORTED_TODAY_0919_KEY='v60_reported_history_20260919_v1';
 
 // A→E follows recovery better than weekday locking.
 // Confirmed current anchor: back (A) → chest (B) → legs (C next).
@@ -184,6 +185,43 @@ function v60BootstrapReportedToday(){
   save(V60_REPORTED_TODAY_KEY,true);
 }
 
+function v60BootstrapReportedToday0919(){
+  if(load(V60_REPORTED_TODAY_0919_KEY,false))return;
+  const date='2026-09-19',workoutId='qui';
+  const all=sessions();
+  const existing=all.find(x=>x.finishedAt&&x.workoutId===workoutId&&v60DateKey(x.startedAt)===date);
+  if(!existing){
+    const plan=workoutPlan.find(w=>w.id===workoutId);
+    const draft=load(K.draft,null);
+    const matchingDraft=draft&&draft.workoutId===workoutId&&v60DateKey(draft.startedAt||Date.now())===date?draft:null;
+    const oldById=new Map((matchingDraft?.exercises||[]).map(ex=>[ex.id,ex]));
+    const exercises=(plan?.exercises||[]).map(ex=>{
+      const old=oldById.get(ex.id);
+      const oldSets=Array.isArray(old?.sets)?old.sets:[];
+      const count=Math.max(1,Number(ex.sets)||oldSets.length||1);
+      return {...ex,reported:true,sets:Array.from({length:count},(_,i)=>{
+        const prev=oldSets[i]||{};
+        const usesLoad=typeof tracoExerciseUsesLoad==='function'?tracoExerciseUsesLoad(ex):true;
+        return {...prev,n:i+1,weight:usesLoad?(prev.weight??''):'',reps:prev.reps??'',done:true,reported:true,repsKnown:Boolean(prev.reps),skipped:false};
+      })};
+    });
+    const startedAt=matchingDraft?.startedAt||new Date(date+'T12:00:00').getTime();
+    all.push({
+      id:'reported-'+date+'-'+workoutId,manualHistoryKey:date,source:'user-reported-2026-09-19',manualConfirmed:true,excludeFromVolume:true,
+      workoutId,wName:plan?.name||'peitão + ombros + braços',startedAt,finishedAt:Date.now(),duration:matchingDraft?Math.max(1,Math.floor((Date.now()-startedAt)/1000)):0,
+      exercises,extras:matchingDraft?.extras||[],prs:[]
+    });
+    save(K.sessions,all);
+  }
+  const attendance=v60LoadAttendance();
+  if(!attendance.some(x=>x.date===date)){attendance.push({date,source:'manual-confirmed'});v60SaveAttendance(attendance);}
+  const seq=v60SequenceState();
+  if(seq.nextWorkoutId===workoutId)v60AdvanceSequence(workoutId);
+  const draft=load(K.draft,null);
+  if(draft&&draft.workoutId===workoutId&&v60DateKey(draft.startedAt||Date.now())===date)localStorage.removeItem(K.draft);
+  save(V60_REPORTED_TODAY_0919_KEY,true);
+}
+
 function v60AllAttendanceDates(){
   const dates=new Set(v60LoadAttendance().map(x=>x.date));
   sessions().filter(s=>s.finishedAt).forEach(s=>dates.add(v60DateKey(s.startedAt)));
@@ -232,6 +270,7 @@ function v60SetRecommended(workoutId){
 v60BootstrapAttendance();
 v60BootstrapReportedHistory();
 v60BootstrapReportedToday();
+v60BootstrapReportedToday0919();
 
 // Replace calendar-day prescription with the current A→E recommendation.
 todayWorkout=function(){return v60RecommendedWorkout();};
