@@ -28,7 +28,7 @@ function v60InstallAestheticCorePlan(){
     qui.exercises.push({...v60CoreExercise('core-dead-bug-qui','reverse crunch no chão','Solo / colchonete',2,12,15,45,'◼️'),usesLoad:false});
   }
   const fri=sex?.exercises.find(e=>e.id==='crunch-2');
-  if(fri)Object.assign(fri,{name:'crunch ajoelhado na polia',equipment:'Polia alta + corda',sets:3,min:10,max:15,rest:45,icon:'◼️',core:true});
+  if(fri)Object.assign(fri,{name:'crunch ajoelhado na polia',equipment:'Polia alta + corda',sets:2,min:10,max:15,rest:45,icon:'◼️',core:true});
 }
 
 function v60CoreSceneReverseCrunch(){
