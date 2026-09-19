@@ -439,6 +439,23 @@
     const input=qs('#evoImportFull');if(input)input.onchange=async()=>{const f=input.files?.[0];if(!f)return;if(!confirm('restaurar este backup e substituir os dados locais atuais?'))return;try{await importFullBackup(f)}catch{toast('backup inválido')}};
   }
 
+  function parseBridgeRaw(raw){
+    if(!raw)return null;
+    try{let value=JSON.parse(raw);if(typeof value==='string')value=JSON.parse(value);return value&&typeof value==='object'?value:null}catch{return null}
+  }
+  function folegoContext(){
+    return parseBridgeRaw(localStorage.getItem('eu_bridge_folego_v1'))
+      ||parseBridgeRaw(localStorage.getItem('flutter.eu_bridge_folego_v1'));
+  }
+  function folegoContextMarkup(){
+    const b=folegoContext(),m=b?.metrics||{};
+    if(!b)return '<article class="evo-bridge-context muted"><b>Fôlego</b><span>abra o Fôlego uma vez para sincronizar o resumo financeiro local.</span></article>';
+    const daily=typeof m.dailyFolego==='number'?new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:2}).format(m.dailyFolego)+'/dia':null;
+    const used=typeof m.budgetUsedPercent==='number'?m.budgetUsedPercent+'% orçamento':null;
+    const days=typeof m.daysUntilIncome==='number'?m.daysUntilIncome+' dias até receber':null;
+    return '<article class="evo-bridge-context"><b>Fôlego</b><span>'+esc([daily,used,days].filter(Boolean).join(' · ')||b.summary||'sincronizado')+'</span></article>';
+  }
+
   /* BRIDGES */
   function publishBridges(){
     const phase=read('traco_shape_phase_v1',null),stats=window.TracoBodyCoach?.weeklyStats?.()||{},rec=dailyRecommendation(),latest=latestBody(),m=milestones();
@@ -531,7 +548,7 @@
   }
   function decorateSettings(){
     const main=qs('.settings-page');if(!main||qs('.evo-backup'))return;
-    main.insertAdjacentHTML('beforeend',backupMarkup()+'<section class="evo-integrations"><span>ECOSSISTEMA</span><h3>Traço ↔ EU ↔ Fôlego</h3><p>o Traço publica localmente fase, treinos, medidas e categorias financeiras para os outros apps do seu ecossistema.</p><div><b>EU</b><small>fase · progresso · marcos · experimento</small><b>Fôlego</b><small>academia · mercado · delivery · suplementos</small></div></section><section class="evo-migration"><span>DADOS</span><h3>schema '+SCHEMA_VERSION+'</h3><p>migrações automáticas preservam seu histórico quando o app ganha campos novos.</p></section>');
+    main.insertAdjacentHTML('beforeend',backupMarkup()+'<section class="evo-integrations"><span>ECOSSISTEMA</span><h3>Traço ↔ EU ↔ Fôlego</h3><p>o Traço publica localmente fase, treinos, medidas e categorias financeiras para os outros apps do seu ecossistema.</p><div><b>EU</b><small>fase · progresso · marcos · experimento</small><b>Fôlego</b><small>academia · mercado · delivery · suplementos</small></div>'+folegoContextMarkup()+'</section><section class="evo-migration"><span>DADOS</span><h3>schema '+SCHEMA_VERSION+'</h3><p>migrações automáticas preservam seu histórico quando o app ganha campos novos.</p></section>');
     bindBackup();
   }
 
