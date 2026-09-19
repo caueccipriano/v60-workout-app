@@ -42,12 +42,16 @@ function v60V4Scene(ex){
   }
 
   function cableFly(kind){
-    const low=kind==='low-high';
-    const eq=`${cableTower(120,low)}${cableTower(580,low)}${line(130,low?270:165,315,185,3,M)}${line(590,low?270:165,405,185,3,M)}${label(304,338,low?'CROSSOVER BAIXO':'CROSSOVER')}`;
+    const low=kind==='low-high', high=kind==='high-low';
+    const cableY=low?270:high?92:165;
+    const handY=low?204:high?122:166;
+    const closeY=low?124:high?194:151;
+    const eq=`${cableTower(120,low)}${cableTower(580,low)}${line(130,cableY,315,high?138:185,3,M)}${line(590,cableY,405,high?138:185,3,M)}${label(294,338,low?'CROSSOVER BAIXO':high?'CROSSOVER ALTO':'CROSSOVER')}`;
     const base=standing(360,190)+muscle(360,142,30,12);
-    const a=`${base}${line(360,143,300,low?204:166)}${line(360,143,420,low?204:166)}`;
-    const b=low?`${base}${line(360,143,337,124)}${line(360,143,383,124)}`:`${base}${line(360,143,334,151)}${line(360,143,386,151)}`;
-    return{equipment:eq,a,b,motion:low?arrow('M 275 218 Q 302 164 339 129',339,129,-48):arrow('M 282 190 Q 310 158 338 153',338,153,-25),note:low?'mãos sobem em arco':'fecha na linha do peito'};
+    const a=`${base}${line(360,143,300,handY)}${line(360,143,420,handY)}`;
+    const b=`${base}${line(360,143,337,closeY)}${line(360,143,383,closeY)}`;
+    const motion=low?arrow('M 275 218 Q 302 164 339 129',339,129,-48):high?arrow('M 275 108 Q 305 165 338 194',338,194,48):arrow('M 282 190 Q 310 158 338 153',338,153,-25);
+    return{equipment:eq,a,b,motion,note:low?'mãos sobem em arco':high?'mãos descem em arco em direção ao abdômen':'fecha na linha do peito'};
   }
 
   function pushdown(){
@@ -188,7 +192,7 @@ function v60V4Scene(ex){
     'supino-inclinado':()=>smithBench(true),
     'desenvolvimento':dumbbellPress,
     'elevacao-lateral':()=>cableLateral(true),
-    'crucifixo-baixo-alto':()=>cableFly('low-high'),
+    'crucifixo-baixo-alto':()=>cableFly('high-low'),
     'triceps-pushdown':pushdown,
     'triceps-overhead':overheadTriceps,
     'leg-press':()=>legPress('standard'),
@@ -205,7 +209,7 @@ function v60V4Scene(ex){
     'rosca-martelo':hammerCurl,
     'crunch':kneelingCrunch,
     'supino-reto':()=>smithBench(false),
-    'crucifixo-reto':()=>cableFly('horizontal'),
+    'crucifixo-reto':()=>cableFly('high-low'),
     'elevacao-lateral-2':()=>cableLateral(true),
     'face-pull':facePull,
     'triceps-overhead-2':overheadTriceps,
