@@ -35,6 +35,7 @@ jobs:
           node --check traco-brand.js
           node --check traco-performance.js
           node --check traco-gym-ux.js
+          node --check traco-coach.js
           node --check eu-bridge.js
       - name: Validate Traço branding
         run: |
@@ -73,8 +74,8 @@ jobs:
           for(const required of ['TRACO_THEME_KEY','tracoSetTheme','data-traco-theme="dark"','version:\'2.4.0\'']){
             if(!brand.includes(required)) throw new Error(`Missing persistent theme feature: ${required}`);
           }
-          if(!index.includes("localStorage.getItem('traco_theme')")||!index.includes('traco-theme.css?v=269')||!index.includes('traco-performance.css?v=269')) throw new Error('First-paint theme bootstrap missing');
-          if(!sw.includes("'./traco-theme.css'")||!sw.includes("'./traco-performance.css'")||!sw.includes("'./traco-performance.js'")||!sw.includes("'./traco-gym-ux.js'")||!sw.includes("'./traco-gym-ux.css'")||!sw.includes("const CACHE = 'traco-v54'")) throw new Error('Theme/cache integration missing');
+          if(!index.includes("localStorage.getItem('traco_theme')")||!index.includes('traco-theme.css?v=270')||!index.includes('traco-performance.css?v=270')) throw new Error('First-paint theme bootstrap missing');
+          if(!sw.includes("'./traco-theme.css'")||!sw.includes("'./traco-performance.css'")||!sw.includes("'./traco-performance.js'")||!sw.includes("'./traco-gym-ux.js'")||!sw.includes("'./traco-gym-ux.css'")||!sw.includes("'./traco-coach.js'")||!sw.includes("'./traco-coach.css'")||!sw.includes("const CACHE = 'traco-v55'")) throw new Error('Theme/cache integration missing');
           if(!guides.includes("dark?'#FF3B30':'#E9342C'")) throw new Error('Exercise guide dark palette missing');
           if(!core.includes("dark?'#FF3B30':'#E9342C'")) throw new Error('Core guide dark palette missing');
           console.log('Dark theme + body mobile layout OK: black/red, persistent, first-paint safe');
@@ -209,7 +210,7 @@ jobs:
           ]){
             if(!css.includes(required)) throw new Error(`Missing Performance Console style: ${required}`);
           }
-          if(!index.includes('traco-performance.js?v=269')||!index.includes('traco-performance.css?v=269')) throw new Error('Performance assets not loaded');
+          if(!index.includes('traco-performance.js?v=270')||!index.includes('traco-performance.css?v=270')) throw new Error('Performance assets not loaded');
           if(!sw.includes("'./traco-performance.js'")||!sw.includes("'./traco-performance.css'")) throw new Error('Performance assets not cached');
           if(manifest.theme_color!=='#090909') throw new Error('PWA theme is not Performance Console');
           console.log('Traço 2.0 Performance Console OK; exact media entrypoint preserved');
@@ -275,7 +276,7 @@ jobs:
           if(/provider:'vimeo'/.test(media)) throw new Error('Vimeo provider still present');
           const videoEntries=[...media.matchAll(/provider:'youtube'/g)].length;
           if(videoEntries!==37) throw new Error(`Expected 37 YouTube exercise videos; found ${videoEntries}`);
-          if(!index.includes('exercise-videos.css?v=269')) throw new Error('Real video CSS missing from app');
+          if(!index.includes('exercise-videos.css?v=270')) throw new Error('Real video CSS missing from app');
           console.log('Traço 2.1 Redline OK');
           NODE
       - name: Validate measurement centering
@@ -335,7 +336,7 @@ jobs:
           ]){
             if(!css.includes(required)) throw new Error(`Missing gym UX design rule: ${required}`);
           }
-          if(!index.includes('traco-gym-ux.css?v=269')||!index.includes('traco-gym-ux.js?v=269')) throw new Error('Gym UX assets not loaded last');
+          if(!index.includes('traco-gym-ux.css?v=270')||!index.includes('traco-gym-ux.js?v=270')) throw new Error('Gym UX assets not loaded last');
           if(!sw.includes("'./traco-gym-ux.js'")||!sw.includes("'./traco-gym-ux.css'")||!sw.includes("'./privacy.html'")||!sw.includes("'./support.html'")) throw new Error('Gym UX/support not offline-cached');
           console.log('Traço 2.3 Gym UX Pass OK');
           NODE
@@ -508,7 +509,7 @@ jobs:
           const css=fs.readFileSync('exercise-videos.css','utf8');
 
           for(const required of [
-            "const CACHE = 'traco-v54'",
+            "const CACHE = 'traco-v55'",
             "ignoreSearch:true",
             "caches.match('./index.html',{ignoreSearch:true})",
             "cache.addAll(ASSETS)",
@@ -531,7 +532,7 @@ jobs:
 
           if(!css.includes('.traco-offline-pill')||!css.includes('.traco-offline-guide-note')) throw new Error('Offline UI missing');
           if(!media.includes('TRACO_MEDIA_AUDIT_RESULT=tracoAuditExerciseMedia()')||!media.includes('TRACO_MEDIA_RENDER_AUDIT_RESULT=tracoAuditRenderedMedia()')) throw new Error('Offline local technical-guide audit missing');
-          if(!index.includes('exercise-videos.js?v=269')||!index.includes('traco-performance.js?v=269')) throw new Error('Offline release cache-bust missing');
+          if(!index.includes('exercise-videos.js?v=270')||!index.includes('traco-performance.js?v=270')) throw new Error('Offline release cache-bust missing');
 
           console.log('Offline-ready PWA OK: app shell + local data + technical execution fallback');
           NODE
@@ -638,6 +639,40 @@ jobs:
             if(!s.includes(required)) throw new Error(`Missing smart-sequence feature: ${required}`);
           }
           console.log('Flexible sequence OK: A back → B chest → C legs next; attendance Mon-Thu seeded');
+          NODE
+      - name: Validate Traço Coach 1.0
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const coach=fs.readFileSync('traco-coach.js','utf8');
+          const css=fs.readFileSync('traco-coach.css','utf8');
+          const index=fs.readFileSync('index.html','utf8');
+          const sw=fs.readFileSync('sw.js','utf8');
+          const app=fs.readFileSync('app.js','utf8');
+          for(const required of [
+            "const COACH_VERSION='1.0.0'",
+            'coachSuggestion',
+            'repeatLastSet',
+            'doLater',
+            'openSubstitute',
+            'setRir',
+            'addCardio',
+            'traco-focus-mode',
+            'priorityMapMarkup',
+            'reviewMarkup',
+            'compressPhoto',
+            'IndexedDB'.toLowerCase()
+          ]){
+            const hay=required==='indexeddb'?coach.toLowerCase():coach;
+            if(!hay.includes(required)) throw new Error('Missing Traço Coach feature: '+required);
+          }
+          for(const required of ['traco-coach-panel','traco-body-map','traco-photo-card','traco-focus-mode']){
+            if(!css.includes(required)) throw new Error('Missing Traço Coach style: '+required);
+          }
+          if(!index.includes('traco-coach.css?v=270')||!index.includes('traco-coach.js?v=270')) throw new Error('Traço Coach assets not loaded');
+          if(!sw.includes("'./traco-coach.css'")||!sw.includes("'./traco-coach.js'")) throw new Error('Traço Coach assets not cached');
+          if(!app.includes('bodyShoulders')||!app.includes('tracoBodyShoulders')) throw new Error('Shoulder measurement integration missing');
+          console.log('Traço Coach 1.0 OK: smart progression, gym controls, body map, review and photos');
           NODE
       - name: Configure Pages
         uses: actions/configure-pages@v5
