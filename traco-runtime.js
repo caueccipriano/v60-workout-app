@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.0.0';
-  const BUILD='ux-polish-information-architecture-2.4.1';
-  const BUILD_NUMBER='289';
+  const BUILD='menu-planner-flexible-day-2.4.1';
+  const BUILD_NUMBER='290';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
