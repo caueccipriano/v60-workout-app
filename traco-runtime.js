@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.0.0';
-  const BUILD='cardapios-dedicated-screen-2.4.1';
-  const BUILD_NUMBER='294';
+  const BUILD='photos-evolution-first-class-2.4.1';
+  const BUILD_NUMBER='295';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
