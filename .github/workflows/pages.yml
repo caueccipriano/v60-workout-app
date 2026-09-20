@@ -1263,7 +1263,7 @@ jobs:
           if(!ux.includes("const valid=['overview','photos','food']")) throw new Error('Body tab state still accepts legacy measures tab');
           if(!ux.includes('function compactOverview(main)')) throw new Error('Overview compactor missing');
           if(!ux.includes('function compactFoodTools(main)')) throw new Error('Food tools compactor missing');
-          if(!ux.includes("openBodyTab('food')") && !body.includes("openBodyTab('food')")) throw new Error('Home cannot route directly to Alimentação');
+          if(!body.includes("state.page='food';render();") && !app.includes("case'food':window.TracoMenuPlanner?.renderFood")) throw new Error('Home/Core cannot route directly to Cardápios');
           if(!body.includes('abrir alimentação + cardápios')) throw new Error('Home CTA does not explicitly name Alimentação/Cardápios');
           if(!menu.includes('traco-menu-planner')) throw new Error('Menu planner missing');
           for(const required of ['.ux-food-more','.ux-overview-measures','.ux-overview-more','grid-template-columns:repeat(3,minmax(0,1fr))']){
@@ -1274,7 +1274,7 @@ jobs:
           if(!index.includes('traco-ux-polish.js?v=293')||!index.includes('traco-menu-planner.js?v=293')) throw new Error('Build 291 assets not loaded');
           if(!sw.includes("const CACHE = 'traco-v78'")) throw new Error('Cache v76 missing');
           if(version.build!=='cardapios-first-class-route-2.4.1') throw new Error('version.json mismatch');
-          console.log('Corpo compact OK: 3 tabs, direct Alimentação route, measures and advanced tools collapsed');
+          console.log('Corpo compact OK: 3 tabs, direct Cardápios route, measures and advanced tools collapsed');
           NODE
       - name: Validate UX refine 292
         run: |
