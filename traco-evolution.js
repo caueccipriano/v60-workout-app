@@ -30,6 +30,52 @@
   function todayEvolution(){const all=read(DAILY_KEY,{}),k=dateKey();return Object.assign({feelings:[],note:'',motivation:''},all[k]||{})}
   function saveTodayEvolution(patch){const all=read(DAILY_KEY,{}),k=dateKey();all[k]=Object.assign({},todayEvolution(),patch,{date:k,updatedAt:Date.now()});write(DAILY_KEY,all);try{haptic()}catch{}}
 
+  const DUMBBELL_LATERAL_SETS_FIX_KEY='traco_manual_fix_2026_09_20_lateral_dumbbell_sets_v1';
+  function applyReportedDumbbellLateralSets(){
+    if(localStorage.getItem(DUMBBELL_LATERAL_SETS_FIX_KEY)==='1')return false;
+    const targetDate='2026-09-20';
+    let changed=false;
+
+    function patchSession(session){
+      if(!session||dateKey(new Date(session.startedAt))!==targetDate)return false;
+      const ex=(session.exercises||[]).find(item=>
+        item.progressionKey==='elevacao-lateral-halter'||
+        (/eleva[cç][aã]o lateral/i.test(String(item.name||''))&&/halter/i.test(String(item.equipment||'')))
+      );
+      if(!ex)return false;
+      ex.equipment='Halteres';
+      ex.progressionKey='elevacao-lateral-halter';
+      ex.performedVariation='halteres';
+      ex.substitutionReason='academia lotada · polia ocupada';
+      ex.reportedPerformance={weight:8,reps:6,sets:4,source:'user-reported'};
+      ex.sets=Array.from({length:4},(_,i)=>Object.assign({},ex.sets?.[i]||{},{
+        n:i+1,
+        weight:'8',
+        reps:'6',
+        done:true,
+        skipped:false,
+        rir:i===3?'heavy':(ex.sets?.[i]?.rir||'right'),
+        reported:true
+      }));
+      ex.lastWorkingWeight='8';
+      ex.lastWorkingReps='6';
+      return true;
+    }
+
+    const draft=load(K.draft,null);
+    if(patchSession(draft)){save(K.draft,draft);changed=true;}
+
+    const all=sessions();
+    const idx=all.findIndex(s=>s.finishedAt&&dateKey(new Date(s.startedAt))===targetDate&&
+      (s.exercises||[]).some(item=>item.progressionKey==='elevacao-lateral-halter'||(/eleva[cç][aã]o lateral/i.test(String(item.name||''))&&/halter/i.test(String(item.equipment||''))))
+    );
+    if(idx>=0&&patchSession(all[idx])){save(K.sessions,all);changed=true;}
+
+    if(patchSession(state.activeSession)){save(K.draft,state.activeSession);changed=true;}
+
+    if(changed)localStorage.setItem(DUMBBELL_LATERAL_SETS_FIX_KEY,'1');
+    return changed;
+  }
   const DUMBBELL_LATERAL_FIX_KEY='traco_manual_fix_2026_09_20_lateral_dumbbell_v1';
   function markDumbbellLateral(ex){
     if(!ex||!/eleva[cç][aã]o lateral/i.test(String(ex.name||''))||!/polia|crossover/i.test(String(ex.equipment||'')))return false;
@@ -84,6 +130,7 @@
       write('traco_exercise_preferences_v1',prefs);v=3;
     }
     applyReportedDumbbellLateralRaise();
+    applyReportedDumbbellLateralSets();
     localStorage.setItem(SCHEMA_KEY,String(SCHEMA_VERSION));
   }
 
