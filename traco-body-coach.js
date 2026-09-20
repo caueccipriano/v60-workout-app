@@ -122,7 +122,7 @@
       '<div class="traco-priority-limit"><article><span>priorize</span>'+g.prioritize.map(function(x){return '<i>✓ '+esc(x)+'</i>';}).join('')+'</article><article><span>evite / limite hoje</span>'+g.limit.map(function(x){return '<i>· '+esc(x)+'</i>';}).join('')+'</article></div>'+
       (compact?'<div class="traco-home-limit"><span>EVITE / LIMITE HOJE</span><b>'+g.limit.map(esc).join(' · ')+'</b></div>':'')+
       '<p>'+esc(g.note)+'</p>'+
-      (compact?'<button id="tracoOpenBodyLog">ver alimentação + registrar meu dia</button>':'')+
+      (compact?'<button id="tracoOpenBodyLog">abrir alimentação + cardápios</button>':'')+
       '</section>';
   }
   function foodLimitsMarkup(){
