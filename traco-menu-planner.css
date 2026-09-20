@@ -1,0 +1,124 @@
+/*
+ * Traço Menu Planner 1.0
+ */
+.traco-menu-planner{display:grid;gap:12px}
+.traco-menu-planner>header{
+  padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--surface-soft)
+}
+.traco-menu-planner>header>span,
+.traco-menu-builder>span,
+.traco-menu-presets-wrap>span,
+.traco-menu-current>header span,
+.traco-menu-portion>span,
+.traco-menu-grocery summary span,
+.traco-menu-favorites summary span{
+  display:block;font-size:8px;font-weight:900;letter-spacing:.12em;color:var(--perf-orange,#FF3B30)
+}
+.traco-menu-planner>header h3{margin:5px 0 6px;font-size:19px;line-height:1.15}
+.traco-menu-planner>header p{margin:0;font-size:10px;line-height:1.5;color:var(--muted)}
+
+.traco-menu-builder{
+  display:grid;gap:11px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--surface)
+}
+.traco-menu-builder h4{margin:3px 0 1px;font-size:15px}
+.traco-menu-question{display:grid;gap:7px}
+.traco-menu-question>b{font-size:10px}
+.traco-menu-question>div{display:flex;gap:6px;flex-wrap:wrap}
+.traco-menu-question button,
+.traco-menu-portion button{
+  min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;
+  background:var(--surface-soft);color:var(--muted);font-size:9px;font-weight:800
+}
+.traco-menu-question button.is-on,
+.traco-menu-portion button.is-on{
+  background:rgba(255,59,48,.12);border-color:rgba(255,59,48,.48);color:var(--perf-orange,#FF3B30)
+}
+.traco-menu-build{
+  min-height:42px;border:0;border-radius:11px;background:var(--perf-orange,#FF3B30);
+  color:#fff;font-size:10px;font-weight:900;text-transform:uppercase
+}
+
+.traco-menu-presets-wrap{display:grid;gap:8px}
+.traco-menu-presets{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px
+}
+.traco-menu-presets button{
+  display:grid;grid-template-columns:30px minmax(0,1fr);align-items:center;gap:8px;
+  min-height:48px;padding:8px 10px;border:1px solid var(--line);border-radius:11px;
+  background:var(--surface);color:var(--text);text-align:left
+}
+.traco-menu-presets button i{
+  width:30px;height:30px;display:grid;place-items:center;border-radius:9px;
+  background:var(--surface-soft);font-style:normal;font-size:13px;color:var(--muted)
+}
+.traco-menu-presets button span{font-size:9px;font-weight:800;line-height:1.2}
+.traco-menu-presets button.is-on{border-color:rgba(255,59,48,.5);background:rgba(255,59,48,.06)}
+.traco-menu-presets button.is-on i{background:var(--perf-orange,#FF3B30);color:#fff}
+
+.traco-menu-current{
+  display:grid;gap:12px;padding:14px;border:1px solid rgba(255,59,48,.34);
+  border-radius:15px;background:linear-gradient(180deg,rgba(255,59,48,.05),var(--surface))
+}
+.traco-menu-current>header{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px
+}
+.traco-menu-current>header>div{min-width:0}
+.traco-menu-current>header h4{margin:4px 0 3px;font-size:19px}
+.traco-menu-current>header p{margin:0;font-size:9px;line-height:1.4;color:var(--muted)}
+.traco-menu-current>header>i{
+  flex:0 0 auto;width:38px;height:38px;display:grid;place-items:center;border-radius:11px;
+  background:rgba(255,59,48,.1);font-style:normal;font-size:16px;color:var(--perf-orange,#FF3B30)
+}
+.traco-menu-current>small{font-size:8px;line-height:1.4;color:var(--muted)}
+
+.traco-menu-portion{
+  display:grid;gap:7px;padding:11px;border:1px solid var(--line);border-radius:11px;background:var(--surface-soft)
+}
+.traco-menu-portion>div{display:flex;gap:6px;flex-wrap:wrap}
+.traco-menu-portion p{margin:0;font-size:9px;line-height:1.4;color:var(--muted)}
+
+.traco-menu-meals{display:grid;gap:8px}
+.traco-menu-meal{
+  display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-soft)
+}
+.traco-menu-meal>header{display:flex;align-items:center;justify-content:space-between}
+.traco-menu-meal>header>span{
+  font-size:8px;font-weight:900;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)
+}
+.traco-menu-meal>header>button{
+  width:32px;height:32px;border:0;border-radius:50%;background:transparent;color:var(--perf-orange,#FF3B30);
+  font-size:18px;line-height:1
+}
+.traco-menu-meal>b{font-size:12px;line-height:1.35}
+.traco-menu-meal>div{display:flex;justify-content:flex-end}
+.traco-menu-meal>div button{
+  min-height:32px;padding:0 10px;border:1px solid var(--line);border-radius:9px;
+  background:var(--surface);color:var(--muted);font-size:8px;font-weight:800;text-transform:uppercase
+}
+
+.traco-menu-grocery,.traco-menu-favorites{
+  border:1px solid var(--line);border-radius:12px;background:var(--surface-soft);overflow:hidden
+}
+.traco-menu-grocery>summary,.traco-menu-favorites>summary{
+  list-style:none;display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0 13px
+}
+.traco-menu-grocery>summary::-webkit-details-marker,.traco-menu-favorites>summary::-webkit-details-marker{display:none}
+.traco-menu-grocery>summary b,.traco-menu-favorites>summary b{font-size:9px;color:var(--muted)}
+.traco-menu-grocery>div,.traco-menu-favorites>div{padding:11px;border-top:1px solid var(--line)}
+.traco-menu-grocery-list{display:flex;gap:6px;flex-wrap:wrap}
+.traco-menu-grocery-list span{
+  padding:7px 9px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:8px
+}
+.traco-menu-grocery-actions{display:grid;grid-template-columns:1fr auto;gap:7px;margin-top:10px}
+.traco-menu-grocery-actions button{
+  min-height:38px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);
+  font-size:8px;font-weight:900;text-transform:uppercase
+}
+.traco-menu-grocery-actions button:first-child{background:var(--perf-orange,#FF3B30);border-color:var(--perf-orange,#FF3B30);color:#fff}
+.traco-menu-favorites p{margin:0;padding:7px 0;border-bottom:1px solid var(--line);font-size:9px;line-height:1.4}
+.traco-menu-favorites p:last-child{border-bottom:0}
+
+@media(min-width:700px){
+  .traco-menu-presets{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .traco-menu-meals{grid-template-columns:1fr 1fr}
+}
