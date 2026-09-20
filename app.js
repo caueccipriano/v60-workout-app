@@ -121,7 +121,7 @@ function renderHome(){
     <button class="text-link week-link" id="seeWeek">ver semana de treino</button>`,{classes:'home-card'});
   $('#startToday').onclick=()=>startSession(w.id);if($('#resumeWorkout'))$('#resumeWorkout').onclick=()=>startSession(draft.workoutId);
   $('#seeWeek').onclick=()=>{state.page='workouts';state.selectedWorkout=w.id;renderWorkouts()};
-  $('[data-workout]').forEach(el=>el.onclick=()=>{state.page='workouts';state.selectedWorkout=el.dataset.workout;renderWorkouts()});
+  $$('[data-workout]').forEach(el=>el.onclick=()=>{state.page='workouts';state.selectedWorkout=el.dataset.workout;renderWorkouts()});
 }
 
 function renderWorkouts(){
