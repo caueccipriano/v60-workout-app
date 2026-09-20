@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.0.0';
-  const BUILD='unified-red-icons-2.4.1';
-  const BUILD_NUMBER='287';
+  const BUILD='pwa-icons-v2-red-black-2.4.1';
+  const BUILD_NUMBER='288';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
