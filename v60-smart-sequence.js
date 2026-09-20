@@ -447,29 +447,31 @@ function v60SequenceStatusMarkup(){
     const completedTitle=today.letter
       ? `Treino ${today.letter} · ${v60Safe(today.label)}`
       : v60Safe(today.label);
-    return `<section class="v60-sequence-note is-complete">
-      <div class="v60-sequence-primary">
-        <span>hoje · concluído</span>
+    return `<section class="v60-workout-status">
+      <article class="v60-status-card v60-status-done">
+        <span>HOJE · CONCLUÍDO</span>
         <b>${completedTitle}</b>
-      </div>
-      <div class="v60-sequence-next">
-        <span>próximo</span>
+        <small>treino de hoje registrado ✓</small>
+      </article>
+      <article class="v60-status-card v60-status-next">
+        <span>PRÓXIMO</span>
         <b>Treino ${next.letter} · ${v60Safe(rec.short)}</b>
-        <small>sequência flexível · escolha outro treino manualmente se precisar</small>
-      </div>
+        <small>sequência flexível · você pode escolher outro manualmente</small>
+      </article>
     </section>`;
   }
-  return `<section class="v60-sequence-note">
-    <div class="v60-sequence-primary">
-      <span>próximo treino</span>
+  return `<section class="v60-workout-status">
+    <article class="v60-status-card v60-status-next">
+      <span>PRÓXIMO TREINO</span>
       <b>Treino ${next.letter} · ${v60Safe(rec.short)}</b>
-    </div>
-    <small>sequência flexível · não depende do dia da semana</small>
+      <small>sequência flexível · não depende do dia da semana</small>
+    </article>
   </section>`;
 }
 
 const v60SmartBaseRenderHome=renderHome;
 renderHome=function(){
+  window.__v60ManualWorkoutSelection=false;
   v60SmartBaseRenderHome();
   const w=v60RecommendedWorkout(),item=v60SequenceItem(w.id);
   const streak=document.querySelector('.streak-pill b');if(streak)streak.textContent=v60TrainingStreak();
@@ -483,6 +485,8 @@ renderHome=function(){
 
 const v60SmartBaseRenderWorkouts=renderWorkouts;
 renderWorkouts=function(){
+  const recommended=v60RecommendedWorkout();
+  if(!window.__v60ManualWorkoutSelection) state.selectedWorkout=recommended.id;
   v60SmartBaseRenderWorkouts();
   const stack=document.querySelector('.workout-stack');
   if(stack){
@@ -503,7 +507,15 @@ renderWorkouts=function(){
   const main=document.querySelector('.workouts-page');
   if(main){
     main.querySelector('.v60-sequence-note')?.remove();
+    main.querySelector('.v60-workout-status')?.remove();
     main.querySelector('.workout-stack')?.insertAdjacentHTML('beforebegin',v60SequenceStatusMarkup());
+    main.querySelectorAll('.workout-select[data-workout]').forEach(card=>{
+      card.onclick=()=>{
+        window.__v60ManualWorkoutSelection=true;
+        state.selectedWorkout=card.dataset.workout;
+        renderWorkouts();
+      };
+    });
   }
 };
 
