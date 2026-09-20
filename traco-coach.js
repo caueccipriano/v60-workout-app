@@ -21,10 +21,10 @@
   function qsa(s){return Array.from(document.querySelectorAll(s));}
   function usesLoad(ex){return typeof tracoExerciseUsesLoad==='function'?tracoExerciseUsesLoad(ex):ex&&ex.usesLoad!==false;}
   function doneSets(ex){return (ex&&ex.sets||[]).filter(function(set){return set.done&&!set.skipped;});}
-  function previousExercise(exId,excludeSessionId){
+  function previousExercise(exKey,excludeSessionId){
     const all=sessions().filter(function(s){return s.finishedAt&&String(s.id)!==String(excludeSessionId||'');}).sort(function(a,b){return b.startedAt-a.startedAt;});
     for(const sess of all){
-      const ex=(sess.exercises||[]).find(function(item){return item.id===exId;});
+      const ex=(sess.exercises||[]).find(function(item){return tracoExerciseProgressionKey(item)===exKey;});
       if(ex&&doneSets(ex).length)return ex;
     }
     return null;
@@ -49,7 +49,7 @@
     return Math.max(0,...doneSets(ex).map(function(s){return Number(s.weight||0);}));
   }
   function coachSuggestion(ex){
-    const prev=previousExercise(ex.id,state.activeSession&&state.activeSession.id);
+    const prev=previousExercise(tracoExerciseProgressionKey(ex),state.activeSession&&state.activeSession.id);
     if(!prev)return {kind:'baseline',title:'cria sua referência',detail:'faz com técnica limpa e deixa o Traço aprender sua carga.'};
     const sets=doneSets(prev);
     if(!sets.length)return {kind:'baseline',title:'sem referência completa',detail:'repete confortável e fecha todas as séries.'};
@@ -91,7 +91,7 @@
     const own=doneSets(ex).filter(function(set){return set!==current;});
     let src=own.length?own[own.length-1]:null;
     if(!src){
-      const prev=previousExercise(ex.id,s.id);
+      const prev=previousExercise(tracoExerciseProgressionKey(ex),s.id);
       src=prev?lastCompletedSet(prev):null;
     }
     if(!src)return toast('ainda não tem série para repetir');
@@ -226,7 +226,7 @@
     const gains=[];
     (s.exercises||[]).forEach(function(ex){
       const current=doneSets(ex);if(!current.length)return;
-      const prev=previousExercise(ex.id,s.id);if(!prev)return;
+      const prev=previousExercise(tracoExerciseProgressionKey(ex),s.id);if(!prev)return;
       if(usesLoad(ex)){
         const now=bestWeight(ex),before=bestWeight(prev);
         if(now>before&&before>0)gains.push(ex.name+' +'+(now-before).toFixed((now-before)%1?1:0)+' kg');
