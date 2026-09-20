@@ -356,7 +356,7 @@ renderHome=function(){
   const metricCards=[...main.querySelectorAll('.perf-metrics article')];
   if(metricCards[0])metricCards[0].classList.add('traco-achievement-card');
   const target=main.querySelector('.perf-target');
-  if(target){target.classList.remove('perf-target');target.classList.add('traco-target-icon');target.innerHTML=tracoGymCalendar();}
+  if(target){target.classList.remove('perf-target');target.classList.add('traco-target-icon');target.innerHTML=iconSvg('history');}
 
   const cta=main.querySelector('.perf-start-cta');
   if(cta)cta.classList.add('traco-start-cta');
