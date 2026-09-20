@@ -81,8 +81,8 @@ jobs:
           for(const required of ['TRACO_THEME_KEY','tracoSetTheme','data-traco-theme="dark"','version:\'2.4.1\'']){
             if(!brand.includes(required)) throw new Error(`Missing persistent theme feature: ${required}`);
           }
-          if(!index.includes("localStorage.getItem('traco_theme')")||!index.includes('traco-theme.css?v=290')||!index.includes('traco-performance.css?v=290')) throw new Error('First-paint theme bootstrap missing');
-          if(!sw.includes("'./traco-theme.css'")||!sw.includes("'./traco-performance.css'")||!sw.includes("'./traco-performance.js'")||!sw.includes("'./traco-gym-ux.js'")||!sw.includes("'./traco-gym-ux.css'")||!sw.includes("'./traco-coach.js'")||!sw.includes("'./traco-coach.css'")||!sw.includes("const CACHE = 'traco-v75'")) throw new Error('Theme/cache integration missing');
+          if(!index.includes("localStorage.getItem('traco_theme')")||!index.includes('traco-theme.css?v=291')||!index.includes('traco-performance.css?v=291')) throw new Error('First-paint theme bootstrap missing');
+          if(!sw.includes("'./traco-theme.css'")||!sw.includes("'./traco-performance.css'")||!sw.includes("'./traco-performance.js'")||!sw.includes("'./traco-gym-ux.js'")||!sw.includes("'./traco-gym-ux.css'")||!sw.includes("'./traco-coach.js'")||!sw.includes("'./traco-coach.css'")||!sw.includes("const CACHE = 'traco-v76'")) throw new Error('Theme/cache integration missing');
           if(!guides.includes("dark?'#FF3B30':'#E9342C'")) throw new Error('Exercise guide dark palette missing');
           if(!core.includes("dark?'#FF3B30':'#E9342C'")) throw new Error('Core guide dark palette missing');
           console.log('Dark theme + body mobile layout OK: black/red, persistent, first-paint safe');
@@ -217,7 +217,7 @@ jobs:
           ]){
             if(!css.includes(required)) throw new Error(`Missing Performance Console style: ${required}`);
           }
-          if(!index.includes('traco-performance.js?v=290')||!index.includes('traco-performance.css?v=290')) throw new Error('Performance assets not loaded');
+          if(!index.includes('traco-performance.js?v=291')||!index.includes('traco-performance.css?v=291')) throw new Error('Performance assets not loaded');
           if(!sw.includes("'./traco-performance.js'")||!sw.includes("'./traco-performance.css'")) throw new Error('Performance assets not cached');
           if(manifest.theme_color!=='#090909') throw new Error('PWA theme is not Performance Console');
           console.log('Traço 2.0 Performance Console OK; exact media entrypoint preserved');
@@ -283,7 +283,7 @@ jobs:
           if(/provider:'vimeo'/.test(media)) throw new Error('Vimeo provider still present');
           const videoEntries=[...media.matchAll(/provider:'youtube'/g)].length;
           if(videoEntries!==37) throw new Error(`Expected 37 YouTube exercise videos; found ${videoEntries}`);
-          if(!index.includes('exercise-videos.css?v=290')) throw new Error('Real video CSS missing from app');
+          if(!index.includes('exercise-videos.css?v=291')) throw new Error('Real video CSS missing from app');
           console.log('Traço 2.1 Redline OK');
           NODE
       - name: Validate measurement centering
@@ -343,7 +343,7 @@ jobs:
           ]){
             if(!css.includes(required)) throw new Error(`Missing gym UX design rule: ${required}`);
           }
-          if(!index.includes('traco-gym-ux.css?v=290')||!index.includes('traco-gym-ux.js?v=290')) throw new Error('Gym UX assets not loaded last');
+          if(!index.includes('traco-gym-ux.css?v=291')||!index.includes('traco-gym-ux.js?v=291')) throw new Error('Gym UX assets not loaded last');
           if(!sw.includes("'./traco-gym-ux.js'")||!sw.includes("'./traco-gym-ux.css'")||!sw.includes("'./privacy.html'")||!sw.includes("'./support.html'")) throw new Error('Gym UX/support not offline-cached');
           console.log('Traço 2.3 Gym UX Pass OK');
           NODE
@@ -516,7 +516,7 @@ jobs:
           const css=fs.readFileSync('exercise-videos.css','utf8');
 
           for(const required of [
-            "const CACHE = 'traco-v75'",
+            "const CACHE = 'traco-v76'",
             "ignoreSearch:true",
             "caches.match('./index.html',{ignoreSearch:true})",
             "cache.addAll(ASSETS)",
@@ -539,7 +539,7 @@ jobs:
 
           if(!css.includes('.traco-offline-pill')||!css.includes('.traco-offline-guide-note')) throw new Error('Offline UI missing');
           if(!media.includes('TRACO_MEDIA_AUDIT_RESULT=tracoAuditExerciseMedia()')||!media.includes('TRACO_MEDIA_RENDER_AUDIT_RESULT=tracoAuditRenderedMedia()')) throw new Error('Offline local technical-guide audit missing');
-          if(!index.includes('exercise-videos.js?v=290')||!index.includes('traco-performance.js?v=290')) throw new Error('Offline release cache-bust missing');
+          if(!index.includes('exercise-videos.js?v=291')||!index.includes('traco-performance.js?v=291')) throw new Error('Offline release cache-bust missing');
 
           console.log('Offline-ready PWA OK: app shell + local data + technical execution fallback');
           NODE
@@ -676,7 +676,7 @@ jobs:
           for(const required of ['traco-coach-panel','traco-body-map','traco-photo-card','traco-focus-mode']){
             if(!css.includes(required)) throw new Error('Missing Traço Coach style: '+required);
           }
-          if(!index.includes('traco-coach.css?v=290')||!index.includes('traco-coach.js?v=290')) throw new Error('Traço Coach assets not loaded');
+          if(!index.includes('traco-coach.css?v=291')||!index.includes('traco-coach.js?v=291')) throw new Error('Traço Coach assets not loaded');
           if(!sw.includes("'./traco-coach.css'")||!sw.includes("'./traco-coach.js'")) throw new Error('Traço Coach assets not cached');
           if(!app.includes('bodyShoulders')||!app.includes('tracoBodyShoulders')) throw new Error('Shoulder measurement integration missing');
           for(const required of ['importStandardBaseline','tracoStandardBaselineImport','baselineOfficial','traco-photo-baseline-badge']){
@@ -722,8 +722,8 @@ jobs:
             if(!bodyCss.includes(item))throw new Error('Missing Traço Corpo CSS: '+item);
           }
           if(!app.includes('bodyHip')||!app.includes('tracoBodyHip')||!app.includes("'hip','cm','quadril/lombar'"))throw new Error('Hip/lower-back measurement missing');
-          if(!index.includes('traco-body-coach.css?v=290')||!index.includes('traco-body-coach.js?v=290'))throw new Error('Traço Corpo assets not loaded');
-          if(!sw.includes("'./traco-body-coach.css'")||!sw.includes("'./traco-body-coach.js'")||!sw.includes("const CACHE = 'traco-v75'"))throw new Error('Traço Corpo offline cache missing');
+          if(!index.includes('traco-body-coach.css?v=291')||!index.includes('traco-body-coach.js?v=291'))throw new Error('Traço Corpo assets not loaded');
+          if(!sw.includes("'./traco-body-coach.css'")||!sw.includes("'./traco-body-coach.js'")||!sw.includes("const CACHE = 'traco-v76'"))throw new Error('Traço Corpo offline cache missing');
           console.log('Traço Corpo 1.0 OK: nutrition, recovery, waist/flank trends, plateau, photo comparison');
           NODE
       - name: Validate Traço Lab 1.0
@@ -768,8 +768,8 @@ jobs:
           for(const item of ['lab-recovery-card','lab-antiflank-card','lab-exercise-feel','lab-camera-view','lab-exp-card','lab-wrapped-card']){
             if(!css.includes(item))throw new Error('Missing Traço Lab CSS: '+item);
           }
-          if(!index.includes('traco-lab.css?v=290')||!index.includes('traco-lab.js?v=290'))throw new Error('Traço Lab assets not loaded');
-          if(!sw.includes("'./traco-lab.css'")||!sw.includes("'./traco-lab.js'")||!sw.includes("const CACHE = 'traco-v75'"))throw new Error('Traço Lab offline cache missing');
+          if(!index.includes('traco-lab.css?v=291')||!index.includes('traco-lab.js?v=291'))throw new Error('Traço Lab assets not loaded');
+          if(!sw.includes("'./traco-lab.css'")||!sw.includes("'./traco-lab.js'")||!sw.includes("const CACHE = 'traco-v76'"))throw new Error('Traço Lab offline cache missing');
           console.log('Traço Lab 1.0 OK: recovery, adaptive training, food tools, shape timeline, experiments and guided photos');
           NODE
       - name: Validate Traço Evolution 1.0
@@ -816,8 +816,8 @@ jobs:
             if(!css.includes(item))throw new Error('Missing Evolution CSS: '+item);
           }
           if(!bridge.includes('shapePhase')||!bridge.includes('activeExperiment')||!bridge.includes('bodyFeeling'))throw new Error('EU bridge enrichment missing');
-          if(!index.includes('traco-evolution.css?v=290')||!index.includes('traco-evolution.js?v=290'))throw new Error('Evolution assets not loaded');
-          if(!sw.includes("'./traco-evolution.css'")||!sw.includes("'./traco-evolution.js'")||!sw.includes("const CACHE = 'traco-v75'"))throw new Error('Evolution offline cache missing');
+          if(!index.includes('traco-evolution.css?v=291')||!index.includes('traco-evolution.js?v=291'))throw new Error('Evolution assets not loaded');
+          if(!sw.includes("'./traco-evolution.css'")||!sw.includes("'./traco-evolution.js'")||!sw.includes("const CACHE = 'traco-v76'"))throw new Error('Evolution offline cache missing');
           console.log('Traço Evolution 1.0 OK');
           NODE
       - name: Validate background rest 1.0
@@ -844,8 +844,8 @@ jobs:
           }
           if(!rest.includes("Math.ceil((Number(meta.endsAt)-Date.now())/1000)"))throw new Error('Rest timer is not deadline-based');
           if(!css.includes('traco-rest-notify')||!css.includes('traco-rest-settings'))throw new Error('Background-rest UI missing');
-          if(!index.includes('traco-rest-background.css?v=290')||!index.includes('traco-rest-background.js?v=290'))throw new Error('Background-rest assets not loaded');
-          if(!sw.includes("'./traco-rest-background.css'")||!sw.includes("'./traco-rest-background.js'")||!sw.includes("const CACHE = 'traco-v75'"))throw new Error('Background-rest offline cache missing');
+          if(!index.includes('traco-rest-background.css?v=291')||!index.includes('traco-rest-background.js?v=291'))throw new Error('Background-rest assets not loaded');
+          if(!sw.includes("'./traco-rest-background.css'")||!sw.includes("'./traco-rest-background.js'")||!sw.includes("const CACHE = 'traco-v76'"))throw new Error('Background-rest offline cache missing');
           if(!sw.includes("notificationclick")||!sw.includes('TRACO_REST_FOCUS'))throw new Error('Notification click handler missing');
           console.log('Background rest OK: absolute deadline, resume reconciliation and PWA notification support');
           NODE
@@ -867,8 +867,8 @@ jobs:
           for(const required of ['2026-09-20','elevacao-lateral-halter','Halteres','academia lotada · polia ocupada']){
             if(!evo.includes(required))throw new Error('Missing today equipment correction: '+required);
           }
-          if(!index.includes('traco-evolution.js?v=290'))throw new Error('Build 277 not loaded');
-          if(!sw.includes("const CACHE = 'traco-v75'"))throw new Error('Cache v62 missing');
+          if(!index.includes('traco-evolution.js?v=291'))throw new Error('Build 277 not loaded');
+          if(!sw.includes("const CACHE = 'traco-v76'"))throw new Error('Cache v62 missing');
           console.log('Manual equipment variation OK: dumbbell lateral raise today, cable progression preserved');
           NODE
       - name: Validate reported dumbbell lateral sets
@@ -888,8 +888,8 @@ jobs:
           ]){
             if(!evo.includes(required))throw new Error('Missing reported lateral data: '+required);
           }
-          if(!index.includes('traco-evolution.js?v=290'))throw new Error('Build 278 not loaded');
-          if(!sw.includes("const CACHE = 'traco-v75'"))throw new Error('Cache v63 missing');
+          if(!index.includes('traco-evolution.js?v=291'))throw new Error('Build 278 not loaded');
+          if(!sw.includes("const CACHE = 'traco-v76'"))throw new Error('Cache v63 missing');
           console.log('Reported dumbbell lateral OK: 4x6 @ 8 kg, isolated from cable history');
           NODE
       - name: Validate food guidance and biweekly photos
@@ -913,8 +913,8 @@ jobs:
           }
           if(!css.includes('traco-food-limits')||!css.includes('traco-home-limit')||!css.includes('traco-photo-cadence'))throw new Error('Food/photo UI styles missing');
           if(!sw.includes("kind==='photo-checkin'")||!sw.includes('TRACO_PHOTO_FOCUS'))throw new Error('Photo notification click routing missing');
-          if(!index.includes('traco-body-coach.js?v=290'))throw new Error('Build 279 not loaded');
-          if(!sw.includes("const CACHE = 'traco-v75'"))throw new Error('Cache v64 missing');
+          if(!index.includes('traco-body-coach.js?v=291'))throw new Error('Build 279 not loaded');
+          if(!sw.includes("const CACHE = 'traco-v76'"))throw new Error('Cache v64 missing');
           console.log('Food guidance + 14-day standardized photo reminder OK');
           NODE
       - name: Validate runtime recovery 1.0
@@ -929,7 +929,7 @@ jobs:
           const sw=fs.readFileSync('sw.js','utf8');
           const version=JSON.parse(fs.readFileSync('version.json','utf8'));
           for(const required of [
-            "const BUILD='menu-planner-flexible-day-2.4.1'",
+            "const BUILD='body-food-navigation-compact-2.4.1'",
             "recoverCompletedDraft",
             "todayStatusMarkup",
             "fallbackFoodMarkup",
@@ -944,9 +944,9 @@ jobs:
           }
           if(!brand.includes("version:'2.4.1'")||!brand.includes('./assets/icon.svg'))throw new Error('Brand version/icon not corrected');
           if(!body.includes('EVITE / LIMITE HOJE')||!body.includes('CHECK-IN QUINZENAL'))throw new Error('Critical body modules missing');
-          if(!index.includes('traco-runtime.css?v=290')||!index.includes('traco-runtime.js?v=290'))throw new Error('Runtime assets not loaded');
-          if(!sw.includes("'./traco-runtime.css'")||!sw.includes("'./traco-runtime.js'")||!sw.includes("const CACHE = 'traco-v75'"))throw new Error('Runtime cache missing');
-          if(version.build!=='menu-planner-flexible-day-2.4.1')throw new Error('version.json build mismatch');
+          if(!index.includes('traco-runtime.css?v=291')||!index.includes('traco-runtime.js?v=291'))throw new Error('Runtime assets not loaded');
+          if(!sw.includes("'./traco-runtime.css'")||!sw.includes("'./traco-runtime.js'")||!sw.includes("const CACHE = 'traco-v76'"))throw new Error('Runtime cache missing');
+          if(version.build!=='body-food-navigation-compact-2.4.1')throw new Error('version.json build mismatch');
           console.log('Runtime recovery OK: final render, today status, food/photo cards, brand icon/version and PWA refresh');
           NODE
       - name: Validate runtime smoke regressions
@@ -964,10 +964,10 @@ jobs:
           if(/(^|\n)\s*\$\('\[data-workout\]'\)\.forEach/.test(app)) throw new Error('Home selector regression: querySelector used with forEach');
           if(gym.includes('tracoGymCalendar()')) throw new Error('Undefined tracoGymCalendar regression');
           if(!evo.includes('function latestBody(){')) throw new Error('Evolution latestBody helper missing');
-          if(!runtime.includes("const BUILD_NUMBER='290'")) throw new Error('Runtime build number mismatch');
-          if(!index.includes('traco-runtime.js?v=290')||!index.includes('traco-body-coach.js?v=290')) throw new Error('Build 281 assets not loaded');
-          if(!sw.includes("const CACHE = 'traco-v75'")) throw new Error('Cache v66 missing');
-          if(version.build!=='menu-planner-flexible-day-2.4.1') throw new Error('version build mismatch');
+          if(!runtime.includes("const BUILD_NUMBER='291'")) throw new Error('Runtime build number mismatch');
+          if(!index.includes('traco-runtime.js?v=291')||!index.includes('traco-body-coach.js?v=291')) throw new Error('Build 281 assets not loaded');
+          if(!sw.includes("const CACHE = 'traco-v76'")) throw new Error('Cache v66 missing');
+          if(version.build!=='body-food-navigation-compact-2.4.1') throw new Error('version build mismatch');
           console.log('Runtime smoke regressions OK: Home selector, gym icon and Evolution latestBody');
           NODE
       - name: Validate performance Home anchors
@@ -983,9 +983,9 @@ jobs:
           if(!evo.includes(".perf-greeting, .editorial-title")) throw new Error('Evolution best-today anchor missing on performance Home');
           if(!evo.includes(".perf-sequence, .week-strip")) throw new Error('Evolution smart-week anchor missing on performance Home');
           if(!runtime.includes(".perf-workout-hero, .today-card")) throw new Error('Runtime today status anchor missing on performance Home');
-          if(!runtime.includes("const BUILD_NUMBER='290'")) throw new Error('Runtime build 282 marker missing');
-          if(!index.includes('traco-runtime.js?v=290')||!index.includes('traco-body-coach.js?v=290')||!index.includes('traco-evolution.js?v=290')) throw new Error('Build 282 assets not loaded');
-          if(!sw.includes("const CACHE = 'traco-v75'")) throw new Error('Cache v67 missing');
+          if(!runtime.includes("const BUILD_NUMBER='291'")) throw new Error('Runtime build 282 marker missing');
+          if(!index.includes('traco-runtime.js?v=291')||!index.includes('traco-body-coach.js?v=291')||!index.includes('traco-evolution.js?v=291')) throw new Error('Build 282 assets not loaded');
+          if(!sw.includes("const CACHE = 'traco-v76'")) throw new Error('Cache v67 missing');
           console.log('Performance Home anchors OK: food, check-in, today status and Evolution can mount');
           NODE
       - name: Validate settings runtime stability
@@ -1000,10 +1000,10 @@ jobs:
 
           if(!gym.includes('function tracoGymClearAll(){')) throw new Error('Missing tracoGymClearAll implementation');
           if(!gym.includes("$('#tracoClearAll').onclick=tracoGymClearAll")) throw new Error('Clear-all binding missing');
-          if(!runtime.includes("const BUILD_NUMBER='290'")) throw new Error('Runtime build 283 marker missing');
-          if(!index.includes('traco-runtime.js?v=290')||!index.includes('traco-gym-ux.js?v=290')) throw new Error('Build 283 assets not loaded');
-          if(!sw.includes("const CACHE = 'traco-v75'")) throw new Error('Cache v68 missing');
-          if(version.build!=='menu-planner-flexible-day-2.4.1') throw new Error('version.json build mismatch');
+          if(!runtime.includes("const BUILD_NUMBER='291'")) throw new Error('Runtime build 283 marker missing');
+          if(!index.includes('traco-runtime.js?v=291')||!index.includes('traco-gym-ux.js?v=291')) throw new Error('Build 283 assets not loaded');
+          if(!sw.includes("const CACHE = 'traco-v76'")) throw new Error('Cache v68 missing');
+          if(version.build!=='body-food-navigation-compact-2.4.1') throw new Error('version.json build mismatch');
           console.log('Settings runtime OK: clear-all handler exists and build/cache are aligned');
           NODE
       - name: Validate workout status card mobile
@@ -1032,10 +1032,10 @@ jobs:
             '.v60-sequence-note.is-complete'
           ]) if(!css.includes(required)) throw new Error('Missing mobile sequence CSS: '+required);
 
-          if(!runtime.includes("const BUILD_NUMBER='290'")) throw new Error('Runtime build 284 marker missing');
-          if(!index.includes('v60-smart-sequence.js?v=290')||!index.includes('v60-smart-sequence.css?v=290')) throw new Error('Build 284 sequence assets not loaded');
-          if(!sw.includes("const CACHE = 'traco-v75'")) throw new Error('Cache v69 missing');
-          if(version.build!=='menu-planner-flexible-day-2.4.1') throw new Error('version.json mismatch');
+          if(!runtime.includes("const BUILD_NUMBER='291'")) throw new Error('Runtime build 284 marker missing');
+          if(!index.includes('v60-smart-sequence.js?v=291')||!index.includes('v60-smart-sequence.css?v=291')) throw new Error('Build 284 sequence assets not loaded');
+          if(!sw.includes("const CACHE = 'traco-v76'")) throw new Error('Cache v69 missing');
+          if(version.build!=='body-food-navigation-compact-2.4.1') throw new Error('version.json mismatch');
           console.log('Workout status card OK: today complete vs next workout, mobile-safe layout');
           NODE
       - name: Validate today E completed and next A
@@ -1060,10 +1060,10 @@ jobs:
             "reps:isLateral?'6'"
           ]) if(!seq.includes(required)) throw new Error('Missing E->A confirmation: '+required);
 
-          if(!runtime.includes("const BUILD_NUMBER='290'")) throw new Error('Runtime build 285 marker missing');
-          if(!index.includes('v60-smart-sequence.js?v=290')||!index.includes('traco-runtime.js?v=290')) throw new Error('Build 285 assets not loaded');
-          if(!sw.includes("const CACHE = 'traco-v75'")) throw new Error('Cache v70 missing');
-          if(version.build!=='menu-planner-flexible-day-2.4.1') throw new Error('version.json mismatch');
+          if(!runtime.includes("const BUILD_NUMBER='291'")) throw new Error('Runtime build 285 marker missing');
+          if(!index.includes('v60-smart-sequence.js?v=291')||!index.includes('traco-runtime.js?v=291')) throw new Error('Build 285 assets not loaded');
+          if(!sw.includes("const CACHE = 'traco-v76'")) throw new Error('Cache v70 missing');
+          if(version.build!=='body-food-navigation-compact-2.4.1') throw new Error('version.json mismatch');
           console.log('Today sequence OK: E completed on 2026-09-20, next workout A');
           NODE
       - name: Validate isolated workout status cards
@@ -1088,10 +1088,10 @@ jobs:
           ]) if(!seq.includes(required) && !css.includes(required)) throw new Error('Missing isolated workout status feature: '+required);
 
           if(!seq.includes("if(!window.__v60ManualWorkoutSelection) state.selectedWorkout=recommended.id")) throw new Error('Recommended workout is not selected by default');
-          if(!runtime.includes("const BUILD_NUMBER='290'")) throw new Error('Runtime build 286 marker missing');
-          if(!index.includes('v60-smart-sequence.js?v=290')||!index.includes('v60-smart-sequence.css?v=290')) throw new Error('Build 286 sequence assets not loaded');
-          if(!sw.includes("const CACHE = 'traco-v75'")) throw new Error('Cache v71 missing');
-          if(version.build!=='menu-planner-flexible-day-2.4.1') throw new Error('version.json mismatch');
+          if(!runtime.includes("const BUILD_NUMBER='291'")) throw new Error('Runtime build 286 marker missing');
+          if(!index.includes('v60-smart-sequence.js?v=291')||!index.includes('v60-smart-sequence.css?v=291')) throw new Error('Build 286 sequence assets not loaded');
+          if(!sw.includes("const CACHE = 'traco-v76'")) throw new Error('Cache v71 missing');
+          if(version.build!=='body-food-navigation-compact-2.4.1') throw new Error('version.json mismatch');
           console.log('Workout status cards OK: isolated vertical cards and next A selected by default');
           NODE
       - name: Validate unified icon palette
@@ -1110,13 +1110,13 @@ jobs:
           if(!theme.includes('filter:none !important')) throw new Error('Logo filter reset missing');
           if(!theme.includes('.perf-bottom-nav .nav-btn.active{color:#FF3B30}')) throw new Error('Active nav icon is not Traço red');
           if(!theme.includes('stroke:currentColor!important')) throw new Error('Bottom nav SVGs do not inherit currentColor');
-          if(!brand.includes('./assets/icon.svg?v=290')) throw new Error('Settings logo is not cache-busted');
+          if(!brand.includes('./assets/icon.svg?v=291')) throw new Error('Settings logo is not cache-busted');
           if(!perf.includes('tracoPerfDumbbell()')) throw new Error('Workout nav icon missing');
-          if(!runtime.includes("const BUILD_NUMBER='290'")) throw new Error('Runtime build 287 marker missing');
-          if(!index.includes('traco-theme.css?v=290')||!index.includes('traco-brand.js?v=290')) throw new Error('Build 287 theme/brand assets not loaded');
-          if(!index.includes('./assets/icon.svg?v=290')) throw new Error('Favicon cache-bust missing');
-          if(!sw.includes("const CACHE = 'traco-v75'")) throw new Error('Cache v72 missing');
-          if(version.build!=='menu-planner-flexible-day-2.4.1') throw new Error('version.json mismatch');
+          if(!runtime.includes("const BUILD_NUMBER='291'")) throw new Error('Runtime build 287 marker missing');
+          if(!index.includes('traco-theme.css?v=291')||!index.includes('traco-brand.js?v=291')) throw new Error('Build 287 theme/brand assets not loaded');
+          if(!index.includes('./assets/icon.svg?v=291')) throw new Error('Favicon cache-bust missing');
+          if(!sw.includes("const CACHE = 'traco-v76'")) throw new Error('Cache v72 missing');
+          if(version.build!=='body-food-navigation-compact-2.4.1') throw new Error('version.json mismatch');
           console.log('Icon palette OK: no magenta filter, red active icons and cache-busted Traço logo');
           NODE
       - name: Validate PWA icon v2 assets
@@ -1138,9 +1138,9 @@ jobs:
           if(!index.includes('./assets/traco-icon-180-v2.png')) throw new Error('Apple touch icon v2 missing');
           if(!manifest.includes('./assets/traco-icon-192-v2.png')||!manifest.includes('./assets/traco-icon-512-v2.png')) throw new Error('Manifest PNG v2 refs missing');
           if(!sw.includes("'./assets/traco-icon-180-v2.png'")||!sw.includes("'./assets/traco-icon-192-v2.png'")||!sw.includes("'./assets/traco-icon-512-v2.png'")) throw new Error('PWA icon v2 cache refs missing');
-          if(!sw.includes("const CACHE = 'traco-v75'")) throw new Error('Cache v73 missing');
-          if(!runtime.includes("const BUILD_NUMBER='290'")) throw new Error('Runtime build 288 marker missing');
-          if(version.build!=='menu-planner-flexible-day-2.4.1') throw new Error('version.json mismatch');
+          if(!sw.includes("const CACHE = 'traco-v76'")) throw new Error('Cache v73 missing');
+          if(!runtime.includes("const BUILD_NUMBER='291'")) throw new Error('Runtime build 288 marker missing');
+          if(version.build!=='body-food-navigation-compact-2.4.1') throw new Error('version.json mismatch');
           console.log('PWA icons v2 OK: Apple + manifest + offline cache all use red/black assets');
           NODE
       - name: Validate UX polish 1.0
@@ -1178,11 +1178,11 @@ jobs:
             '.ux-finish-confirm'
           ]) if(!css.includes(required)) throw new Error('Missing UX style: '+required);
 
-          if(!runtime.includes("const BUILD_NUMBER='290'")) throw new Error('Runtime build 289 marker missing');
-          if(!index.includes('traco-ux-polish.css?v=290')||!index.includes('traco-ux-polish.js?v=290')) throw new Error('UX assets not loaded');
+          if(!runtime.includes("const BUILD_NUMBER='291'")) throw new Error('Runtime build 289 marker missing');
+          if(!index.includes('traco-ux-polish.css?v=291')||!index.includes('traco-ux-polish.js?v=291')) throw new Error('UX assets not loaded');
           if(!sw.includes("'./traco-ux-polish.css'")||!sw.includes("'./traco-ux-polish.js'")) throw new Error('UX offline cache refs missing');
-          if(!sw.includes("const CACHE = 'traco-v75'")) throw new Error('Cache v74 missing');
-          if(version.build!=='menu-planner-flexible-day-2.4.1') throw new Error('version.json mismatch');
+          if(!sw.includes("const CACHE = 'traco-v76'")) throw new Error('Cache v74 missing');
+          if(version.build!=='body-food-navigation-compact-2.4.1') throw new Error('version.json mismatch');
           console.log('UX polish OK: Home, Corpo, Evolução, Mais, Treino and finish hierarchy loaded');
           NODE
       - name: Validate menu planner 1.0
@@ -1237,13 +1237,45 @@ jobs:
           if(!ux.includes("food:['.traco-menu-planner'")) throw new Error('Menu planner is not assigned to Alimentação tab');
           if(!lab.includes("const items=[...new Set([...defaults,...saved])]")) throw new Error('Supermercado does not include generated menu items');
           if(!evo.includes("'traco_menu_planner_v1','traco_menu_favorites_v1'")) throw new Error('Menu planner keys missing from full backup');
-          if(!runtime.includes("const BUILD_NUMBER='290'")) throw new Error('Runtime build 290 marker missing');
-          if(!brand.includes('./assets/icon.svg?v=290')) throw new Error('Brand cache-bust not aligned to 290');
-          if(!index.includes('traco-menu-planner.css?v=290')||!index.includes('traco-menu-planner.js?v=290')) throw new Error('Menu planner assets not loaded');
+          if(!runtime.includes("const BUILD_NUMBER='291'")) throw new Error('Runtime build 290 marker missing');
+          if(!brand.includes('./assets/icon.svg?v=291')) throw new Error('Brand cache-bust not aligned to 290');
+          if(!index.includes('traco-menu-planner.css?v=291')||!index.includes('traco-menu-planner.js?v=291')) throw new Error('Menu planner assets not loaded');
           if(!sw.includes("'./traco-menu-planner.css'")||!sw.includes("'./traco-menu-planner.js'")) throw new Error('Menu planner offline cache refs missing');
-          if(!sw.includes("const CACHE = 'traco-v75'")) throw new Error('Cache v75 missing');
-          if(version.build!=='menu-planner-flexible-day-2.4.1') throw new Error('version.json mismatch');
+          if(!sw.includes("const CACHE = 'traco-v76'")) throw new Error('Cache v75 missing');
+          if(version.build!=='body-food-navigation-compact-2.4.1') throw new Error('version.json mismatch');
           console.log('Menu planner OK: contexts, 3-tap builder, swaps, portions, favorites, grocery and backup');
+          NODE
+      - name: Validate compact Corpo and Alimentação navigation
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const ux=fs.readFileSync('traco-ux-polish.js','utf8');
+          const css=fs.readFileSync('traco-ux-polish.css','utf8');
+          const body=fs.readFileSync('traco-body-coach.js','utf8');
+          const menu=fs.readFileSync('traco-menu-planner.js','utf8');
+          const runtime=fs.readFileSync('traco-runtime.js','utf8');
+          const brand=fs.readFileSync('traco-brand.js','utf8');
+          const index=fs.readFileSync('index.html','utf8');
+          const sw=fs.readFileSync('sw.js','utf8');
+          const version=JSON.parse(fs.readFileSync('version.json','utf8'));
+
+          if(!ux.includes('<button data-ux-body-tab="overview">visão geral</button><button data-ux-body-tab="photos">fotos</button><button data-ux-body-tab="food">alimentação</button>')) throw new Error('Corpo does not expose exactly 3 main tabs');
+          if(ux.includes('data-ux-body-tab="measures"')) throw new Error('Legacy Medidas tab still present');
+          if(!ux.includes("const valid=['overview','photos','food']")) throw new Error('Body tab state still accepts legacy measures tab');
+          if(!ux.includes('function compactOverview(main)')) throw new Error('Overview compactor missing');
+          if(!ux.includes('function compactFoodTools(main)')) throw new Error('Food tools compactor missing');
+          if(!ux.includes("openBodyTab('food')") && !body.includes("openBodyTab('food')")) throw new Error('Home cannot route directly to Alimentação');
+          if(!body.includes('abrir alimentação + cardápios')) throw new Error('Home CTA does not explicitly name Alimentação/Cardápios');
+          if(!menu.includes('traco-menu-planner')) throw new Error('Menu planner missing');
+          for(const required of ['.ux-food-more','.ux-overview-measures','.ux-overview-more','grid-template-columns:repeat(3,minmax(0,1fr))']){
+            if(!css.includes(required)) throw new Error('Missing compact-body UX style: '+required);
+          }
+          if(!runtime.includes("const BUILD_NUMBER='291'")) throw new Error('Runtime build 291 marker missing');
+          if(!brand.includes('./assets/icon.svg?v=291')) throw new Error('Brand cache-bust not aligned');
+          if(!index.includes('traco-ux-polish.js?v=291')||!index.includes('traco-menu-planner.js?v=291')) throw new Error('Build 291 assets not loaded');
+          if(!sw.includes("const CACHE = 'traco-v76'")) throw new Error('Cache v76 missing');
+          if(version.build!=='body-food-navigation-compact-2.4.1') throw new Error('version.json mismatch');
+          console.log('Corpo compact OK: 3 tabs, direct Alimentação route, measures and advanced tools collapsed');
           NODE
       - name: Configure Pages
         uses: actions/configure-pages@v5
