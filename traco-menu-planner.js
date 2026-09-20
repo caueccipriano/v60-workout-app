@@ -174,7 +174,7 @@
   }
   function presetMarkup(){
     const s=state();
-    return '<div class="traco-menu-presets">'+Object.entries(MODES).map(([k,v])=>'<button data-menu-mode="'+k+'" class="'+(s.mode===k?'is-on':'')+'"><i>'+esc(v.icon)+'</i><span>'+esc(v.label)+'</span></button>').join('')+'</div>';
+    return '<details class="traco-menu-contexts"><summary><div><span>TROCAR CONTEXTO</span><b>'+esc(mode().label)+'</b></div><i>+</i></summary><div class="traco-menu-presets">'+Object.entries(MODES).map(([k,v])=>'<button data-menu-mode="'+k+'" class="'+(s.mode===k?'is-on':'')+'"><i>'+esc(v.icon)+'</i><span>'+esc(v.label)+'</span></button>').join('')+'</div></details>';
   }
   function portionMarkup(){
     const p=state().portion;
@@ -191,14 +191,13 @@
   }
   function markup(){
     const m=mode();
-    return '<section class="traco-menu-planner"><header><span>CARDÁPIOS</span><h3>seu dia, sem dieta engessada</h3><p>escolha um contexto ou deixe o Traço montar. As opções são estruturas flexíveis — sem calorias inventadas e sem alimento proibido.</p></header>'+
+    return '<section class="traco-menu-planner"><header><span>CARDÁPIOS</span><h3>seu dia, sem dieta engessada</h3><p>monte em 3 toques ou use o contexto atual. sem calorias inventadas e sem alimento proibido.</p></header>'+
       builderMarkup()+
-      '<div class="traco-menu-presets-wrap"><span>OU ESCOLHA UM CONTEXTO</span>'+presetMarkup()+'</div>'+
       '<section class="traco-menu-current"><header><div><span>CARDÁPIO ATUAL</span><h4>'+esc(m.label)+'</h4><p>'+esc(m.desc)+'</p></div><i>'+esc(m.icon)+'</i></header>'+
       portionMarkup()+
       '<div class="traco-menu-meals">'+SLOTS.map(mealCard).join('')+'</div>'+
       '<small>base flexível: ajuste a preferências, alergias/restrições e orientações profissionais que você já tenha.</small></section>'+
-      favoritesMarkup()+groceryMarkup()+
+      presetMarkup()+favoritesMarkup()+groceryMarkup()+
       '</section>';
   }
 
