@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.0.0';
-  const BUILD='runtime-ui-recovery-2.4.1';
-  const BUILD_NUMBER='280';
+  const BUILD='runtime-smoke-fixed-2.4.1';
+  const BUILD_NUMBER='281';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
