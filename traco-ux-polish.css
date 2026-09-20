@@ -1,0 +1,164 @@
+/*
+ * Traço UX Polish 1.0
+ */
+
+/* HOME — ação primeiro, contexto depois */
+.ux-home .perf-greeting{margin-bottom:14px}
+.ux-home .perf-workout-hero{margin-bottom:12px}
+.ux-home .evo-best-today{
+  margin:0 0 12px;padding:12px 13px;border-radius:13px;
+  background:var(--surface-soft);border-color:var(--line)
+}
+.ux-home .evo-best-today header{align-items:center}
+.ux-home .evo-best-today header>span{font-size:9px}
+.ux-home .evo-best-today header>b{font-size:9px;padding:5px 8px}
+.ux-home .evo-best-today h3{font-size:13px;line-height:1.35;margin:4px 0 0}
+.ux-home .evo-best-today p{font-size:10px;line-height:1.45}
+.ux-home .evo-best-today>button{display:none}
+
+.ux-home-attention{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 14px
+}
+.ux-home-attention>#tracoDailyHome,
+.ux-home-attention>#runtimePhotoMount{margin:0;min-width:0}
+.ux-home #tracoDailyHome .traco-daily-card{
+  margin:0;padding:12px;border-radius:13px;min-height:100%
+}
+.ux-home #tracoDailyHome .traco-daily-card>header,
+.ux-home #tracoDailyHome .traco-priority-limit,
+.ux-home #tracoDailyHome .traco-daily-card>p{display:none}
+.ux-home #tracoDailyHome .traco-home-limit{margin:0;padding:0;background:transparent;border:0}
+.ux-home #tracoDailyHome .traco-home-limit span{font-size:8px}
+.ux-home #tracoDailyHome .traco-home-limit b{font-size:10px;line-height:1.4;margin-top:5px}
+.ux-home #tracoDailyHome .traco-daily-card>button{
+  min-height:34px;margin-top:9px;font-size:8px;border-radius:9px
+}
+.ux-home .runtime-photo-home{
+  height:100%;min-height:100%;padding:12px;border-radius:13px;align-items:flex-start
+}
+.ux-home .runtime-photo-home h3{font-size:13px;line-height:1.25}
+.ux-home .runtime-photo-home small{font-size:9px;line-height:1.35}
+.ux-home .runtime-photo-home button{min-height:34px;height:34px;padding:0 9px}
+
+.ux-home-more{margin:10px 0 0;border:1px solid var(--line);border-radius:12px;background:var(--surface-soft);overflow:hidden}
+.ux-home-more>summary{
+  list-style:none;display:flex;align-items:center;justify-content:space-between;
+  min-height:46px;padding:0 13px;cursor:pointer
+}
+.ux-home-more>summary::-webkit-details-marker{display:none}
+.ux-home-more>summary span{font-size:10px;font-weight:800}
+.ux-home-more>summary b{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.ux-home-more[open]>summary{border-bottom:1px solid var(--line)}
+.ux-home-more-body{padding:10px}
+.ux-home-more .evo-smart-week,.ux-home-more .evo-heatmap{margin:0}
+.ux-home-more .evo-heatmap{margin-top:8px}
+
+/* BODY — quatro áreas claras */
+.ux-body-tabs{
+  position:sticky;top:calc(env(safe-area-inset-top) + 4px);z-index:24;
+  display:flex;gap:6px;overflow-x:auto;margin:0 -2px 14px;padding:4px 2px 8px;
+  background:linear-gradient(var(--surface) 75%,transparent);
+  scrollbar-width:none
+}
+.ux-body-tabs::-webkit-scrollbar{display:none}
+.ux-body-tabs button{
+  flex:0 0 auto;min-height:38px;padding:0 12px;border:1px solid var(--line);
+  border-radius:999px;background:var(--surface-soft);color:var(--muted);
+  font-size:10px;font-weight:800;white-space:nowrap
+}
+.ux-body-tabs button.is-active{
+  background:var(--perf-orange,#FF3B30);border-color:var(--perf-orange,#FF3B30);color:#111
+}
+.ux-body-panel{display:grid;gap:12px}
+.ux-body-panel>[class],.ux-body-panel>section,.ux-body-panel>details{margin-top:0!important}
+.ux-body-panel[hidden]{display:none!important}
+.ux-body .traco-body-intro{margin:0;font-size:10px;line-height:1.5}
+.ux-body .body-blue{margin:0}
+.ux-body .traco-daily-card,.ux-body .traco-food-limits,.ux-body .traco-habit-card,
+.ux-body .evo-mini-plan,.ux-body .evo-hunger-sos{margin-top:0}
+
+/* PROGRESS — leitura primeiro */
+.ux-progress-30{
+  margin:0 0 14px;padding:14px;border:1px solid var(--line);
+  border-radius:14px;background:var(--surface-soft)
+}
+.ux-progress-30 header span{display:block;font-size:8px;font-weight:900;letter-spacing:.12em;color:var(--perf-orange,#FF3B30)}
+.ux-progress-30 header b{display:block;margin-top:4px;font-size:11px}
+.ux-progress-30>div{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:11px}
+.ux-progress-30 article{min-width:0;padding:10px 8px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.ux-progress-30 article b{display:block;font-size:17px;line-height:1.05;overflow-wrap:anywhere}
+.ux-progress-30 article span{display:block;margin-top:5px;font-size:8px;color:var(--muted)}
+
+/* SETTINGS — menos scroll, mais agrupamento */
+.ux-settings .settings-intro{padding:14px 15px;margin-bottom:10px}
+.ux-settings .settings-intro b{font-size:15px}
+.ux-settings .traco-about-card{padding:12px 14px;margin-top:10px}
+.ux-settings .traco-about-card img{width:54px!important;height:54px!important;border-radius:14px}
+.ux-settings .traco-about-card b{font-size:18px}
+.ux-settings .traco-theme-card{padding:13px 14px;margin-top:10px}
+.ux-settings .traco-theme-segment{margin-top:9px}
+.ux-settings .traco-theme-option{min-height:38px}
+.ux-settings-groups{display:grid;gap:8px;margin-top:12px}
+.ux-settings-group{
+  border:1px solid var(--line);border-radius:13px;background:var(--surface-soft);overflow:hidden
+}
+.ux-settings-group>summary{
+  list-style:none;display:flex;align-items:center;justify-content:space-between;
+  min-height:58px;padding:10px 14px;cursor:pointer
+}
+.ux-settings-group>summary::-webkit-details-marker{display:none}
+.ux-settings-group>summary div{display:grid;gap:3px}
+.ux-settings-group>summary b{font-size:12px}
+.ux-settings-group>summary small{font-size:9px;color:var(--muted)}
+.ux-settings-group>summary>span{font-size:20px;color:var(--perf-orange,#FF3B30);transition:transform .18s ease}
+.ux-settings-group[open]>summary>span{transform:rotate(45deg)}
+.ux-settings-group[open]>summary{border-bottom:1px solid var(--line)}
+.ux-settings-group-body{display:grid;gap:8px;padding:10px}
+.ux-settings-group-body>.form-card,
+.ux-settings-group-body>.traco-rest-settings,
+.ux-settings-group-body>.evo-backup,
+.ux-settings-group-body>.evo-integrations,
+.ux-settings-group-body>.evo-migration,
+.ux-settings-group-body>.traco-data-support,
+.ux-settings-group-body>.runtime-build-card{margin:0!important;border-radius:10px;padding:12px;background:var(--surface);box-shadow:none}
+
+/* SESSION — operação limpa */
+.ux-session .perf-last-performance{
+  margin:10px 0 12px;padding:9px 10px;border-radius:10px
+}
+.ux-session .perf-last-performance span{font-size:8px}
+.ux-session .perf-last-performance b{font-size:10px}
+.ux-session-more{
+  margin-top:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-soft);overflow:hidden
+}
+.ux-session-more>summary{
+  list-style:none;display:flex;align-items:center;justify-content:space-between;
+  padding:11px 13px;min-height:48px
+}
+.ux-session-more>summary::-webkit-details-marker{display:none}
+.ux-session-more>summary div{display:grid;gap:2px}
+.ux-session-more>summary b{font-size:10px}
+.ux-session-more>summary small{font-size:9px;color:var(--muted)}
+.ux-session-more>summary>span{font-size:20px;color:var(--perf-orange,#FF3B30);transition:transform .18s ease}
+.ux-session-more[open]>summary>span{transform:rotate(45deg)}
+.ux-session-more-body{display:grid;gap:10px;padding:10px;border-top:1px solid var(--line)}
+.ux-session-more-body>*{margin:0!important}
+.ux-session .perf-exercise-top small,
+.ux-session .perf-exercise-top p,
+.ux-session .perf-value-panel>span,
+.ux-session .perf-session-footer{font-size:10px!important}
+.ux-session .perf-value-panel label small{font-size:10px!important}
+
+/* FINISH — confiança de que salvou */
+.ux-finish-confirm{
+  display:grid;gap:4px;margin:14px 0;padding:12px;border:1px solid rgba(196,216,46,.35);
+  border-radius:12px;background:rgba(196,216,46,.07)
+}
+.ux-finish-confirm span{font-size:8px;font-weight:900;letter-spacing:.12em;color:#c4d82e}
+.ux-finish-confirm b{font-size:12px}
+.ux-finish-confirm small{font-size:9px;color:var(--muted)}
+
+@media(max-width:430px){
+  .ux-home-attention{grid-template-columns:1fr}
+  .ux-progress-30>div{grid-template-columns:1fr 1fr}
+}
