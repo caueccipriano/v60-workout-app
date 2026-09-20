@@ -64,7 +64,7 @@
     overview:['.traco-body-intro','.body-blue','.evo-perception','.traco-week-shape','.traco-flank-card','.traco-goal-card','.evo-milestones','.evo-monthly','.evo-volume-map','.lab-recovery-card','.lab-antiflank-card','.lab-phase-card','.lab-goals-card','.lab-records-card','.lab-wrapped-card','.lab-exp-card','.lab-timeline-card'],
     photos:['.traco-photo-cadence','#tracoPhotoCheckin','.traco-photo-compare-card','.evo-photo-tools-card','.lab-photo-tools-card','.lab-camera-entry','#evoVaultMount'],
     measures:['.measure-form','.measure-history','.traco-moving-card','.traco-pattern-card','.traco-plateau-card'],
-    food:['.traco-daily-card','.traco-food-limits','.traco-habit-card','.traco-choice-card','.evo-mini-plan','.evo-hunger-sos','.lab-hunger-card','.lab-food-coach','.lab-meal-card','.lab-grocery-card']
+    food:['.traco-menu-planner','.traco-daily-card','.traco-food-limits','.traco-habit-card','.traco-choice-card','.evo-mini-plan','.evo-hunger-sos','.lab-hunger-card','.lab-food-coach','.lab-meal-card','.lab-grocery-card']
   };
 
   function bodyShell(main){
