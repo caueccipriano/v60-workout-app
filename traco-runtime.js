@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.0.0';
-  const BUILD='menu-planner-flexible-day-2.4.1';
-  const BUILD_NUMBER='290';
+  const BUILD='body-food-navigation-compact-2.4.1';
+  const BUILD_NUMBER='291';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
