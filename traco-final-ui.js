@@ -1,0 +1,149 @@
+/*
+ * Traço Final UI Guard 1.0
+ * Última camada: garante a hierarquia final depois de qualquer render.
+ */
+(function(){
+  'use strict';
+  const VERSION='1.0.0';
+  const q=s=>document.querySelector(s);
+  const qa=s=>Array.from(document.querySelectorAll(s));
+  let scheduled=false,working=false;
+
+  function go(page){state.page=page;render();}
+
+  async function photoMeta(){
+    try{
+      const rows=await window.TracoCoach?.dbAll?.();
+      const valid=(rows||[]).filter(r=>r.front&&r.side&&r.back).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+      const latest=valid[valid.length-1]||null;
+      let due='primeiro check-in pendente';
+      if(latest?.date){
+        const d=new Date(latest.date+'T12:00:00');d.setDate(d.getDate()+14);
+        const now=new Date();now.setHours(12,0,0,0);
+        const days=Math.ceil((d-now)/86400000);
+        due=days<=0?'check-in disponível agora':days===1?'próximo amanhã':'próximo em '+days+' dias';
+      }
+      return {count:valid.length,latest,due};
+    }catch{return {count:0,latest:null,due:'abrir acompanhamento visual'};}
+  }
+
+  function progressTabs(active){
+    return '<nav class="final-progress-tabs" aria-label="evolução"><button data-final-progress="overview" class="'+(active==='overview'?'is-active':'')+'">visão geral</button><button data-final-progress="photos" class="'+(active==='photos'?'is-active':'')+'">fotos</button></nav>';
+  }
+
+  async function ensureProgressPhotos(){
+    const main=q('.perf-progress');if(!main)return;
+    if(!main.querySelector('.final-progress-tabs')){
+      main.querySelector('.page-head')?.insertAdjacentHTML('afterend',progressTabs('overview'));
+    }
+    main.querySelector('[data-final-progress="overview"]')?.addEventListener('click',()=>{});
+    const photoTab=main.querySelector('[data-final-progress="photos"]');
+    if(photoTab&&!photoTab.dataset.bound){photoTab.dataset.bound='1';photoTab.onclick=()=>go('photos');}
+
+    let card=main.querySelector('.final-photo-entry');
+    if(!card){
+      card=document.createElement('section');
+      card.className='final-photo-entry';
+      const anchor=main.querySelector('.ux-progress-30')||main.querySelector('.final-progress-tabs')||main.querySelector('.page-head');
+      anchor?.insertAdjacentElement('afterend',card);
+    }
+    const m=await photoMeta();
+    if(!card.isConnected)return;
+    card.innerHTML='<div><span>EVOLUÇÃO VISUAL</span><h3>'+(m.latest?'último check-in · '+m.latest.date:'acompanhe seu corpo por fotos')+'</h3><small>'+m.due+' · '+m.count+' check-in'+(m.count===1?'':'s')+'</small></div><button>abrir fotos</button>';
+    card.querySelector('button').onclick=()=>go('photos');
+
+    // Evita duplicidade: o card final substitui a versão assíncrona antiga.
+    qa('.perf-progress .evo-progress-photos').forEach(n=>n.remove());
+
+    let more=main.querySelector('.final-progress-more');
+    if(!more){
+      const candidates=['.evo-volume-map','.evo-adaptive','.traco-body-map','.traco-review-card','.evo-milestones','.evo-monthly']
+        .flatMap(sel=>qa('.perf-progress '+sel));
+      if(candidates.length){
+        more=document.createElement('details');
+        more.className='final-progress-more';
+        more.innerHTML='<summary><div><b>análises avançadas</b><small>volume · ciclo · marcos · detalhes</small></div><span>+</span></summary><div class="final-progress-more-body"></div>';
+        main.appendChild(more);
+        const body=more.querySelector('.final-progress-more-body');
+        candidates.forEach(n=>body.appendChild(n));
+      }
+    }
+  }
+
+  async function ensurePhotos(){
+    const main=q('.perf-photos');if(!main)return;
+    if(!main.querySelector('.final-progress-tabs')){
+      main.querySelector('.page-head')?.insertAdjacentHTML('afterend',progressTabs('photos'));
+    }
+    const overview=main.querySelector('[data-final-progress="overview"]');
+    if(overview&&!overview.dataset.bound){overview.dataset.bound='1';overview.onclick=()=>go('progress');}
+    const photos=main.querySelector('[data-final-progress="photos"]');
+    if(photos)photos.onclick=()=>{};
+
+    // Não deixa o usuário preso se o módulo de fotos falhar parcialmente.
+    if(!main.querySelector('#tracoPhotoCheckin')){
+      const fallback=document.createElement('section');
+      fallback.className='final-photo-fallback';
+      fallback.innerHTML='<span>FOTOS DE EVOLUÇÃO</span><h3>não consegui montar o uploader</h3><p>reabra o app para carregar o módulo de fotos. seus registros locais não são apagados.</p><button>voltar à evolução</button>';
+      main.appendChild(fallback);
+      fallback.querySelector('button').onclick=()=>go('progress');
+    }
+  }
+
+  function refineHome(){
+    const main=q('.perf-home');if(!main)return;
+    // Garante uma única entrada de alimentação e uma única entrada de fotos.
+    qa('#runtimeFoodHome').forEach(n=>n.remove());
+    const menu=q('#tracoMenuHomeCard');
+    if(menu)menu.classList.add('final-home-primary-card');
+    const photo=q('.runtime-photo-home');
+    if(photo)photo.classList.add('final-home-secondary-card');
+  }
+
+  function refineFood(){
+    const main=q('.perf-food');if(!main)return;
+    main.querySelector('.traco-menu-planner')?.classList.add('final-menu-planner');
+    const quick=main.querySelector('.traco-food-quicknav');
+    if(quick)quick.classList.add('final-food-quicknav');
+  }
+
+  function refineWorkouts(){
+    const main=q('.perf-workouts');if(!main)return;
+    main.querySelector('.perf-history-shortcut')?.classList.add('final-compact-shortcut');
+  }
+
+  function refineSettings(){
+    const main=q('.perf-settings');if(!main)return;
+    main.querySelector('.traco-about-card')?.classList.add('final-about-card');
+  }
+
+  function refineSession(){
+    q('.perf-session')?.classList.add('final-session');
+  }
+
+  async function apply(){
+    if(working)return;working=true;
+    try{
+      refineHome();
+      refineFood();
+      refineWorkouts();
+      refineSettings();
+      refineSession();
+      await ensureProgressPhotos();
+      await ensurePhotos();
+    }finally{working=false;}
+  }
+
+  function schedule(){
+    if(scheduled)return;scheduled=true;
+    requestAnimationFrame(()=>{scheduled=false;apply();});
+  }
+
+  const app=q('#app');
+  if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:true});
+  window.addEventListener('pageshow',schedule);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule();});
+  setTimeout(schedule,30);
+  window.TracoFinalUI={version:VERSION,apply};
+  document.documentElement.dataset.tracoFinalUi=VERSION;
+})();
