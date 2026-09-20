@@ -10,6 +10,8 @@
   const SETTINGS_KEY='traco_body_coach_settings_v1';
   const PHOTO_DB='traco_photo_checkins_v1';
   const PHOTO_STORE='checkins';
+  const PHOTO_NOTIFY_KEY='traco_photo_checkin_notify_v1';
+  const PHOTO_NOTIFY_SENT_KEY='traco_photo_checkin_last_notified_v1';
 
   function qs(s){return document.querySelector(s);}
   function qsa(s){return Array.from(document.querySelectorAll(s));}
@@ -269,7 +271,59 @@
     const d=new Date(String(row.date)+'T12:00:00');d.setDate(d.getDate()+PHOTO_INTERVAL_DAYS);return d;
   }
   function photoCadenceMarkup(){
-    return '<section class="traco-photo-cadence" id="tracoPhotoCadence"><span>CHECK-IN QUINZENAL</span><h3 id="tracoPhotoCadenceTitle">calculando próxima atualização…</h3><p id="tracoPhotoCadenceText">frente + perfil + costas, sempre nas mesmas condições.</p><div class="traco-photo-standard"><b>padrão recomendado</b><small>mesma luz · mesma distância · corpo relaxado · de preferência antes do treino e sem pump</small></div><div class="traco-photo-cadence-actions"><button id="tracoGoPhotos">atualizar fotos</button><button id="tracoShareFeedback">compartilhar para feedback</button></div></section>';
+    const notifyOn=localStorage.getItem(PHOTO_NOTIFY_KEY)==='1';
+    const perm=('Notification' in window)?Notification.permission:'unsupported';
+    const notifyLabel=perm==='granted'&&notifyOn?'🔔 aviso quinzenal ativado':perm==='denied'?'🔕 aviso bloqueado no iPhone':'🔔 ativar aviso quinzenal';
+    return '<section class="traco-photo-cadence" id="tracoPhotoCadence"><span>CHECK-IN QUINZENAL</span><h3 id="tracoPhotoCadenceTitle">calculando próxima atualização…</h3><p id="tracoPhotoCadenceText">frente + perfil + costas, sempre nas mesmas condições.</p><div class="traco-photo-standard"><b>padrão recomendado</b><small>mesma luz · mesma distância · corpo relaxado · de preferência antes do treino e sem pump</small></div><div class="traco-photo-cadence-actions"><button id="tracoGoPhotos">atualizar fotos</button><button id="tracoShareFeedback">compartilhar para feedback</button></div><button class="traco-photo-notify-btn" id="tracoPhotoNotify">'+notifyLabel+'</button></section>';
+  }
+  async function requestPhotoReminderPermission(){
+    if(!('Notification' in window)||!('serviceWorker' in navigator)){toast('avisos do PWA não estão disponíveis aqui');return false;}
+    if(Notification.permission==='denied'){localStorage.setItem(PHOTO_NOTIFY_KEY,'0');toast('notificações estão bloqueadas no iPhone');return false;}
+    try{
+      const result=Notification.permission==='granted'?'granted':await Notification.requestPermission();
+      const ok=result==='granted';localStorage.setItem(PHOTO_NOTIFY_KEY,ok?'1':'0');
+      toast(ok?'aviso quinzenal ativado':'notificação não autorizada');
+      if(state.page==='body')renderBody();
+      return ok;
+    }catch(e){toast('não consegui ativar o aviso');return false;}
+  }
+  async function latestStandardPhoto(){
+    const rows=(await allPhotos()).filter(function(row){return row.front&&row.side&&row.back;}).sort(function(a,b){return photoDateValue(a)-photoDateValue(b);});
+    return rows.length?rows[rows.length-1]:null;
+  }
+  async function showPhotoReminderNotification(latest,due){
+    if(localStorage.getItem(PHOTO_NOTIFY_KEY)!=='1')return false;
+    if(!('Notification' in window)||Notification.permission!=='granted'||!('serviceWorker' in navigator))return false;
+    const dueKey=due.toISOString().slice(0,10);
+    if(localStorage.getItem(PHOTO_NOTIFY_SENT_KEY)===dueKey)return false;
+    try{
+      const reg=await navigator.serviceWorker.ready;
+      await reg.showNotification('📸 Dia de atualizar suas fotos', {
+        body:'Frente, perfil e costas · mantenha o mesmo padrão para comparar sua evolução.',
+        icon:'./assets/traco-icon-192.png',
+        badge:'./assets/traco-icon-192.png',
+        tag:'traco-photo-checkin',
+        renotify:true,
+        data:{url:'./?photo_due=1',kind:'photo-checkin'}
+      });
+      localStorage.setItem(PHOTO_NOTIFY_SENT_KEY,dueKey);
+      return true;
+    }catch(e){return false;}
+  }
+  async function checkPhotoReminder(){
+    try{
+      const latest=await latestStandardPhoto();if(!latest)return;
+      const due=nextPhotoDueFrom(latest);if(!due)return;
+      const now=new Date();now.setHours(12,0,0,0);
+      if(now>=due)await showPhotoReminderNotification(latest,due);
+    }catch(e){}
+  }
+  function openPhotosFromReminder(){
+    state.page='body';renderBody();
+    setTimeout(function(){
+      const card=qs('#tracoPhotoCheckin')||qs('#tracoPhotoCadence');
+      if(card)card.scrollIntoView({behavior:'smooth',block:'start'});
+    },80);
   }
   async function renderPhotoCadence(){
     const title=qs('#tracoPhotoCadenceTitle'),text=qs('#tracoPhotoCadenceText');if(!title||!text)return;
@@ -331,6 +385,7 @@
     bindQuickLog();renderPhotoCompare();renderPhotoCadence();
     const go=qs('#tracoGoPhotos');if(go)go.onclick=function(){const card=qs('#tracoPhotoCheckin');if(card)card.scrollIntoView({behavior:'smooth',block:'start'});else toast('abra a área de fotos padronizadas');};
     const share=qs('#tracoShareFeedback');if(share)share.onclick=sharePhotoFeedback;
+    const notify=qs('#tracoPhotoNotify');if(notify)notify.onclick=requestPhotoReminderPermission;
   }
 
   const baseHome=renderHome;
@@ -339,6 +394,15 @@
   const baseBody=renderBody;
   renderBody=function(){baseBody();decorateBody();};
 
-  window.TracoBodyCoach={version:VERSION,todayLog:todayLog,weeklyStats:weeklyStats,guidance:guidance};
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')checkPhotoReminder();});
+  window.addEventListener('pageshow',function(){setTimeout(checkPhotoReminder,50);});
+  navigator.serviceWorker?.addEventListener?.('message',function(event){
+    if(event.data?.type==='TRACO_PHOTO_FOCUS')openPhotosFromReminder();
+  });
+  if(new URLSearchParams(location.search).get('photo_due')==='1')setTimeout(openPhotosFromReminder,120);
+  setTimeout(checkPhotoReminder,500);
+  setInterval(checkPhotoReminder,60*60*1000);
+
+  window.TracoBodyCoach={version:VERSION,todayLog:todayLog,weeklyStats:weeklyStats,guidance:guidance,checkPhotoReminder:checkPhotoReminder};
   document.documentElement.dataset.tracoBodyCoach=VERSION;
 })();
