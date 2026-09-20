@@ -162,3 +162,72 @@
   .ux-home-attention{grid-template-columns:1fr}
   .ux-progress-30>div{grid-template-columns:1fr 1fr}
 }
+
+/* Build 291: Corpo reduzido e Alimentação impossível de perder */
+.ux-body-tabs{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  overflow:visible!important;
+  gap:7px!important;
+  margin-bottom:12px!important;
+}
+.ux-body-tabs button{
+  width:100%!important;
+  min-height:42px!important;
+  padding:0 8px!important;
+  font-size:9px!important;
+  text-align:center!important;
+}
+.ux-body-tabs button[data-ux-body-tab="food"]{
+  font-weight:900!important;
+}
+.ux-body-tabs button[data-ux-body-tab="food"]::before{
+  content:"🍽 ";
+}
+.ux-body-tabs button[data-ux-body-tab="photos"]::before{
+  content:"◫ ";
+}
+.ux-body-tabs button[data-ux-body-tab="overview"]::before{
+  content:"◎ ";
+}
+
+.ux-food-more,.ux-overview-measures,.ux-overview-more{
+  border:1px solid var(--line);border-radius:12px;background:var(--surface-soft);overflow:hidden
+}
+.ux-food-more>summary,.ux-overview-measures>summary,.ux-overview-more>summary{
+  list-style:none;display:flex;align-items:center;justify-content:space-between;
+  min-height:50px;padding:10px 13px;cursor:pointer
+}
+.ux-food-more>summary::-webkit-details-marker,
+.ux-overview-measures>summary::-webkit-details-marker,
+.ux-overview-more>summary::-webkit-details-marker{display:none}
+.ux-food-more>summary div,.ux-overview-measures>summary div,.ux-overview-more>summary div{display:grid;gap:3px}
+.ux-food-more>summary b,.ux-overview-measures>summary b,.ux-overview-more>summary b{font-size:11px}
+.ux-food-more>summary small,.ux-overview-measures>summary small,.ux-overview-more>summary small{font-size:8px;color:var(--muted)}
+.ux-food-more>summary>span,.ux-overview-measures>summary>span,.ux-overview-more>summary>span{
+  font-size:20px;color:var(--perf-orange,#FF3B30);transition:transform .18s ease
+}
+.ux-food-more[open]>summary>span,.ux-overview-measures[open]>summary>span,.ux-overview-more[open]>summary>span{
+  transform:rotate(45deg)
+}
+.ux-food-more-body,.ux-overview-measures-body,.ux-overview-more-body{
+  display:grid;gap:9px;padding:10px;border-top:1px solid var(--line)
+}
+.ux-food-more-body>*,
+.ux-overview-measures-body>*,
+.ux-overview-more-body>*{margin:0!important}
+
+.ux-body-panel[data-ux-panel="food"]>.traco-menu-planner{order:1}
+.ux-body-panel[data-ux-panel="food"]>.traco-daily-card{order:2}
+.ux-body-panel[data-ux-panel="food"]>.evo-hunger-sos{order:3}
+.ux-body-panel[data-ux-panel="food"]>.ux-food-more{order:4}
+
+.ux-body-panel[data-ux-panel="overview"]>.body-blue{order:1}
+.ux-body-panel[data-ux-panel="overview"]>.traco-goal-card{order:2}
+.ux-body-panel[data-ux-panel="overview"]>.evo-perception{order:3}
+.ux-body-panel[data-ux-panel="overview"]>.ux-overview-measures{order:4}
+.ux-body-panel[data-ux-panel="overview"]>.ux-overview-more{order:5}
+
+@media(max-width:360px){
+  .ux-body-tabs button{font-size:8px!important;padding:0 5px!important}
+}
