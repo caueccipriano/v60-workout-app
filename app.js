@@ -54,12 +54,13 @@ function fmtDate(d){return new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:
 function fmtFull(d){return new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'2-digit',month:'long'}).format(d)}
 function weekdayLabel(d=new Date()){return new Intl.DateTimeFormat('pt-BR',{weekday:'long'}).format(d)}
 function todayWorkout(){const day=new Date().getDay();return workoutPlan.find(w=>w.day===day)||workoutPlan[0]}
-function lastExercisePerf(exId){const ss=sessions().filter(s=>s.finishedAt).sort((a,b)=>b.startedAt-a.startedAt);for(const s of ss){const ex=s.exercises.find(e=>e.id===exId);if(ex)return ex}return null}
+function lastExercisePerf(exId){const ss=sessions().filter(s=>s.finishedAt).sort((a,b)=>b.startedAt-a.startedAt);for(const s of ss){const ex=s.exercises.find(e=>tracoExerciseProgressionKey(e)===exId);if(ex)return ex}return null}
 function toast(msg){const t=$('#toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600)}
 function fmtClock(sec){const m=Math.floor(sec/60),s=sec%60;return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}
 function volumeOfSession(s){if(s?.excludeFromVolume)return 0;return s.exercises.reduce((sum,ex)=>sum+ex.sets.reduce((a,set)=>a+(set.done?Number(set.weight||0)*Number(set.reps||0):0),0),0)}
 function formatLoad(v){if(v>=1000)return `${(v/1000).toFixed(v>=10000?1:2).replace('.',',')}t`;return `${Math.round(v)}kg`}
 function tracoExerciseUsesLoad(ex){if(ex?.usesLoad===false)return false;const eq=String(ex?.equipment||'').toLowerCase(),name=String(ex?.name||'').toLowerCase();return !(/solo|colchonete|peso corporal/.test(eq)||/prancha|reverse crunch/.test(name));}
+function tracoExerciseProgressionKey(ex){return ex?.progressionKey||ex?.id||'';}
 function hasPartialVolume(ss=[]){return ss.some(s=>s?.excludeFromVolume)}
 function recordedLoadCount(ss=[]){
   return ss.reduce((sum,s)=>sum+(s.exercises||[]).filter(ex=>(ex.sets||[]).some(set=>set.done&&Number(set.weight)>0)).length,0);
@@ -190,7 +191,7 @@ function startRest(seconds){state.restRemaining=seconds;showRestOverlay();beginR
 function showRestOverlay(){let el=$('#restOverlay');if(!el){document.body.insertAdjacentHTML('beforeend',`<div class="rest-overlay" id="restOverlay"><div class="rest-inner"><span>DESCANSO</span><strong id="restTime">${fmtClock(state.restRemaining)}</strong><p>respira. a próxima já tá pronta.</p><button id="skipRest">pular descanso</button></div></div>`);el=$('#restOverlay')}el.classList.add('show');$('#skipRest').onclick=stopRest;}
 function beginRestTicker(){clearInterval(state.restTimer);state.restTimer=setInterval(()=>{state.restRemaining--;const el=$('#restTime');if(el)el.textContent=fmtClock(Math.max(0,state.restRemaining));if(state.restRemaining<=0){stopRest();toast('bora pra próxima série');haptic()}},1000)}
 function stopRest(){clearInterval(state.restTimer);state.restRemaining=0;$('#restOverlay')?.remove();if(state.page==='session')renderSession()}
-function detectPRs(s){const prev=sessions().filter(x=>x.finishedAt),best={};prev.forEach(sess=>sess.exercises.forEach(ex=>{const mx=Math.max(0,...ex.sets.filter(z=>z.done).map(z=>Number(z.weight||0)));best[ex.id]=Math.max(best[ex.id]||0,mx)}));return s.exercises.map(ex=>{const mx=Math.max(0,...ex.sets.filter(z=>z.done).map(z=>Number(z.weight||0)));return mx>(best[ex.id]||0)&&mx>0?{id:ex.id,name:ex.name,weight:mx,reps:Math.max(0,...ex.sets.filter(z=>z.done&&Number(z.weight||0)===mx).map(z=>Number(z.reps||0)))}:null}).filter(Boolean);}
+function detectPRs(s){const prev=sessions().filter(x=>x.finishedAt),best={};prev.forEach(sess=>sess.exercises.forEach(ex=>{const key=tracoExerciseProgressionKey(ex),mx=Math.max(0,...ex.sets.filter(z=>z.done).map(z=>Number(z.weight||0)));best[key]=Math.max(best[key]||0,mx)}));return s.exercises.map(ex=>{const key=tracoExerciseProgressionKey(ex),mx=Math.max(0,...ex.sets.filter(z=>z.done).map(z=>Number(z.weight||0)));return mx>(best[key]||0)&&mx>0?{id:ex.id,progressionKey:key,name:ex.name,weight:mx,reps:Math.max(0,...ex.sets.filter(z=>z.done&&Number(z.weight||0)===mx).map(z=>Number(z.reps||0)))}:null}).filter(Boolean);}
 function finishSession(){const s=state.activeSession;if(!s)return;const done=s.exercises.flatMap(e=>e.sets).filter(x=>x.done).length;if(done===0&&!confirm('nenhuma série marcada. encerrar mesmo assim?'))return;const key=tracoDateKey(s.startedAt);if(tracoHasDuplicateSession(key,s.workoutId,s.id)&&!confirm('Já existe este treino nessa data. Deseja manter os dois?'))return;const prs=detectPRs(s);s.prs=prs;s.finishedAt=Date.now();s.duration=Math.floor((s.finishedAt-s.startedAt)/1000);const total=volumeOfSession(s),all=sessions();all.push(s);save(K.sessions,all);localStorage.removeItem(K.draft);state.finishSummary={name:s.wName,duration:s.duration,total,prs,streak:calcStreak(all)};state.activeSession=null;clearInterval(state.sessionClock);clearInterval(state.restTimer);state.restRemaining=0;$('#restOverlay')?.remove();state.page='finish';renderFinish();}
 function cancelSession(){if(!confirm('cancelar este treino? o rascunho será apagado.'))return;localStorage.removeItem(K.draft);state.activeSession=null;clearInterval(state.sessionClock);clearInterval(state.restTimer);state.restRemaining=0;$('#restOverlay')?.remove();state.page='home';render()}
 function renderFinish(){const x=state.finishSummary;if(!x){state.page='home';render();return}const pr=x.prs[0];$('#app').innerHTML=`<main class="finish-shell"><section class="finish-card"><button class="finish-close" id="finishClose">${iconSvg('close')}</button><div class="finish-check">${iconSvg('check')}</div><h1>treino fechado</h1><p>${x.name}</p><div class="finish-stats"><div><span>tempo</span><strong>${Math.max(1,Math.round(x.duration/60))}min</strong></div><div><span>carga total</span><strong>${formatLoad(x.total)}</strong></div></div>${pr?`<div class="finish-pr">${iconSvg('trophy')}<div><b>novo recorde pessoal</b><span>${pr.name} — ${pr.weight}kg × ${pr.reps}</span></div></div>`:`<div class="finish-note">sem PR hoje — consistência também conta.</div>`}<div class="finish-streak">${iconSvg('flame')}<span>streak</span><b>${x.streak} dias</b></div><button class="cta-lime" id="backHome">voltar pro início</button></section></main>`;$('#backHome').onclick=$('#finishClose').onclick=()=>{state.finishSummary=null;state.page='home';render()};}
@@ -205,10 +206,11 @@ function tracoRecomputePRs(){
     for(const ex of (sess.exercises||[])){
       const done=(ex.sets||[]).filter(z=>z.done&&Number(z.weight)>0);
       const mx=Math.max(0,...done.map(z=>Number(z.weight||0)));
-      if(!sess.excludeFromVolume&&mx>(best[ex.id]||0)&&mx>0){
-        prs.push({id:ex.id,name:ex.name,weight:mx,reps:Math.max(0,...done.filter(z=>Number(z.weight||0)===mx).map(z=>Number(z.reps||0)))});
+      const key=tracoExerciseProgressionKey(ex);
+      if(!sess.excludeFromVolume&&mx>(best[key]||0)&&mx>0){
+        prs.push({id:ex.id,progressionKey:key,name:ex.name,weight:mx,reps:Math.max(0,...done.filter(z=>Number(z.weight||0)===mx).map(z=>Number(z.reps||0)))});
       }
-      best[ex.id]=Math.max(best[ex.id]||0,mx);
+      best[key]=Math.max(best[key]||0,mx);
     }
     sess.prs=prs;
   }
