@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.0.0';
-  const BUILD='runtime-smoke-fixed-2.4.1';
-  const BUILD_NUMBER='281';
+  const BUILD='performance-home-visible-2.4.1';
+  const BUILD_NUMBER='282';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
@@ -108,18 +108,20 @@
     qs('#runtimeFoodHome')?.remove();
     qs('#runtimePhotoMount')?.remove();
 
-    const today=main.querySelector('.today-card');
+    const today=main.querySelector('.perf-workout-hero, .today-card');
     const status=todayStatusMarkup();
     if(today&&status)today.insertAdjacentHTML('afterend',status);
 
     const bodyDaily=qs('#tracoDailyHome');
     if(bodyDaily){
       bodyDaily.insertAdjacentHTML('afterend','<div id="runtimePhotoMount"></div>');
-    }else if(today){
+    }else{
       const food=fallbackFoodMarkup();
-      if(food)today.insertAdjacentHTML('afterend',food);
-      const anchor=qs('#runtimeFoodHome')||qs('#runtimeTodayStatus')||today;
-      anchor.insertAdjacentHTML('afterend','<div id="runtimePhotoMount"></div>');
+      const anchorBase=today||main.querySelector('.perf-greeting')||main.firstElementChild;
+      if(food&&anchorBase)anchorBase.insertAdjacentHTML('afterend',food);
+      const anchor=qs('#runtimeFoodHome')||qs('#runtimeTodayStatus')||anchorBase;
+      if(anchor)anchor.insertAdjacentHTML('afterend','<div id="runtimePhotoMount"></div>');
+      else main.insertAdjacentHTML('beforeend','<div id="runtimePhotoMount"></div>');
     }
 
     const resume=qs('#runtimeResumeToday');
