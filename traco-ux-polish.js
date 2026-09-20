@@ -61,9 +61,8 @@
   }
 
   const BODY={
-    overview:['.traco-body-intro','.body-blue','.evo-perception','.traco-week-shape','.traco-flank-card','.traco-goal-card','.evo-milestones','.evo-monthly','.evo-volume-map','.lab-recovery-card','.lab-antiflank-card','.lab-phase-card','.lab-goals-card','.lab-records-card','.lab-wrapped-card','.lab-exp-card','.lab-timeline-card'],
+    overview:['.traco-body-intro','.body-blue','.measure-form','.measure-history','.traco-moving-card','.traco-pattern-card','.traco-plateau-card','.evo-perception','.traco-week-shape','.traco-flank-card','.traco-goal-card','.evo-milestones','.evo-monthly','.evo-volume-map','.lab-recovery-card','.lab-antiflank-card','.lab-phase-card','.lab-goals-card','.lab-records-card','.lab-wrapped-card','.lab-exp-card','.lab-timeline-card'],
     photos:['.traco-photo-cadence','#tracoPhotoCheckin','.traco-photo-compare-card','.evo-photo-tools-card','.lab-photo-tools-card','.lab-camera-entry','#evoVaultMount'],
-    measures:['.measure-form','.measure-history','.traco-moving-card','.traco-pattern-card','.traco-plateau-card'],
     food:['.traco-menu-planner','.traco-daily-card','.traco-food-limits','.traco-habit-card','.traco-choice-card','.evo-mini-plan','.evo-hunger-sos','.lab-hunger-card','.lab-food-coach','.lab-meal-card','.lab-grocery-card']
   };
 
@@ -73,14 +72,14 @@
       tabs=document.createElement('nav');
       tabs.className='ux-body-tabs';
       tabs.setAttribute('aria-label','áreas do corpo');
-      tabs.innerHTML='<button data-ux-body-tab="overview">visão geral</button><button data-ux-body-tab="photos">fotos</button><button data-ux-body-tab="measures">medidas</button><button data-ux-body-tab="food">alimentação</button>';
+      tabs.innerHTML='<button data-ux-body-tab="overview">visão geral</button><button data-ux-body-tab="photos">fotos</button><button data-ux-body-tab="food">alimentação</button>';
       main.querySelector('.page-head')?.insertAdjacentElement('afterend',tabs);
     }
     let panels=main.querySelector('.ux-body-panels');
     if(!panels){
       panels=document.createElement('div');
       panels.className='ux-body-panels';
-      panels.innerHTML='<section class="ux-body-panel" data-ux-panel="overview"></section><section class="ux-body-panel" data-ux-panel="photos"></section><section class="ux-body-panel" data-ux-panel="measures"></section><section class="ux-body-panel" data-ux-panel="food"></section>';
+      panels.innerHTML='<section class="ux-body-panel" data-ux-panel="overview"></section><section class="ux-body-panel" data-ux-panel="photos"></section><section class="ux-body-panel" data-ux-panel="food"></section>';
       tabs.insertAdjacentElement('afterend',panels);
     }
     return {tabs,panels};
@@ -88,7 +87,7 @@
 
   function selectBodyTab(tab){
     const main=qs('.perf-body');if(!main)return;
-    const valid=['overview','photos','measures','food'].includes(tab)?tab:'overview';
+    const valid=['overview','photos','food'].includes(tab)?tab:'overview';
     localStorage.setItem(BODY_TAB_KEY,valid);
     main.querySelectorAll('[data-ux-body-tab]').forEach(btn=>{
       const on=btn.dataset.uxBodyTab===valid;
@@ -112,12 +111,37 @@
     selectBodyTab(localStorage.getItem(BODY_TAB_KEY)||'overview');
   }
 
+  function compactFoodTools(main){
+    const food=main.querySelector('[data-ux-panel="food"]');if(!food)return;
+    let more=food.querySelector('.ux-food-more');
+    if(!more){
+      more=document.createElement('details');
+      more.className='ux-food-more';
+      more.innerHTML='<summary><div><b>mais ferramentas</b><small>construtor · supermercado · favoritos · contexto</small></div><span>+</span></summary><div class="ux-food-more-body"></div>';
+      food.appendChild(more);
+    }
+    const target=more.querySelector('.ux-food-more-body');
+    [
+      '.traco-food-limits','.traco-habit-card','.traco-choice-card','.evo-mini-plan',
+      '.lab-food-coach','.lab-meal-card','.lab-grocery-card','.traco-menu-favorites',
+      '.traco-menu-grocery'
+    ].forEach(selector=>food.querySelectorAll(selector).forEach(node=>move(node,target)));
+  }
+
+  function openBodyTab(tab){
+    state.page='body';
+    localStorage.setItem(BODY_TAB_KEY,tab);
+    renderBody();
+    setTimeout(()=>selectBodyTab(tab),30);
+  }
+
   function body(){
     const main=qs('.perf-body');if(!main)return;
     main.classList.add('ux-body');
     regroupBody(main);
-    setTimeout(()=>regroupBody(main),80);
-    setTimeout(()=>regroupBody(main),320);
+    compactFoodTools(main);
+    setTimeout(()=>{regroupBody(main);compactFoodTools(main)},80);
+    setTimeout(()=>{regroupBody(main);compactFoodTools(main)},320);
   }
 
   function last30(){
@@ -214,7 +238,7 @@
   const sessionBase=renderSession;renderSession=function(){sessionBase();session();};
   const finishBase=renderFinish;renderFinish=function(){finishBase();finish();};
 
-  window.TracoUXPolish={version:VERSION,home,body,progress,settings,session};
+  window.TracoUXPolish={version:VERSION,home,body,progress,settings,session,selectBodyTab,openBodyTab};
   document.documentElement.dataset.tracoUx=VERSION;
   setTimeout(()=>{if(state.page==='home')home();if(state.page==='body')body();if(state.page==='progress')progress();if(state.page==='settings')settings();if(state.page==='session')session();if(state.page==='finish')finish();},50);
 })();
