@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.0.0';
-  const BUILD='runtime-stable-home-settings-2.4.1';
-  const BUILD_NUMBER='283';
+  const BUILD='workout-sequence-status-mobile-2.4.1';
+  const BUILD_NUMBER='284';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
