@@ -72,7 +72,7 @@
       tabs=document.createElement('nav');
       tabs.className='ux-body-tabs';
       tabs.setAttribute('aria-label','áreas do corpo');
-      tabs.innerHTML='<button data-ux-body-tab="overview">visão geral</button><button data-ux-body-tab="photos">fotos</button><button data-ux-body-tab="food">alimentação</button>';
+      tabs.innerHTML='<button data-ux-body-tab="overview">visão geral</button><button data-ux-body-tab="photos">fotos</button><button data-ux-body-tab="food">cardápios</button>';
       main.querySelector('.page-head')?.insertAdjacentElement('afterend',tabs);
     }
     let panels=main.querySelector('.ux-body-panels');
