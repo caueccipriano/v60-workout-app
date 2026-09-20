@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.0.0';
-  const BUILD='final-ui-dedicated-photos-2.4.1';
-  const BUILD_NUMBER='296';
+  const BUILD='photos-guaranteed-access-2.4.1';
+  const BUILD_NUMBER='297';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
