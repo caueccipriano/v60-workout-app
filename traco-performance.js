@@ -17,16 +17,19 @@ function tracoPerfEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp
 function tracoPerfDumbbell(){
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 8v8M4.5 9.5v5M17 8v8M19.5 9.5v5M7 12h10M2.5 11v2M21.5 11v2"/></svg>';
 }
+function tracoPerfPlate(){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11a7 7 0 0 0 14 0H5Z"/><path d="M8 7h8M10 4h4M4 20h16"/></svg>';
+}
 
 nav=function(){
   const items=[
     ['home','home','início'],
     ['progress','chart','evolução'],
     ['workouts','dumbbell','treino'],
-    ['body','ruler','corpo'],
+    ['food','plate','cardápios'],
     ['settings','gear','mais']
   ];
-  return `<nav class="bottom-nav perf-bottom-nav">${items.map(([p,i,l])=>`<button class="nav-btn ${state.page===p?'active':''}" data-nav="${p}" aria-label="${l}"><span class="ico">${i==='dumbbell'?tracoPerfDumbbell():iconSvg(i)}</span><span>${l}</span></button>`).join('')}</nav>`;
+  return `<nav class="bottom-nav perf-bottom-nav">${items.map(([p,i,l])=>{const active=state.page===p||(p==='food'&&state.page==='body');const icon=i==='dumbbell'?tracoPerfDumbbell():i==='plate'?tracoPerfPlate():iconSvg(i);return `<button class="nav-btn ${active?'active':''}" data-nav="${p}" aria-label="${l}"><span class="ico">${icon}</span><span>${l}</span></button>`}).join('')}</nav>`;
 };
 
 function tracoPerfSequence(){
