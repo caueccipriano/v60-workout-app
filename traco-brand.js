@@ -91,7 +91,7 @@ renderSettings=function(){
   tracoBaseRenderSettings();
   const intro=document.querySelector('.settings-intro');
   if(intro&&!document.querySelector('.traco-about-card')){
-    intro.insertAdjacentHTML('afterend','<section class="traco-about-card"><img src="./assets/icon.svg?v=291" alt=""><div><span>seu app</span><b>Traço</b><small>treino · evolução · constância · versão 2.4.1</small></div></section>');
+    intro.insertAdjacentHTML('afterend','<section class="traco-about-card"><img src="./assets/icon.svg?v=292" alt=""><div><span>seu app</span><b>Traço</b><small>treino · evolução · constância · versão 2.4.1</small></div></section>');
   }
   const about=document.querySelector('.traco-about-card');
   if(about&&!document.querySelector('.traco-theme-card')){
