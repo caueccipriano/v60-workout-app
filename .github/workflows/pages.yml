@@ -927,7 +927,7 @@ jobs:
           const sw=fs.readFileSync('sw.js','utf8');
           const version=JSON.parse(fs.readFileSync('version.json','utf8'));
           for(const required of [
-            "const BUILD='runtime-ui-recovery-2.4.1'",
+            "const BUILD='runtime-smoke-fixed-2.4.1'",
             "recoverCompletedDraft",
             "todayStatusMarkup",
             "fallbackFoodMarkup",
@@ -944,7 +944,7 @@ jobs:
           if(!body.includes('EVITE / LIMITE HOJE')||!body.includes('CHECK-IN QUINZENAL'))throw new Error('Critical body modules missing');
           if(!index.includes('traco-runtime.css?v=281')||!index.includes('traco-runtime.js?v=281'))throw new Error('Runtime assets not loaded');
           if(!sw.includes("'./traco-runtime.css'")||!sw.includes("'./traco-runtime.js'")||!sw.includes("const CACHE = 'traco-v66'"))throw new Error('Runtime cache missing');
-          if(version.build!=='runtime-ui-recovery-2.4.1')throw new Error('version.json build mismatch');
+          if(version.build!=='runtime-smoke-fixed-2.4.1')throw new Error('version.json build mismatch');
           console.log('Runtime recovery OK: final render, today status, food/photo cards, brand icon/version and PWA refresh');
           NODE
       - name: Validate runtime smoke regressions
@@ -962,9 +962,7 @@ jobs:
           if(app.includes("$('[data-workout]').forEach")) throw new Error('Home selector regression: querySelector used with forEach');
           if(gym.includes('tracoGymCalendar()')) throw new Error('Undefined tracoGymCalendar regression');
           if(!evo.includes('function latestBody(){')) throw new Error('Evolution latestBody helper missing');
-          if(!runtime.includes("const BUILD_NUMBER='280'")) {
-            // runtime script keeps its own historical identifier; asset build is what matters here.
-          }
+          if(!runtime.includes("const BUILD_NUMBER='281'")) throw new Error('Runtime build number mismatch');
           if(!index.includes('traco-runtime.js?v=281')||!index.includes('traco-body-coach.js?v=281')) throw new Error('Build 281 assets not loaded');
           if(!sw.includes("const CACHE = 'traco-v66'")) throw new Error('Cache v66 missing');
           if(version.build!=='runtime-smoke-fixed-2.4.1') throw new Error('version build mismatch');
