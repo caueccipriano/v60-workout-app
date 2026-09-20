@@ -234,10 +234,7 @@
       state.page='body';render();
     };
     const photosBtn=document.querySelector('#tracoFoodPhotos');
-    if(photosBtn)photosBtn.onclick=()=>{
-      localStorage.setItem('traco_ux_body_tab_v1','photos');
-      state.page='body';render();
-    };
+    if(photosBtn)photosBtn.onclick=()=>{state.page='photos';render();};
   }
 
   function homeCardMarkup(){
