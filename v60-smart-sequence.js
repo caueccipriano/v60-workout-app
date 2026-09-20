@@ -322,6 +322,52 @@ function v60AttendanceStrip(){
 function v60SequenceBadge(workoutId){
   const x=v60SequenceItem(workoutId);return `${x.letter}`;
 }
+function v60TodayTrainingSummary(){
+  const today=v60DateKey(new Date());
+  const finished=sessions()
+    .filter(s=>s.finishedAt&&v60DateKey(s.startedAt)===today)
+    .sort((a,b)=>Number(b.finishedAt||b.startedAt)-Number(a.finishedAt||a.startedAt));
+  if(finished.length){
+    const session=finished[0],item=v60SequenceItem(session.workoutId);
+    return {
+      done:true,
+      workoutId:session.workoutId,
+      letter:item?.letter||'',
+      label:item?.label||session.wName||'treino concluído',
+      session
+    };
+  }
+  if(v60AllAttendanceDates().has(today)){
+    return {done:true,workoutId:null,letter:'',label:'treino concluído hoje',session:null};
+  }
+  return {done:false};
+}
+function v60SequenceStatusMarkup(){
+  const rec=v60RecommendedWorkout(),next=v60SequenceItem(rec.id),today=v60TodayTrainingSummary();
+  if(today.done){
+    const completedTitle=today.letter
+      ? `Treino ${today.letter} · ${v60Safe(today.label)}`
+      : v60Safe(today.label);
+    return `<section class="v60-sequence-note is-complete">
+      <div class="v60-sequence-primary">
+        <span>hoje · concluído</span>
+        <b>${completedTitle}</b>
+      </div>
+      <div class="v60-sequence-next">
+        <span>próximo</span>
+        <b>Treino ${next.letter} · ${v60Safe(rec.short)}</b>
+        <small>sequência flexível · escolha outro treino manualmente se precisar</small>
+      </div>
+    </section>`;
+  }
+  return `<section class="v60-sequence-note">
+    <div class="v60-sequence-primary">
+      <span>próximo treino</span>
+      <b>Treino ${next.letter} · ${v60Safe(rec.short)}</b>
+    </div>
+    <small>sequência flexível · não depende do dia da semana</small>
+  </section>`;
+}
 
 const v60SmartBaseRenderHome=renderHome;
 renderHome=function(){
@@ -356,9 +402,9 @@ renderWorkouts=function(){
   const selectedItem=v60SequenceItem(selected?.id);
   const blue=document.querySelector('.selected-blue>span');if(blue)blue.textContent=selected?.id===v60RecommendedWorkout().id?`próximo recomendado · ${selectedItem.letter}`:`treino ${selectedItem.letter}`;
   const main=document.querySelector('.workouts-page');
-  if(main&&!main.querySelector('.v60-sequence-note')){
-    const rec=v60RecommendedWorkout(),r=v60SequenceItem(rec.id);
-    main.querySelector('.workout-stack')?.insertAdjacentHTML('beforebegin',`<section class="v60-sequence-note"><div><span>agora</span><b>Treino ${r.letter} · ${v60Safe(rec.short)}</b></div><small>não depende do dia da semana · você ainda pode escolher outro treino manualmente</small></section>`);
+  if(main){
+    main.querySelector('.v60-sequence-note')?.remove();
+    main.querySelector('.workout-stack')?.insertAdjacentHTML('beforebegin',v60SequenceStatusMarkup());
   }
 };
 
