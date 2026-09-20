@@ -16,3 +16,27 @@
   .v60-sequence-note.is-complete{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px!important}
   .v60-sequence-note.is-complete .v60-sequence-primary{padding-bottom:0;padding-right:16px;border-bottom:0;border-right:1px solid rgba(255,255,255,.08)}
 }
+
+/* Build 286: status isolado, sem herança do card antigo */
+.v60-workout-status{display:grid;gap:10px;margin:0 0 16px}
+.v60-status-card{
+  display:grid;gap:5px;padding:14px 15px;border:1px solid var(--line,#303036);
+  border-radius:14px;background:#151515;color:#F7F7F2;min-width:0
+}
+.v60-status-card span{
+  font-size:8px;font-weight:900;letter-spacing:.12em;text-transform:uppercase
+}
+.v60-status-card b{
+  font-size:17px;line-height:1.2;white-space:normal;overflow-wrap:anywhere;word-break:normal
+}
+.v60-status-card small{
+  font-size:8px;line-height:1.4;color:#999CA1;white-space:normal
+}
+.v60-status-done{border-color:rgba(196,216,46,.38);box-shadow:inset 3px 0 0 #c4d82e}
+.v60-status-done span{color:#c4d82e}
+.v60-status-next{border-color:rgba(255,79,69,.38);box-shadow:inset 3px 0 0 var(--perf-orange,#ff4f45)}
+.v60-status-next span{color:var(--perf-orange,#ff4f45)}
+@media(min-width:700px){
+  .v60-workout-status:has(.v60-status-done){grid-template-columns:1fr 1fr}
+}
+html[data-theme="light"] .v60-status-card{background:#FCFBF8;color:#111113;border-color:#DAD7D0}
