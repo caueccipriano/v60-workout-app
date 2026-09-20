@@ -7,16 +7,16 @@ function v60Profile(){
 function v60SaveProfile(next){save(V60_PROFILE_KEY,{...v60Profile(),...next});}
 function v60Safe(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));}
 function v60CompletedSessions(){return sessions().filter(s=>s.finishedAt).sort((a,b)=>b.startedAt-a.startedAt);}
-function v60PreviousExercise(exId){
+function v60PreviousExercise(exKey){
   for(const s of v60CompletedSessions()){
-    const ex=(s.exercises||[]).find(e=>e.id===exId);
+    const ex=(s.exercises||[]).find(e=>tracoExerciseProgressionKey(e)===exKey);
     if(ex)return ex;
   }
   return null;
 }
 function v60SeedExerciseSets(ex){
   const usesLoad=typeof tracoExerciseUsesLoad==='function'?tracoExerciseUsesLoad(ex):true;
-  const prev=v60PreviousExercise(ex.id);
+  const prev=v60PreviousExercise(tracoExerciseProgressionKey(ex));
   if(!prev?.sets?.length)return;
   const prevKnown=prev.sets.filter(x=>x.done&&x.weight!==''&&x.weight!=null);
   if(!prevKnown.length)return;
