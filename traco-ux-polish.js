@@ -123,9 +123,36 @@
     const target=more.querySelector('.ux-food-more-body');
     [
       '.traco-food-limits','.traco-habit-card','.traco-choice-card','.evo-mini-plan',
-      '.lab-food-coach','.lab-meal-card','.lab-grocery-card','.traco-menu-favorites',
-      '.traco-menu-grocery'
+      '.lab-food-coach','.lab-meal-card','.lab-grocery-card','.lab-hunger-card'
     ].forEach(selector=>food.querySelectorAll(selector).forEach(node=>move(node,target)));
+  }
+
+  function compactOverview(main){
+    const overview=main.querySelector('[data-ux-panel="overview"]');if(!overview)return;
+
+    let measures=overview.querySelector('.ux-overview-measures');
+    if(!measures){
+      measures=document.createElement('details');
+      measures.className='ux-overview-measures';
+      measures.innerHTML='<summary><div><b>medidas</b><small>registrar e ver histórico</small></div><span>+</span></summary><div class="ux-overview-measures-body"></div>';
+      overview.appendChild(measures);
+    }
+    const measuresBody=measures.querySelector('.ux-overview-measures-body');
+    ['.measure-form','.measure-history'].forEach(selector=>overview.querySelectorAll(selector).forEach(node=>move(node,measuresBody)));
+
+    let more=overview.querySelector('.ux-overview-more');
+    if(!more){
+      more=document.createElement('details');
+      more.className='ux-overview-more';
+      more.innerHTML='<summary><div><b>mais do corpo</b><small>tendências · padrões · análises</small></div><span>+</span></summary><div class="ux-overview-more-body"></div>';
+      overview.appendChild(more);
+    }
+    const moreBody=more.querySelector('.ux-overview-more-body');
+    [
+      '.traco-moving-card','.traco-pattern-card','.traco-plateau-card','.evo-volume-map',
+      '.lab-recovery-card','.lab-antiflank-card','.lab-phase-card','.lab-goals-card',
+      '.lab-records-card','.lab-wrapped-card','.lab-exp-card','.lab-timeline-card'
+    ].forEach(selector=>overview.querySelectorAll(selector).forEach(node=>move(node,moreBody)));
   }
 
   function openBodyTab(tab){
@@ -139,9 +166,10 @@
     const main=qs('.perf-body');if(!main)return;
     main.classList.add('ux-body');
     regroupBody(main);
+    compactOverview(main);
     compactFoodTools(main);
-    setTimeout(()=>{regroupBody(main);compactFoodTools(main)},80);
-    setTimeout(()=>{regroupBody(main);compactFoodTools(main)},320);
+    setTimeout(()=>{regroupBody(main);compactOverview(main);compactFoodTools(main)},80);
+    setTimeout(()=>{regroupBody(main);compactOverview(main);compactFoodTools(main)},320);
   }
 
   function last30(){
@@ -238,7 +266,7 @@
   const sessionBase=renderSession;renderSession=function(){sessionBase();session();};
   const finishBase=renderFinish;renderFinish=function(){finishBase();finish();};
 
-  window.TracoUXPolish={version:VERSION,home,body,progress,settings,session,selectBodyTab,openBodyTab};
+  window.TracoUXPolish={version:VERSION,home,body,progress,settings,session,selectBodyTab,openBodyTab,compactOverview,compactFoodTools};
   document.documentElement.dataset.tracoUx=VERSION;
   setTimeout(()=>{if(state.page==='home')home();if(state.page==='body')body();if(state.page==='progress')progress();if(state.page==='settings')settings();if(state.page==='session')session();if(state.page==='finish')finish();},50);
 })();
