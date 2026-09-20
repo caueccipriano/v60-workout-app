@@ -509,7 +509,7 @@
       localStorage:{}
       ,photos:photoRows
     };
-    ['v60_sessions','v60_body','v60_settings','v60_profile','v60_attendance','traco_body_daily_v1','traco_lab_daily_v1','traco_exercise_preferences_v1','traco_shape_phase_v1','traco_shape_goals_v1','traco_experiments_v1','traco_grocery_v1',DAILY_KEY,CUES_KEY,FAVORITES_KEY,VAULT_KEY].forEach(k=>{const v=localStorage.getItem(k);if(v!=null)payload.localStorage[k]=v});
+    ['v60_sessions','v60_body','v60_settings','v60_profile','v60_attendance','traco_body_daily_v1','traco_lab_daily_v1','traco_exercise_preferences_v1','traco_shape_phase_v1','traco_shape_goals_v1','traco_experiments_v1','traco_grocery_v1',DAILY_KEY,CUES_KEY,FAVORITES_KEY,VAULT_KEY,'traco_menu_planner_v1','traco_menu_favorites_v1'].forEach(k=>{const v=localStorage.getItem(k);if(v!=null)payload.localStorage[k]=v});
     const blob=new Blob([JSON.stringify(payload)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='traco-backup-completo-'+dateKey()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   }
   async function importFullBackup(file){
