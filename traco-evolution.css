@@ -23,3 +23,40 @@ html[data-theme="light"] .evo-cue,html[data-theme="light"] .evo-tempo,html[data-
 
 .evo-bridge-context{margin-top:10px;padding:10px;border:1px solid #303137;border-radius:11px;background:#18181a;display:grid;gap:3px}.evo-bridge-context b{font-size:9px}.evo-bridge-context span{font-size:8px;line-height:1.4;color:#8f9298}.evo-bridge-context.muted{opacity:.78}
 html[data-theme="light"] .evo-bridge-context{background:#FCFBF8;border-color:#DAD7D0;color:#111113}
+
+/* Build 295: fotos como parte central da Evolução */
+.evo-progress-photos{
+  margin:0 0 12px;padding:13px;border:1px solid var(--line);border-radius:14px;
+  background:linear-gradient(180deg,rgba(255,59,48,.05),var(--surface-soft));
+}
+.evo-progress-photos>header{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px
+}
+.evo-progress-photos>header>div{min-width:0}
+.evo-progress-photos>header span{
+  display:block;font-size:8px;font-weight:900;letter-spacing:.12em;color:var(--perf-orange,#FF3B30)
+}
+.evo-progress-photos>header h3{margin:4px 0 2px;font-size:15px;line-height:1.2}
+.evo-progress-photos>header small{font-size:8px;line-height:1.35;color:var(--muted)}
+.evo-progress-photos>header>b{
+  flex:0 0 auto;padding:6px 8px;border-radius:999px;background:var(--surface);
+  border:1px solid var(--line);font-size:8px;color:var(--muted)
+}
+.evo-progress-photo-thumbs{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:5px;overflow:hidden;border-radius:11px
+}
+.evo-progress-photo-thumbs img{
+  width:100%;aspect-ratio:3/4;object-fit:cover;background:var(--surface)
+}
+.evo-progress-photo-locked{
+  display:grid;place-items:center;gap:4px;min-height:116px;padding:16px;border-radius:11px;
+  background:var(--surface);border:1px dashed var(--line);text-align:center
+}
+.evo-progress-photo-locked>span{font-size:20px;color:var(--perf-orange,#FF3B30)}
+.evo-progress-photo-locked>b{font-size:11px}
+.evo-progress-photo-locked>small{max-width:230px;font-size:8px;line-height:1.4;color:var(--muted)}
+.evo-progress-photo-actions{display:grid;margin-top:8px}
+.evo-progress-photo-actions button{
+  min-height:40px;border:0;border-radius:10px;background:var(--perf-orange,#FF3B30);
+  color:#fff;font-size:9px;font-weight:900;text-transform:uppercase
+}
