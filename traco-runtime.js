@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.0.0';
-  const BUILD='today-e-complete-next-a-2.4.1';
-  const BUILD_NUMBER='285';
+  const BUILD='isolated-workout-status-next-a-2.4.1';
+  const BUILD_NUMBER='286';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
