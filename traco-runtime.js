@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.0.0';
-  const BUILD='body-food-navigation-compact-2.4.1';
-  const BUILD_NUMBER='291';
+  const BUILD='ux-refine-density-menu-2.4.1';
+  const BUILD_NUMBER='292';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
