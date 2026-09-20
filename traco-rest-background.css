@@ -1,0 +1,14 @@
+/*
+ * Traço Rest Background 1.0
+ */
+.rest-inner #tracoRestEndsAt{margin:2px 0 8px;font-size:9px;color:#94979d}
+.traco-rest-notify{margin:0 0 8px!important;min-height:36px!important;border:1px solid #35363b!important;border-radius:10px!important;background:#1b1b1e!important;color:#f5f5f2!important;font-size:8px!important;font-weight:900!important;text-transform:uppercase!important}
+.traco-rest-notify[data-state="on"]{border-color:rgba(196,216,46,.5)!important;background:rgba(196,216,46,.09)!important;color:#dce67c!important}
+.traco-rest-notify[data-state="blocked"]{border-color:rgba(255,59,48,.35)!important;color:#ff817a!important}
+.traco-rest-settings{margin-top:14px;border:1px solid #2d2d31;background:#111113;color:#f7f7f4;border-radius:20px;padding:16px}
+.traco-rest-settings>span{display:block;font-size:8px;font-weight:900;letter-spacing:.14em;color:var(--traco-action)}
+.traco-rest-settings h3{margin:5px 0 6px;font-size:20px;letter-spacing:-.025em}
+.traco-rest-settings p{margin:0;font-size:9px;line-height:1.5;color:#92959a}
+.traco-rest-settings button{width:100%;height:40px;margin-top:11px;border:1px solid #34343a;border-radius:10px;background:#1b1b1e;color:#fff;font-size:8px;font-weight:900;text-transform:uppercase}
+html[data-theme="light"] .traco-rest-settings{background:#F5F3EE;border-color:#D7D4CC;color:#111113}
+html[data-theme="light"] .traco-rest-settings button{background:#FCFBF8;border-color:#DAD7D0;color:#111113}
