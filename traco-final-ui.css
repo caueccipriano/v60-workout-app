@@ -1,0 +1,134 @@
+/*
+ * Traço Final UI Guard 1.0
+ * Estado visual final após todos os módulos.
+ */
+.final-progress-tabs{
+  display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:0 0 10px;
+  padding:4px;border:1px solid var(--line);border-radius:12px;background:var(--surface-soft)
+}
+.final-progress-tabs button{
+  min-height:38px;border:0;border-radius:9px;background:transparent;color:var(--muted);
+  font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.04em
+}
+.final-progress-tabs button.is-active{
+  background:var(--surface);color:var(--perf-orange,#FF3B30);
+  box-shadow:0 1px 0 rgba(255,255,255,.04)
+}
+
+.final-photo-entry{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin:0 0 10px;padding:12px 13px;border:1px solid rgba(255,59,48,.32);
+  border-radius:13px;background:linear-gradient(135deg,rgba(255,59,48,.08),var(--surface-soft))
+}
+.final-photo-entry>div{min-width:0;display:grid;gap:3px}
+.final-photo-entry span{
+  font-size:8px;font-weight:900;letter-spacing:.12em;color:var(--perf-orange,#FF3B30)
+}
+.final-photo-entry h3{margin:0;font-size:13px;line-height:1.25}
+.final-photo-entry small{font-size:8px;line-height:1.35;color:var(--muted)}
+.final-photo-entry button{
+  flex:0 0 auto;min-height:38px;padding:0 12px;border:0;border-radius:10px;
+  background:var(--perf-orange,#FF3B30);color:#fff;font-size:8px;font-weight:900;text-transform:uppercase
+}
+
+.final-progress-more{
+  margin-top:10px;border:1px solid var(--line);border-radius:12px;background:var(--surface-soft);overflow:hidden
+}
+.final-progress-more>summary{
+  list-style:none;display:flex;align-items:center;justify-content:space-between;
+  min-height:50px;padding:10px 13px;cursor:pointer
+}
+.final-progress-more>summary::-webkit-details-marker{display:none}
+.final-progress-more>summary div{display:grid;gap:3px}
+.final-progress-more>summary b{font-size:10px}
+.final-progress-more>summary small{font-size:8px;color:var(--muted)}
+.final-progress-more>summary>span{font-size:20px;color:var(--perf-orange,#FF3B30);transition:transform .18s ease}
+.final-progress-more[open]>summary>span{transform:rotate(45deg)}
+.final-progress-more-body{display:grid;gap:8px;padding:9px;border-top:1px solid var(--line)}
+.final-progress-more-body>*{margin:0!important}
+
+.photos-page.perf-photos{
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+}
+.traco-photos-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px
+}
+.traco-photos-head .page-kicker{color:var(--perf-orange,#FF3B30)}
+.traco-photos-head h2{margin-top:2px;font-size:28px;line-height:1;letter-spacing:-.04em}
+.traco-photos-back{
+  min-height:36px;padding:0 11px;border:1px solid var(--line);border-radius:10px;
+  background:var(--surface-soft);color:var(--text);font-size:8px;font-weight:900;text-transform:uppercase
+}
+
+.traco-photos-summary{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  margin:0 0 10px;padding:12px 13px;border:1px solid rgba(255,59,48,.28);
+  border-radius:13px;background:linear-gradient(135deg,rgba(255,59,48,.07),var(--surface-soft))
+}
+.traco-photos-summary>div{min-width:0;display:grid;gap:3px}
+.traco-photos-summary span,.traco-photos-compare>span,.traco-photos-compare header span{
+  font-size:8px;font-weight:900;letter-spacing:.12em;color:var(--perf-orange,#FF3B30)
+}
+.traco-photos-summary h3,.traco-photos-compare h3{margin:0;font-size:13px;line-height:1.25}
+.traco-photos-summary small{font-size:8px;color:var(--muted)}
+.traco-photos-summary>b{
+  flex:0 0 auto;padding:6px 8px;border:1px solid var(--line);border-radius:999px;
+  background:var(--surface);font-size:8px;color:var(--muted)
+}
+
+.perf-photos .traco-photo-page-card{
+  margin:0 0 10px!important;padding:13px!important;border-radius:14px!important
+}
+.perf-photos .traco-photo-page-card h3{font-size:18px!important}
+.perf-photos .traco-photo-grid{gap:6px}
+.perf-photos .traco-photo-slot{min-height:150px}
+.perf-photos .traco-photo-history{margin-top:2px}
+
+.traco-photos-compare{
+  display:grid;gap:10px;margin:0 0 10px;padding:13px;border:1px solid var(--line);
+  border-radius:14px;background:var(--surface-soft)
+}
+.traco-photos-compare>p{margin:0;font-size:9px;line-height:1.45;color:var(--muted)}
+.traco-photos-compare>header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.traco-photos-compare>header>div{display:grid;gap:3px}
+.traco-photos-compare>header>b{
+  padding:6px 8px;border-radius:999px;border:1px solid var(--line);
+  background:var(--surface);font-size:8px;color:var(--muted)
+}
+.traco-photos-compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.traco-photos-compare-grid article{display:grid;gap:5px}
+.traco-photos-compare-grid article>span{
+  font-size:8px;font-weight:900;text-transform:uppercase;color:var(--muted)
+}
+.traco-photos-compare-grid article>div{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.traco-photos-compare-grid img{
+  width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:7px;background:var(--surface)
+}
+
+.final-photo-fallback{
+  margin-top:10px;padding:14px;border:1px dashed rgba(255,59,48,.36);
+  border-radius:13px;background:var(--surface-soft)
+}
+.final-photo-fallback span{font-size:8px;font-weight:900;letter-spacing:.12em;color:var(--perf-orange,#FF3B30)}
+.final-photo-fallback h3{margin:5px 0;font-size:15px}
+.final-photo-fallback p{margin:0 0 10px;font-size:9px;line-height:1.45;color:var(--muted)}
+.final-photo-fallback button{
+  min-height:38px;padding:0 12px;border:0;border-radius:9px;background:var(--perf-orange,#FF3B30);
+  color:#fff;font-size:8px;font-weight:900;text-transform:uppercase
+}
+
+/* Refinos finais de densidade */
+.final-home-primary-card{margin-bottom:7px!important}
+.final-home-secondary-card{padding:10px 11px!important}
+.final-compact-shortcut{min-height:50px!important}
+.final-about-card{padding:10px 12px!important}
+.final-session .ux-session-more{margin-top:8px!important}
+.final-menu-planner{gap:8px!important}
+.final-food-quicknav{margin-bottom:8px!important}
+
+@media(max-width:390px){
+  .final-photo-entry{align-items:flex-end}
+  .final-photo-entry button{min-height:36px;padding:0 10px}
+  .traco-photos-compare-grid{grid-template-columns:1fr}
+  .perf-photos .traco-photo-slot{min-height:132px}
+}
