@@ -365,6 +365,81 @@
       target.innerHTML=parts.join('')+'<small class="traco-photo-count">'+rows.length+' check-in'+(rows.length>1?'s':'')+' salvo'+(rows.length>1?'s':'')+' neste aparelho</small>';
     }catch(e){target.innerHTML='<p>fotos indisponíveis neste navegador.</p>';}
   }
+
+  function photosPageCardMarkup(){
+    return '<section class="traco-photo-card traco-photo-page-card" id="tracoPhotoCheckin"><header><span>NOVO CHECK-IN</span><h3>frente · perfil · costas</h3><small>relaxado, mesma luz, distância e altura da câmera.</small></header>'+
+      '<label class="traco-photo-date">data<input id="tracoPhotoDate" type="date" value="'+new Date().toISOString().slice(0,10)+'"></label>'+
+      '<div class="traco-photo-grid">'+photoSlotMarkup('front','frente')+photoSlotMarkup('side','perfil')+photoSlotMarkup('back','costas')+'</div>'+
+      '<button class="cta-lime" id="tracoPhotoSave">salvar check-in</button>'+
+      '<div class="traco-standard-baseline-import"><div><span>JÁ TEM SEU “ANTES”?</span><b>usar baseline atual como referência</b><small>importe seu pacote privado uma vez para preservar a comparação.</small></div><label>importar baseline<input id="tracoStandardBaselineImport" type="file" accept="application/json"></label></div>'+
+      '<div id="tracoPhotoHistory" class="traco-photo-history"></div></section>';
+  }
+  async function photosSummaryMarkup(){
+    const rows=(await dbAll()).filter(function(r){return r.front&&r.side&&r.back;}).sort(function(a,b){return String(a.date||'').localeCompare(String(b.date||''));});
+    const latest=rows[rows.length-1]||null;
+    let due='faça seu primeiro check-in';
+    if(latest&&latest.date){
+      const d=new Date(latest.date+'T12:00:00');d.setDate(d.getDate()+14);
+      const now=new Date();now.setHours(12,0,0,0);
+      const days=Math.ceil((d-now)/86400000);
+      due=days<=0?'check-in disponível agora':days===1?'próximo check-in amanhã':'próximo em '+days+' dias';
+    }
+    return '<section class="traco-photos-summary"><div><span>EVOLUÇÃO VISUAL</span><h3>'+(latest?'último · '+esc(latest.date):'comece sua linha do tempo')+'</h3><small>'+esc(due)+'</small></div><b>'+rows.length+' check-in'+(rows.length===1?'':'s')+'</b></section>';
+  }
+  async function photosCompareMarkup(){
+    const rows=(await dbAll()).filter(function(r){return r.front&&r.side&&r.back;}).sort(function(a,b){return String(a.date||'').localeCompare(String(b.date||''));});
+    if(rows.length<2)return '<section class="traco-photos-compare"><span>ANTES × AGORA</span><h3>a comparação aparece com 2 check-ins</h3><p>salve a próxima sequência nas mesmas condições para comparar.</p></section>';
+    const baseline=rows.find(function(r){return r.baselineOfficial;})||rows[0],latest=rows[rows.length-1];
+    return '<section class="traco-photos-compare"><header><div><span>ANTES × AGORA</span><h3>'+esc(baseline.date)+' → '+esc(latest.date)+'</h3></div><b>'+rows.length+' check-ins</b></header>'+
+      '<div class="traco-photos-compare-grid">'+
+      '<article><span>antes</span><div><img src="'+baseline.front+'" alt="frente antes"><img src="'+baseline.side+'" alt="perfil antes"><img src="'+baseline.back+'" alt="costas antes"></div></article>'+
+      '<article><span>agora</span><div><img src="'+latest.front+'" alt="frente atual"><img src="'+latest.side+'" alt="perfil atual"><img src="'+latest.back+'" alt="costas atual"></div></article>'+
+      '</div></section>';
+  }
+  function bindStandalonePhotoCard(){
+    qsa('[data-photo-input]').forEach(function(input){
+      input.onchange=async function(){
+        const file=input.files&&input.files[0];if(!file)return;
+        const key=input.dataset.photoInput;
+        try{
+          const data=await compressPhoto(file);photoDraft[key]=data;
+          const slot=qs('[data-photo-slot="'+key+'"]');if(slot){slot.style.backgroundImage='url("'+data+'")';slot.classList.add('has-photo');}
+          haptic();
+        }catch(e){toast('não consegui preparar esta foto');}
+      };
+    });
+    const saveBtn=qs('#tracoPhotoSave');
+    if(saveBtn)saveBtn.onclick=async function(){
+      if(!photoDraft.front||!photoDraft.side||!photoDraft.back)return toast('faltam frente, perfil e costas');
+      const date=qs('#tracoPhotoDate')?.value;if(!date)return toast('escolhe a data');
+      try{
+        await dbPut({id:Date.now(),date:date,front:photoDraft.front,side:photoDraft.side,back:photoDraft.back,kind:'progress'});
+        photoDraft.front=photoDraft.side=photoDraft.back=null;toast('check-in fotográfico salvo');haptic();renderPhotosPage();
+      }catch(e){toast('não consegui salvar as fotos');}
+    };
+    const baselineInput=qs('#tracoStandardBaselineImport');
+    if(baselineInput)baselineInput.onchange=async function(){
+      const file=baselineInput.files&&baselineInput.files[0];if(!file)return;
+      try{await importStandardBaseline(file);toast('baseline oficial adicionado');haptic();renderPhotosPage();}
+      catch(e){toast('não consegui importar esse baseline');}
+    };
+    refreshPhotoHistory();
+  }
+  async function hydratePhotosPage(){
+    const summary=qs('#tracoPhotosSummaryMount'),compare=qs('#tracoPhotosCompareMount');
+    try{if(summary)summary.innerHTML=await photosSummaryMarkup();}catch(e){if(summary)summary.innerHTML='<section class="traco-photos-summary"><div><span>EVOLUÇÃO VISUAL</span><h3>fotos de progresso</h3><small>não consegui ler o histórico agora</small></div></section>';}
+    try{if(compare)compare.innerHTML=await photosCompareMarkup();}catch(e){if(compare)compare.innerHTML='';}
+  }
+  function renderPhotosPage(){
+    shell('<header class="page-head traco-photos-head"><div><span class="page-kicker">EVOLUÇÃO VISUAL</span><h2>fotos</h2></div><button class="traco-photos-back" id="tracoPhotosBack">evolução</button></header>'+
+      '<div id="tracoPhotosSummaryMount"></div>'+
+      photosPageCardMarkup()+
+      '<div id="tracoPhotosCompareMount"></div>',{classes:'photos-page perf-photos'});
+    const back=qs('#tracoPhotosBack');if(back)back.onclick=function(){state.page='progress';render();};
+    bindStandalonePhotoCard();
+    hydratePhotosPage();
+  }
+
   function bodyRatiosMarkup(){
     const rows=body().slice().sort(function(a,b){return b.date.localeCompare(a.date);}),latest=rows[0];
     const chest=latest?ratio(latest.chest,latest.waist):null;
@@ -439,7 +514,9 @@
     suggestion:coachSuggestion,
     repeatLastSet:repeatLastSet,
     doLater:doLater,
-    openSubstitute:openSubstitute
+    openSubstitute:openSubstitute,
+    renderPhotosPage:renderPhotosPage,
+    dbAll:dbAll
   };
 
   document.documentElement.dataset.tracoCoach=COACH_VERSION;
