@@ -1,12 +1,12 @@
-const CACHE = 'traco-v80';
+const CACHE = 'traco-v81';
 const ASSETS = [
   './','./index.html','./manifest.json',
   './styles.css','./exercise-guides.css','./exercise-guides-v4.css','./exercise-videos.css',
   './v60-personal-progress.css','./v60-aesthetic-core.css','./v60-smart-sequence.css',
-  './traco-brand.css','./traco-theme.css','./traco-performance.css','./traco-gym-ux.css','./traco-coach.css','./traco-body-coach.css','./traco-lab.css','./traco-evolution.css','./traco-rest-background.css','./traco-runtime.css','./traco-ux-polish.css','./traco-menu-planner.css',
+  './traco-brand.css','./traco-theme.css','./traco-performance.css','./traco-gym-ux.css','./traco-coach.css','./traco-body-coach.css','./traco-lab.css','./traco-evolution.css','./traco-rest-background.css','./traco-runtime.css','./traco-ux-polish.css','./traco-menu-planner.css','./traco-final-ui.css',
   './app.js','./exercise-guides.js','./exercise-guides-v4.js','./exercise-videos.js',
   './v60-personal-progress.js','./v60-aesthetic-core.js','./v60-smart-sequence.js',
-  './traco-brand.js','./traco-performance.js','./traco-gym-ux.js','./eu-bridge.js','./traco-coach.js','./traco-body-coach.js','./traco-lab.js','./traco-evolution.js','./traco-rest-background.js','./traco-runtime.js','./traco-ux-polish.js','./traco-menu-planner.js',
+  './traco-brand.js','./traco-performance.js','./traco-gym-ux.js','./eu-bridge.js','./traco-coach.js','./traco-body-coach.js','./traco-lab.js','./traco-evolution.js','./traco-rest-background.js','./traco-runtime.js','./traco-ux-polish.js','./traco-menu-planner.js','./traco-final-ui.js',
   './privacy.html','./terms.html','./support.html','./assets/icon.svg','./assets/traco-icon-180-v2.png','./assets/traco-icon-192-v2.png','./assets/traco-icon-512-v2.png'
 ];
 
