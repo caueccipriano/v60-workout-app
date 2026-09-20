@@ -56,3 +56,17 @@ html[data-theme="light"] .traco-daily-card,html[data-theme="light"] .traco-habit
 html[data-theme="light"] .traco-priority-limit article,html[data-theme="light"] .traco-protein-step,html[data-theme="light"] .traco-week-grid article,html[data-theme="light"] .traco-flank-card article,html[data-theme="light"] .traco-moving-card article,html[data-theme="light"] .traco-choice-card article{background:#FCFBF8;border-color:#DAD7D0}
 html[data-theme="light"] .traco-habit-grid button,html[data-theme="light"] .traco-life-actions button,html[data-theme="light"] .traco-recovery-grid input,html[data-theme="light"] .traco-recovery-grid select{background:#FCFBF8;border-color:#DAD7D0;color:#111113}
 @media(max-width:390px){.traco-week-grid{grid-template-columns:1fr 1fr}.traco-recovery-grid{grid-template-columns:1fr}.traco-priority-limit{grid-template-columns:1fr}.traco-photo-compare-grid{gap:4px}}
+
+.traco-home-limit{margin-top:10px;padding:11px 12px;border:1px solid rgba(255,184,77,.4);border-radius:12px;background:rgba(255,184,77,.08);display:grid;gap:4px}
+.traco-home-limit span{font-size:8px;font-weight:900;letter-spacing:.13em;color:#ffc36a}.traco-home-limit b{font-size:9px;line-height:1.45;color:#f4f4f1}
+.traco-photo-cadence{border-radius:20px;padding:16px;background:#111113;border:1px solid #2d2d31;color:#f8f8f5}
+.traco-photo-cadence>span{display:block;font-size:8px;font-weight:900;letter-spacing:.14em;color:var(--traco-action)}.traco-photo-cadence h3{margin:5px 0 4px;font-size:21px;letter-spacing:-.025em}.traco-photo-cadence>p{margin:0;font-size:9px;line-height:1.45;color:#92959a}
+.traco-photo-standard{display:grid;gap:3px;margin-top:11px;padding:11px;border-radius:12px;background:#18181a;border:1px solid #2c2d31}.traco-photo-standard b{font-size:9px}.traco-photo-standard small{font-size:8px;line-height:1.4;color:#8f9298}
+.traco-photo-cadence-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.traco-photo-cadence-actions button,.traco-photo-notify-btn{min-height:40px;border:1px solid #34343a;border-radius:10px;background:#1b1b1e;color:#fff;font-size:8px;font-weight:900;text-transform:uppercase}
+.traco-photo-cadence-actions button:first-child{background:var(--traco-action);border-color:var(--traco-action)}.traco-photo-notify-btn{width:100%;margin-top:7px}.traco-photo-notify-btn:has(+ *){display:block}
+html[data-theme="light"] .traco-home-limit{background:#FFF7E8;border-color:#E7C983}.traco-home-limit b{color:inherit}
+html[data-theme="light"] .traco-photo-cadence,html[data-theme="light"] .traco-photo-standard{background:#F5F3EE;border-color:#D7D4CC;color:#111113}
+html[data-theme="light"] .traco-photo-standard{background:#FCFBF8}
+html[data-theme="light"] .traco-photo-cadence-actions button,html[data-theme="light"] .traco-photo-notify-btn{background:#FCFBF8;border-color:#DAD7D0;color:#111113}
+html[data-theme="light"] .traco-photo-cadence-actions button:first-child{background:var(--traco-action);color:#fff}
+@media(max-width:390px){.traco-photo-cadence-actions{grid-template-columns:1fr}}
