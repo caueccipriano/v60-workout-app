@@ -133,7 +133,7 @@
       renderSession();
     };
     const foodOpen=qs('#runtimeFoodOpen');
-    if(foodOpen)foodOpen.onclick=()=>{state.page='body';renderBody();setTimeout(()=>qs('.traco-food-limits')?.scrollIntoView({behavior:'smooth',block:'start'}),80);};
+    if(foodOpen)foodOpen.onclick=()=>{state.page='food';render();};
     photoMiniMarkup();
   }
 
