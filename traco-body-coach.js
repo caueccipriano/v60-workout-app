@@ -125,6 +125,17 @@
       (compact?'<button id="tracoOpenBodyLog">ver alimentação + registrar meu dia</button>':'')+
       '</section>';
   }
+  function foodLimitsMarkup(){
+    const items=[
+      ['bebidas açucaradas / calorias líquidas','saciam pouco e podem aumentar calorias sem você perceber'],
+      ['álcool frequente','piora a recuperação e facilita exagerar nas calorias'],
+      ['frituras e fast-food muito frequentes','deixe como exceção, não base da rotina'],
+      ['sobremesas grandes todos os dias','prefira porção menor ou menos frequência'],
+      ['molhos e cremes muito calóricos','use como detalhe, não como base da refeição'],
+      ['beliscar sem fome','é fácil somar calorias sem perceber']
+    ];
+    return '<section class="traco-food-limits"><span>EVITE / LIMITE MAIS FREQUENTEMENTE</span><h3>não precisa proibir — só não transformar em rotina</h3><div>'+items.map(function(item){return '<article><b>'+esc(item[0])+'</b><small>'+esc(item[1])+'</small></article>';}).join('')+'</div><p><b>não são vilões:</b> arroz, pão, massa, batata, feijão e outros carboidratos podem entrar normalmente, principalmente perto do treino.</p></section>';
+  }
   function quickLogMarkup(){
     const log=todayLog();
     const chip=function(id,label,on){return '<button data-body-toggle="'+id+'" class="'+(on?'is-on':'')+'">'+label+'</button>';};
@@ -372,7 +383,7 @@
     const open=qs('#tracoOpenBodyLog');if(open)open.onclick=function(){state.page='body';renderBody();setTimeout(function(){qs('#tracoDailyCard')&&qs('#tracoDailyCard').scrollIntoView({behavior:'smooth',block:'start'});},40);};
   }
   function bodySectionsMarkup(){
-    return '<div id="tracoBodyCoach">'+dailyCardMarkup(false)+photoCadenceMarkup()+quickLogMarkup()+weeklyDashboardMarkup()+flankCardMarkup()+movingAveragesMarkup()+correlationMarkup()+plateauMarkup()+goalMarkup()+choicesMarkup()+photoCompareMarkup()+'</div>';
+    return '<div id="tracoBodyCoach">'+dailyCardMarkup(false)+foodLimitsMarkup()+photoCadenceMarkup()+quickLogMarkup()+weeklyDashboardMarkup()+flankCardMarkup()+movingAveragesMarkup()+correlationMarkup()+plateauMarkup()+goalMarkup()+choicesMarkup()+photoCompareMarkup()+'</div>';
   }
   function decorateCurrentBody(){
     if(state.page!=='body')return;
