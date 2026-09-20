@@ -202,6 +202,8 @@
   }
 
   function renderPlanner(){
+    const dedicated=document.querySelector('.perf-food #tracoFoodPlannerMount');
+    if(dedicated){dedicated.innerHTML=markup();bind();return;}
     const main=document.querySelector('.perf-body');if(!main)return;
     let host=main.querySelector('.ux-body-panel[data-ux-panel="food"]')||main;
     main.querySelector('.traco-menu-planner')?.remove();
@@ -211,12 +213,31 @@
     bind();
   }
   function renderFood(){
-    localStorage.setItem('traco_ux_body_tab_v1','food');
-    renderBody();
-    const h=document.querySelector('.perf-body .page-head h2');if(h)h.textContent='cardápios';
-    const k=document.querySelector('.perf-body .page-kicker');if(k)k.textContent='ALIMENTAÇÃO DO DIA';
-    window.TracoUXPolish?.selectBodyTab?.('food');
-    renderPlanner();
+    const profile=typeof v60Profile==='function'?v60Profile():{name:'Cauê'};
+    shell(`
+      <header class="page-head traco-food-head">
+        <div><span class="page-kicker">ALIMENTAÇÃO DO DIA</span><h2>cardápios</h2></div>
+        <span class="traco-food-avatar">${esc((profile.name||'C').trim().charAt(0).toUpperCase())}</span>
+      </header>
+      <section class="traco-food-quicknav" aria-label="atalhos do corpo">
+        <button id="tracoFoodBodyOverview"><span>◎</span><b>corpo</b><small>visão geral</small></button>
+        <button id="tracoFoodPhotos"><span>◫</span><b>fotos</b><small>check-in</small></button>
+      </section>
+      <div id="tracoFoodPlannerMount"></div>
+    `,{classes:'food-page perf-food'});
+    const mount=document.querySelector('#tracoFoodPlannerMount');
+    if(mount)mount.innerHTML=markup();
+    bind();
+    const bodyBtn=document.querySelector('#tracoFoodBodyOverview');
+    if(bodyBtn)bodyBtn.onclick=()=>{
+      localStorage.setItem('traco_ux_body_tab_v1','overview');
+      state.page='body';render();
+    };
+    const photosBtn=document.querySelector('#tracoFoodPhotos');
+    if(photosBtn)photosBtn.onclick=()=>{
+      localStorage.setItem('traco_ux_body_tab_v1','photos');
+      state.page='body';render();
+    };
   }
 
   function homeCardMarkup(){
@@ -226,6 +247,8 @@
   function renderHomeCard(){
     if(state.page!=='home')return;
     document.querySelector('#tracoMenuHomeCard')?.remove();
+    document.querySelector('#tracoDailyHome')?.remove();
+    document.querySelector('#runtimeFoodHome')?.remove();
     const main=document.querySelector('.perf-home');if(!main)return;
     const anchor=main.querySelector('.perf-workout-hero')||main.querySelector('.perf-greeting');
     if(!anchor)return;
