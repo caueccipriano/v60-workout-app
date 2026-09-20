@@ -4,6 +4,7 @@ const V60_SMART_MIGRATION_KEY='v60_smart_sequence_bootstrap_20260917';
 const V60_REPORTED_HISTORY_KEY='v60_reported_history_bootstrap_20260917_v1';
 const V60_REPORTED_TODAY_KEY='v60_reported_history_20260918_v1';
 const V60_REPORTED_TODAY_0919_KEY='v60_reported_history_20260919_v1';
+const V60_REPORTED_TODAY_0920_KEY='v60_reported_history_20260920_v1';
 
 // A→E follows recovery better than weekday locking.
 // Confirmed current anchor: back (A) → chest (B) → legs (C next).
@@ -222,6 +223,91 @@ function v60BootstrapReportedToday0919(){
   save(V60_REPORTED_TODAY_0919_KEY,true);
 }
 
+function v60BootstrapReportedToday0920(){
+  if(load(V60_REPORTED_TODAY_0920_KEY,false))return;
+  const date='2026-09-20',workoutId='sex';
+  const all=sessions();
+  let existing=all.find(x=>x.finishedAt&&x.workoutId===workoutId&&v60DateKey(x.startedAt)===date);
+
+  if(!existing){
+    const plan=workoutPlan.find(w=>w.id===workoutId);
+    const draft=load(K.draft,null);
+    const matchingDraft=draft&&draft.workoutId===workoutId&&v60DateKey(draft.startedAt||Date.now())===date?draft:null;
+    const oldById=new Map((matchingDraft?.exercises||[]).map(ex=>[ex.id,ex]));
+
+    const exercises=(plan?.exercises||[]).map(ex=>{
+      const old=oldById.get(ex.id);
+      const oldSets=Array.isArray(old?.sets)?old.sets:[];
+      const count=Math.max(1,Number(ex.sets)||oldSets.length||1);
+      const merged={...ex,...old};
+      // Elevação lateral de hoje foi feita com halteres; preserve isso se o draft antigo ainda disser polia.
+      if(/eleva[cç][aã]o lateral/i.test(String(merged.name||''))){
+        merged.equipment='Halteres';
+        merged.progressionKey='elevacao-lateral-halter';
+        merged.performedVariation='halteres';
+        merged.substitutionReason='academia lotada · polia ocupada';
+      }
+      return {...merged,reported:true,sets:Array.from({length:count},(_,i)=>{
+        const prev=oldSets[i]||{};
+        const usesLoad=typeof tracoExerciseUsesLoad==='function'?tracoExerciseUsesLoad(merged):true;
+        const isLateral=/eleva[cç][aã]o lateral/i.test(String(merged.name||''));
+        return {
+          ...prev,
+          n:i+1,
+          weight:isLateral?'8':(usesLoad?(prev.weight??''):''),
+          reps:isLateral?'6':(prev.reps??''),
+          done:true,
+          reported:true,
+          repsKnown:Boolean(isLateral||prev.reps),
+          skipped:false,
+          rir:isLateral?(i===count-1?'heavy':(prev.rir||'right')):prev.rir
+        };
+      })};
+    });
+
+    const startedAt=matchingDraft?.startedAt||new Date(date+'T12:00:00').getTime();
+    existing={
+      id:'reported-'+date+'-'+workoutId,
+      manualHistoryKey:date,
+      source:'user-reported-2026-09-20',
+      manualConfirmed:true,
+      excludeFromVolume:true,
+      workoutId,
+      wName:plan?.name||'posterior + dorsal + ombros',
+      startedAt,
+      finishedAt:Date.now(),
+      duration:matchingDraft?Math.max(1,Math.floor((Date.now()-startedAt)/1000)):0,
+      exercises,
+      extras:matchingDraft?.extras||[],
+      prs:[]
+    };
+    all.push(existing);
+    save(K.sessions,all);
+  }
+
+  const attendance=v60LoadAttendance();
+  if(!attendance.some(x=>x.date===date)){
+    attendance.push({date,source:'manual-confirmed-e'});
+    v60SaveAttendance(attendance);
+  }
+
+  // Usuário confirmou explicitamente que fez E hoje; próximo correto é A.
+  save(V60_SMART_SEQUENCE_KEY,{
+    nextWorkoutId:'qua',
+    lastWorkoutId:'sex',
+    updatedAt:Date.now(),
+    manualConfirmed:true,
+    source:'user-confirmed-e-2026-09-20'
+  });
+
+  const draft=load(K.draft,null);
+  if(draft&&draft.workoutId===workoutId&&v60DateKey(draft.startedAt||Date.now())===date){
+    localStorage.removeItem(K.draft);
+  }
+
+  save(V60_REPORTED_TODAY_0920_KEY,true);
+}
+
 function v60AllAttendanceDates(){
   const dates=new Set(v60LoadAttendance().map(x=>x.date));
   sessions().filter(s=>s.finishedAt).forEach(s=>dates.add(v60DateKey(s.startedAt)));
@@ -271,6 +357,7 @@ v60BootstrapAttendance();
 v60BootstrapReportedHistory();
 v60BootstrapReportedToday();
 v60BootstrapReportedToday0919();
+v60BootstrapReportedToday0920();
 
 // Replace calendar-day prescription with the current A→E recommendation.
 todayWorkout=function(){return v60RecommendedWorkout();};
