@@ -330,9 +330,7 @@
     }catch(e){}
   }
   function openPhotosFromReminder(){
-    if(window.TracoUXPolish?.openBodyTab){window.TracoUXPolish.openBodyTab('photos');return;}
-    localStorage.setItem('traco_ux_body_tab_v1','photos');
-    state.page='body';render();
+    state.page='photos';render();
   }
   async function renderPhotoCadence(){
     const title=qs('#tracoPhotoCadenceTitle'),text=qs('#tracoPhotoCadenceText');if(!title||!text)return;
