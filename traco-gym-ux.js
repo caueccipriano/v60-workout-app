@@ -588,6 +588,15 @@ renderBody=function(){
   main.querySelector('.body-empty-copy')?.remove();
 };
 
+function tracoGymClearAll(){
+  if(!confirm('apagar todos os dados do Traço neste aparelho? essa ação não pode ser desfeita.'))return;
+  try{localStorage.clear();sessionStorage.clear();}catch(_){}
+  try{
+    const req=indexedDB.deleteDatabase('traco_photo_checkins_v1');
+    req.onsuccess=req.onerror=req.onblocked=()=>setTimeout(()=>location.reload(),120);
+  }catch(_){setTimeout(()=>location.reload(),120);}
+}
+
 /* SETTINGS */
 const tracoGymBaseSettings=renderSettings;
 renderSettings=function(){
