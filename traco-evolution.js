@@ -395,9 +395,7 @@
       '</section>';
   }
   function openPhotosArea(){
-    if(window.TracoUXPolish?.openBodyTab){window.TracoUXPolish.openBodyTab('photos');return;}
-    localStorage.setItem('traco_ux_body_tab_v1','photos');
-    state.page='body';render();
+    state.page='photos';render();
   }
   async function progressPhotosMarkup(){
     const rows=(await photos()).filter(r=>r.front&&r.side&&r.back).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
