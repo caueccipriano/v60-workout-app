@@ -330,11 +330,9 @@
     }catch(e){}
   }
   function openPhotosFromReminder(){
-    state.page='body';renderBody();
-    setTimeout(function(){
-      const card=qs('#tracoPhotoCheckin')||qs('#tracoPhotoCadence');
-      if(card)card.scrollIntoView({behavior:'smooth',block:'start'});
-    },80);
+    if(window.TracoUXPolish?.openBodyTab){window.TracoUXPolish.openBodyTab('photos');return;}
+    localStorage.setItem('traco_ux_body_tab_v1','photos');
+    state.page='body';render();
   }
   async function renderPhotoCadence(){
     const title=qs('#tracoPhotoCadenceTitle'),text=qs('#tracoPhotoCadenceText');if(!title||!text)return;
