@@ -394,6 +394,41 @@
       (rows.length>1?'<div class="evo-what-changed"><span>O QUE MUDOU DESDE…</span><select id="evoPhotoCompareSelect">'+select+'</select><div id="evoPhotoChange">'+photoChangeMarkup(rows[rows.length-1],latest)+'</div></div>':'')+
       '</section>';
   }
+  function openPhotosArea(){
+    if(window.TracoUXPolish?.openBodyTab){window.TracoUXPolish.openBodyTab('photos');return;}
+    localStorage.setItem('traco_ux_body_tab_v1','photos');
+    state.page='body';render();
+  }
+  async function progressPhotosMarkup(){
+    const rows=(await photos()).filter(r=>r.front&&r.side&&r.back).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+    const latest=rows[rows.length-1]||null,v=vaultState();
+    let dueText='primeiro check-in pendente';
+    if(latest?.date){
+      const due=new Date(latest.date+'T12:00:00');due.setDate(due.getDate()+14);
+      const now=new Date();now.setHours(12,0,0,0);
+      const days=Math.ceil((due-now)/86400000);
+      dueText=days<=0?'check-in disponível agora':days===1?'próximo check-in amanhã':'próximo check-in em '+days+' dias';
+    }
+    const thumbs=latest&&!v.locked
+      ?'<div class="evo-progress-photo-thumbs"><img src="'+latest.front+'" alt="frente"><img src="'+latest.side+'" alt="perfil"><img src="'+latest.back+'" alt="costas"></div>'
+      :'<div class="evo-progress-photo-locked"><span>◫</span><b>'+(latest?'fotos protegidas':'sem fotos ainda')+'</b><small>'+(latest?'revele no cofre para ver as miniaturas':'faça frente, perfil e costas para iniciar o acompanhamento')+'</small></div>';
+    return '<section class="evo-progress-photos"><header><div><span>EVOLUÇÃO VISUAL</span><h3>'+(latest?'último check-in · '+esc(latest.date):'suas fotos de progresso')+'</h3><small>'+esc(dueText)+'</small></div><b>'+rows.length+' check-in'+(rows.length===1?'':'s')+'</b></header>'+thumbs+'<div class="evo-progress-photo-actions"><button id="evoOpenProgressPhotos">abrir fotos e comparar</button></div></section>';
+  }
+  async function decorateProgressPhotos(){
+    const main=qs('.progress-page');if(!main)return;
+    main.querySelector('.evo-progress-photos')?.remove();
+    try{
+      const html=await progressPhotosMarkup();
+      const anchor=main.querySelector('.ux-progress-30')||main.querySelector('.page-head');
+      if(anchor)anchor.insertAdjacentHTML('afterend',html);else main.insertAdjacentHTML('afterbegin',html);
+      const btn=qs('#evoOpenProgressPhotos');if(btn)btn.onclick=openPhotosArea;
+    }catch(e){
+      const anchor=main.querySelector('.ux-progress-30')||main.querySelector('.page-head');
+      if(anchor)anchor.insertAdjacentHTML('afterend','<section class="evo-progress-photos"><header><div><span>EVOLUÇÃO VISUAL</span><h3>fotos de progresso</h3><small>não consegui ler o cofre agora</small></div></header><div class="evo-progress-photo-actions"><button id="evoOpenProgressPhotos">abrir fotos</button></div></section>');
+      const btn=qs('#evoOpenProgressPhotos');if(btn)btn.onclick=openPhotosArea;
+    }
+  }
+
   async function bindVault(){
     const toggle=qs('#evoVaultToggle');if(toggle)toggle.onclick=()=>{setVault({locked:!vaultState().locked});renderBody()};
     const input=qs('#evoPhotoPack');if(input)input.onchange=async()=>{
@@ -631,9 +666,12 @@
     const mount=qs('#evoVaultMount');if(mount){mount.innerHTML=await vaultMarkup();bindVault();}
   }
   function decorateProgress(){
-    const main=qs('.progress-page');if(!main||qs('.evo-volume-map'))return;
-    main.insertAdjacentHTML('beforeend',volumeMapMarkup()+'<section class="evo-adaptive"><span>VOLUME ADAPTATIVO</span><h3>'+esc(adaptiveVolumeAdvice().text)+'</h3><p>o Traço ajusta no máximo uma série por grupo por sessão, e reduz acessórios quando a recuperação está baixa.</p></section>'+milestonesMarkup()+monthlyMarkup());
-    qs('#evoShareMonth')&&(qs('#evoShareMonth').onclick=shareMonth);
+    const main=qs('.progress-page');if(!main)return;
+    if(!qs('.evo-volume-map')){
+      main.insertAdjacentHTML('beforeend',volumeMapMarkup()+'<section class="evo-adaptive"><span>VOLUME ADAPTATIVO</span><h3>'+esc(adaptiveVolumeAdvice().text)+'</h3><p>o Traço ajusta no máximo uma série por grupo por sessão, e reduz acessórios quando a recuperação está baixa.</p></section>'+milestonesMarkup()+monthlyMarkup());
+      qs('#evoShareMonth')&&(qs('#evoShareMonth').onclick=shareMonth);
+    }
+    setTimeout(decorateProgressPhotos,30);
   }
   function decorateSettings(){
     const main=qs('.settings-page');if(!main||qs('.evo-backup'))return;
@@ -648,6 +686,6 @@
   const baseSettings=renderSettings;renderSettings=function(){baseSettings();decorateSettings()};
 
   migrate().then(()=>{publishBridges();setInterval(publishBridges,5000)});
-  window.TracoEvolution={version:VERSION,smartWorkout,smartWeekOrder,weeklyMuscleVolume,productiveSet,fullBackup,publishBridges};
+  window.TracoEvolution={version:VERSION,smartWorkout,smartWeekOrder,weeklyMuscleVolume,productiveSet,fullBackup,publishBridges,photos,openPhotosArea,decorateProgressPhotos};
   document.documentElement.dataset.tracoEvolution=VERSION;
 })();
