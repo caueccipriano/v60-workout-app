@@ -122,3 +122,53 @@
   .traco-menu-presets{grid-template-columns:repeat(3,minmax(0,1fr))}
   .traco-menu-meals{grid-template-columns:1fr 1fr}
 }
+
+/* Build 292: cardápios mais diretos */
+.traco-menu-planner{gap:9px}
+.traco-menu-planner>header{padding:12px 13px}
+.traco-menu-planner>header h3{font-size:17px;margin:4px 0}
+.traco-menu-planner>header p{font-size:9px;line-height:1.42}
+
+.traco-menu-builder{gap:8px;padding:12px}
+.traco-menu-builder h4{font-size:13px}
+.traco-menu-question{grid-template-columns:108px minmax(0,1fr);align-items:center;gap:8px}
+.traco-menu-question>b{font-size:9px}
+.traco-menu-question>div{justify-content:flex-end;gap:5px}
+.traco-menu-question button,.traco-menu-portion button{min-height:32px;padding:0 10px;font-size:8px}
+.traco-menu-build{min-height:38px;font-size:9px}
+
+.traco-menu-current{gap:9px;padding:12px}
+.traco-menu-current>header h4{font-size:17px}
+.traco-menu-current>header p{font-size:8px}
+.traco-menu-current>header>i{width:34px;height:34px;font-size:14px}
+.traco-menu-portion{padding:9px;gap:6px}
+.traco-menu-portion p{font-size:8px}
+.traco-menu-meals{gap:6px}
+.traco-menu-meal{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"head head" "meal action";align-items:center;gap:5px 8px;padding:10px}
+.traco-menu-meal>header{grid-area:head}
+.traco-menu-meal>b{grid-area:meal;font-size:11px}
+.traco-menu-meal>div{grid-area:action}
+.traco-menu-meal>div button{min-height:30px}
+.traco-menu-meal>header>button{width:28px;height:28px;font-size:16px}
+
+.traco-menu-contexts{
+  border:1px solid var(--line);border-radius:12px;background:var(--surface-soft);overflow:hidden
+}
+.traco-menu-contexts>summary{
+  list-style:none;display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:9px 12px;cursor:pointer
+}
+.traco-menu-contexts>summary::-webkit-details-marker{display:none}
+.traco-menu-contexts>summary>div{display:grid;gap:3px}
+.traco-menu-contexts>summary span{font-size:8px;font-weight:900;letter-spacing:.12em;color:var(--perf-orange,#FF3B30)}
+.traco-menu-contexts>summary b{font-size:10px}
+.traco-menu-contexts>summary>i{font-style:normal;font-size:20px;color:var(--perf-orange,#FF3B30);transition:transform .18s ease}
+.traco-menu-contexts[open]>summary>i{transform:rotate(45deg)}
+.traco-menu-contexts .traco-menu-presets{padding:9px;border-top:1px solid var(--line)}
+.traco-menu-presets button{min-height:42px}
+.traco-menu-presets button i{width:26px;height:26px}
+.traco-menu-presets button span{font-size:8px}
+
+@media(max-width:360px){
+  .traco-menu-question{grid-template-columns:1fr}
+  .traco-menu-question>div{justify-content:flex-start}
+}
