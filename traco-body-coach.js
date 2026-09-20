@@ -117,9 +117,10 @@
     const log=todayLog(),g=guidance(),p=proteinGuide();
     return '<section class="traco-daily-card '+(compact?'is-compact':'')+'" id="tracoDailyCard">'+
       '<header><div><span>TRAÇO CORPO · HOJE</span><h3>'+esc(dayHasWorkout()?'dia de treino':'dia de recuperação')+'</h3><small>'+esc(p.title)+'</small></div><b>'+dailyScore(log)+'%</b></header>'+
-      '<div class="traco-priority-limit"><article><span>priorize</span>'+g.prioritize.map(function(x){return '<i>✓ '+esc(x)+'</i>';}).join('')+'</article><article><span>tente limitar</span>'+g.limit.map(function(x){return '<i>· '+esc(x)+'</i>';}).join('')+'</article></div>'+
+      '<div class="traco-priority-limit"><article><span>priorize</span>'+g.prioritize.map(function(x){return '<i>✓ '+esc(x)+'</i>';}).join('')+'</article><article><span>evite / limite hoje</span>'+g.limit.map(function(x){return '<i>· '+esc(x)+'</i>';}).join('')+'</article></div>'+
+      (compact?'<div class="traco-home-limit"><span>EVITE / LIMITE HOJE</span><b>'+g.limit.map(esc).join(' · ')+'</b></div>':'')+
       '<p>'+esc(g.note)+'</p>'+
-      (compact?'<button id="tracoOpenBodyLog">registrar meu dia</button>':'')+
+      (compact?'<button id="tracoOpenBodyLog">ver alimentação + registrar meu dia</button>':'')+
       '</section>';
   }
   function quickLogMarkup(){
@@ -261,16 +262,63 @@
   function photoCompareMarkup(){
     return '<section class="traco-photo-compare-card"><span>ANTES × AGORA</span><h3>comparação padronizada</h3><div id="tracoPhotoCompare"><p>carregando fotos…</p></div></section>';
   }
+  const PHOTO_INTERVAL_DAYS=14;
+  function photoDateValue(row){return new Date(String(row&&row.date||'')+'T12:00:00').getTime();}
+  function nextPhotoDueFrom(row){
+    if(!row||!row.date)return null;
+    const d=new Date(String(row.date)+'T12:00:00');d.setDate(d.getDate()+PHOTO_INTERVAL_DAYS);return d;
+  }
+  function photoCadenceMarkup(){
+    return '<section class="traco-photo-cadence" id="tracoPhotoCadence"><span>CHECK-IN QUINZENAL</span><h3 id="tracoPhotoCadenceTitle">calculando próxima atualização…</h3><p id="tracoPhotoCadenceText">frente + perfil + costas, sempre nas mesmas condições.</p><div class="traco-photo-standard"><b>padrão recomendado</b><small>mesma luz · mesma distância · corpo relaxado · de preferência antes do treino e sem pump</small></div><div class="traco-photo-cadence-actions"><button id="tracoGoPhotos">atualizar fotos</button><button id="tracoShareFeedback">compartilhar para feedback</button></div></section>';
+  }
+  async function renderPhotoCadence(){
+    const title=qs('#tracoPhotoCadenceTitle'),text=qs('#tracoPhotoCadenceText');if(!title||!text)return;
+    try{
+      const rows=(await allPhotos()).filter(function(row){return row.front&&row.side&&row.back;}).sort(function(a,b){return photoDateValue(a)-photoDateValue(b);});
+      if(!rows.length){title.textContent='faça seu primeiro check-in';text.textContent='depois o Traço passa a contar 14 dias automaticamente.';return;}
+      const latest=rows[rows.length-1],due=nextPhotoDueFrom(latest),now=new Date();now.setHours(12,0,0,0);
+      const days=Math.ceil((due-now)/86400000);
+      if(days<=0){title.textContent='hoje é dia de atualizar as fotos';text.textContent='último check-in: '+latest.date+' · já passaram 14 dias ou mais.';}
+      else if(days===1){title.textContent='próxima atualização amanhã';text.textContent='último check-in: '+latest.date+' · mantenha o mesmo padrão de foto.';}
+      else{title.textContent='próxima atualização em '+days+' dias';text.textContent='último check-in: '+latest.date+' · próxima referência: '+due.toLocaleDateString('pt-BR');}
+    }catch(e){title.textContent='check-in quinzenal';text.textContent='não consegui ler as fotos salvas neste navegador.';}
+  }
+  function dataUrlToFile(dataUrl,name){
+    const parts=String(dataUrl||'').split(','),meta=parts[0]||'',b64=parts[1]||'',mime=(meta.match(/data:([^;]+)/)||[])[1]||'image/jpeg';
+    const bytes=atob(b64),arr=new Uint8Array(bytes.length);for(let i=0;i<bytes.length;i++)arr[i]=bytes.charCodeAt(i);
+    return new File([arr],name,{type:mime});
+  }
+  async function sharePhotoFeedback(){
+    try{
+      const rows=(await allPhotos()).filter(function(row){return row.front&&row.side&&row.back;}).sort(function(a,b){return photoDateValue(a)-photoDateValue(b);});
+      if(!rows.length)return toast('ainda não tem fotos padronizadas');
+      const latest=rows[rows.length-1],baseline=rows.find(function(row){return row.baselineOfficial;})||rows[0];
+      const selected=baseline.id===latest.id?[latest]:[baseline,latest];
+      const files=[];
+      selected.forEach(function(row,index){
+        const tag=row.id===baseline.id?'baseline':'atual';
+        files.push(dataUrlToFile(row.front,tag+'-frente.jpg'));
+        files.push(dataUrlToFile(row.side,tag+'-perfil.jpg'));
+        files.push(dataUrlToFile(row.back,tag+'-costas.jpg'));
+      });
+      const prompt='Analise meu check-in quinzenal do Traço comparando com o baseline/anterior. Quero feedback sobre cintura e flancos, costas/V-taper, peito, ombros, braços e evolução visual geral. Considere diferenças de iluminação/pose e não estime percentual de gordura exato.';
+      if(navigator.share&&navigator.canShare&&navigator.canShare({files:files})){
+        await navigator.share({title:'Check-in quinzenal · Traço',text:prompt,files:files});return;
+      }
+      await navigator.clipboard?.writeText(prompt);
+      toast('prompt copiado · compartilhe as fotos com o ChatGPT');
+    }catch(e){toast('não consegui preparar o compartilhamento');}
+  }
 
   function decorateHome(){
     const main=qs('.home-card');if(!main||qs('#tracoDailyHome'))return;
     const today=main.querySelector('.today-card');
     if(!today)return;
     today.insertAdjacentHTML('afterend','<div id="tracoDailyHome">'+dailyCardMarkup(true)+'</div>');
-    const open=qs('#tracoOpenBodyLog');if(open)open.onclick=function(){state.page='body';renderBody();setTimeout(function(){qs('#tracoHabitCard')&&qs('#tracoHabitCard').scrollIntoView({behavior:'smooth',block:'start'});},40);};
+    const open=qs('#tracoOpenBodyLog');if(open)open.onclick=function(){state.page='body';renderBody();setTimeout(function(){qs('#tracoDailyCard')&&qs('#tracoDailyCard').scrollIntoView({behavior:'smooth',block:'start'});},40);};
   }
   function bodySectionsMarkup(){
-    return '<div id="tracoBodyCoach">'+dailyCardMarkup(false)+quickLogMarkup()+weeklyDashboardMarkup()+flankCardMarkup()+movingAveragesMarkup()+correlationMarkup()+plateauMarkup()+goalMarkup()+choicesMarkup()+photoCompareMarkup()+'</div>';
+    return '<div id="tracoBodyCoach">'+dailyCardMarkup(false)+photoCadenceMarkup()+quickLogMarkup()+weeklyDashboardMarkup()+flankCardMarkup()+movingAveragesMarkup()+correlationMarkup()+plateauMarkup()+goalMarkup()+choicesMarkup()+photoCompareMarkup()+'</div>';
   }
   function decorateCurrentBody(){
     if(state.page!=='body')return;
@@ -280,7 +328,9 @@
     const main=qs('.body-page');if(!main||qs('#tracoBodyCoach'))return;
     const blue=main.querySelector('.body-blue');
     if(blue)blue.insertAdjacentHTML('afterend',bodySectionsMarkup());else main.insertAdjacentHTML('afterbegin',bodySectionsMarkup());
-    bindQuickLog();renderPhotoCompare();
+    bindQuickLog();renderPhotoCompare();renderPhotoCadence();
+    const go=qs('#tracoGoPhotos');if(go)go.onclick=function(){const card=qs('#tracoPhotoCheckin');if(card)card.scrollIntoView({behavior:'smooth',block:'start'});else toast('abra a área de fotos padronizadas');};
+    const share=qs('#tracoShareFeedback');if(share)share.onclick=sharePhotoFeedback;
   }
 
   const baseHome=renderHome;
