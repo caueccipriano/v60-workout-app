@@ -340,6 +340,18 @@ function v60TodayTrainingSummary(){
   if(v60AllAttendanceDates().has(today)){
     return {done:true,workoutId:null,letter:'',label:'treino concluído hoje',session:null};
   }
+  const seq=v60SequenceState();
+  if(seq?.lastWorkoutId&&seq?.updatedAt&&v60DateKey(seq.updatedAt)===today){
+    const item=v60SequenceItem(seq.lastWorkoutId);
+    const plan=workoutPlan.find(w=>w.id===seq.lastWorkoutId);
+    return {
+      done:true,
+      workoutId:seq.lastWorkoutId,
+      letter:item?.letter||'',
+      label:item?.label||plan?.short||plan?.name||'treino concluído hoje',
+      session:null
+    };
+  }
   return {done:false};
 }
 function v60SequenceStatusMarkup(){
