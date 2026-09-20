@@ -959,7 +959,7 @@ jobs:
           const sw=fs.readFileSync('sw.js','utf8');
           const version=JSON.parse(fs.readFileSync('version.json','utf8'));
 
-          if(app.includes("$('[data-workout]').forEach")) throw new Error('Home selector regression: querySelector used with forEach');
+          if(/(^|\n)\s*\$\('\[data-workout\]'\)\.forEach/.test(app)) throw new Error('Home selector regression: querySelector used with forEach');
           if(gym.includes('tracoGymCalendar()')) throw new Error('Undefined tracoGymCalendar regression');
           if(!evo.includes('function latestBody(){')) throw new Error('Evolution latestBody helper missing');
           if(!runtime.includes("const BUILD_NUMBER='281'")) throw new Error('Runtime build number mismatch');
