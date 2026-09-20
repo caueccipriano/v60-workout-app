@@ -70,3 +70,14 @@ html[data-theme="light"] .traco-photo-standard{background:#FCFBF8}
 html[data-theme="light"] .traco-photo-cadence-actions button,html[data-theme="light"] .traco-photo-notify-btn{background:#FCFBF8;border-color:#DAD7D0;color:#111113}
 html[data-theme="light"] .traco-photo-cadence-actions button:first-child{background:var(--traco-action);color:#fff}
 @media(max-width:390px){.traco-photo-cadence-actions{grid-template-columns:1fr}}
+
+.traco-food-limits{border-radius:20px;padding:16px;background:#111113;border:1px solid rgba(255,184,77,.35);color:#f8f8f5}
+.traco-food-limits>span{display:block;font-size:8px;font-weight:900;letter-spacing:.14em;color:#ffc36a}
+.traco-food-limits h3{margin:5px 0 10px;font-size:21px;letter-spacing:-.025em}
+.traco-food-limits>div{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.traco-food-limits article{padding:10px;border-radius:11px;background:#18181a;border:1px solid #2f3035;display:grid;gap:4px}
+.traco-food-limits article b{font-size:9px}.traco-food-limits article small{font-size:8px;line-height:1.35;color:#92959a}
+.traco-food-limits>p{margin:10px 0 0;font-size:8px;line-height:1.45;color:#9b9ea3}.traco-food-limits>p b{color:#c4d82e}
+html[data-theme="light"] .traco-food-limits{background:#FFF9ED;border-color:#E4C77F;color:#111113}
+html[data-theme="light"] .traco-food-limits article{background:#FCFBF8;border-color:#DAD7D0}
+@media(max-width:390px){.traco-food-limits>div{grid-template-columns:1fr}}
