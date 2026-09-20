@@ -210,6 +210,30 @@
     host.insertAdjacentElement('afterbegin',planner);
     bind();
   }
+  function renderFood(){
+    localStorage.setItem('traco_ux_body_tab_v1','food');
+    renderBody();
+    const h=document.querySelector('.perf-body .page-head h2');if(h)h.textContent='cardápios';
+    const k=document.querySelector('.perf-body .page-kicker');if(k)k.textContent='ALIMENTAÇÃO DO DIA';
+    window.TracoUXPolish?.selectBodyTab?.('food');
+    renderPlanner();
+  }
+
+  function homeCardMarkup(){
+    const m=mode();
+    return '<section class="traco-menu-home-card" id="tracoMenuHomeCard"><div><span>CARDÁPIO DE HOJE</span><b>'+esc(m.label)+'</b><small>4 refeições · porção '+esc(state().portion)+'</small></div><button id="tracoMenuHomeOpen">abrir</button></section>';
+  }
+  function renderHomeCard(){
+    if(state.page!=='home')return;
+    document.querySelector('#tracoMenuHomeCard')?.remove();
+    const main=document.querySelector('.perf-home');if(!main)return;
+    const anchor=main.querySelector('.perf-workout-hero')||main.querySelector('.perf-greeting');
+    if(!anchor)return;
+    anchor.insertAdjacentHTML('afterend',homeCardMarkup());
+    const btn=document.querySelector('#tracoMenuHomeOpen');
+    if(btn)btn.onclick=()=>{state.page='food';render();};
+  }
+
   function bind(){
     document.querySelectorAll('[data-menu-answer]').forEach(btn=>btn.onclick=()=>{
       const [k,v]=btn.dataset.menuAnswer.split('|');
@@ -246,8 +270,10 @@
 
   const baseRenderBody=renderBody;
   renderBody=function(){baseRenderBody();renderPlanner();};
-  setTimeout(()=>{if(state.page==='body')renderPlanner()},80);
+  const baseRenderHome=renderHome;
+  renderHome=function(){baseRenderHome();renderHomeCard();};
+  setTimeout(()=>{if(state.page==='body'||state.page==='food')renderPlanner();if(state.page==='home')renderHomeCard()},80);
 
-  window.TracoMenuPlanner={version:VERSION,state,buildFromAnswers,groceryItems,renderPlanner};
+  window.TracoMenuPlanner={version:VERSION,state,buildFromAnswers,groceryItems,renderPlanner,renderFood,renderHomeCard};
   document.documentElement.dataset.tracoMenuPlanner=VERSION;
 })();
