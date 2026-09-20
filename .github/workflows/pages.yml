@@ -1018,7 +1018,7 @@ jobs:
           for(const required of [
             'function v60TodayTrainingSummary()',
             'function v60SequenceStatusMarkup()',
-            'hoje · concluído',
+            'HOJE · CONCLUÍDO',
             'próximo',
             'lastWorkoutId'
           ]) if(!seq.includes(required)) throw new Error('Missing workout-status feature: '+required);
