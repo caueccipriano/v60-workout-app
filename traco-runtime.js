@@ -95,10 +95,10 @@
         else{title='fotos em '+days+' dias';sub='próxima referência · '+due.toLocaleDateString('pt-BR');}
       }
       mount.innerHTML='<section class="runtime-photo-home"><div><span>CHECK-IN QUINZENAL</span><h3>'+esc(title)+'</h3><small>'+esc(sub)+'</small></div><button id="runtimePhotoOpen">abrir</button></section>';
-      qs('#runtimePhotoOpen').onclick=()=>{state.page='body';renderBody();setTimeout(()=>qs('#tracoPhotoCadence')?.scrollIntoView({behavior:'smooth',block:'start'}),80);};
+      qs('#runtimePhotoOpen').onclick=()=>{if(window.TracoUXPolish?.openBodyTab){window.TracoUXPolish.openBodyTab('photos');return;}localStorage.setItem('traco_ux_body_tab_v1','photos');state.page='body';render();};
     }catch{
       mount.innerHTML='<section class="runtime-photo-home"><div><span>CHECK-IN QUINZENAL</span><h3>a cada 14 dias</h3><small>frente · perfil · costas</small></div><button id="runtimePhotoOpen">abrir</button></section>';
-      qs('#runtimePhotoOpen').onclick=()=>{state.page='body';renderBody();};
+      qs('#runtimePhotoOpen').onclick=()=>{if(window.TracoUXPolish?.openBodyTab){window.TracoUXPolish.openBodyTab('photos');return;}localStorage.setItem('traco_ux_body_tab_v1','photos');state.page='body';render();};
     }
   }
 
