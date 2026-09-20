@@ -601,9 +601,11 @@
   /* DECORATORS */
   function decorateHome(){
     const main=qs('.home-card');if(!main||qs('.evo-best-today'))return;
-    const title=main.querySelector('.editorial-title');if(title)title.insertAdjacentHTML('afterend',bestTodayMarkup());
+    const title=main.querySelector('.perf-greeting, .editorial-title');
+    if(title)title.insertAdjacentHTML('afterend',bestTodayMarkup());
+    else main.insertAdjacentHTML('afterbegin',bestTodayMarkup());
     const start=qs('#evoStartBest');if(start)start.onclick=()=>startSession(smartWorkout().id);
-    const strip=main.querySelector('.week-strip');if(strip){
+    const strip=main.querySelector('.perf-sequence, .week-strip');if(strip){
       const order=smartWeekOrder(),labels=order.map(id=>workoutPlan.find(w=>w.id===id)?.short).filter(Boolean);
       strip.insertAdjacentHTML('afterend','<section class="evo-smart-week"><span>SEMANA AUTO-ORGANIZADA</span><b>'+labels.join(' → ')+'</b><small>o próximo treino muda conforme o que você já fez e sua recuperação.</small></section>');
     }
