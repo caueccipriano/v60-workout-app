@@ -231,3 +231,75 @@
 @media(max-width:360px){
   .ux-body-tabs button{font-size:8px!important;padding:0 5px!important}
 }
+
+/* Build 292: densidade final sem perder leitura */
+.ux-home .perf-workout-hero{
+  min-height:218px!important;
+  padding:15px!important;
+}
+.ux-home .perf-hero-copy{margin:20px 0 16px!important}
+.ux-home .perf-hero-copy strong{font-size:34px!important}
+.ux-home .perf-hero-copy p{font-size:12px!important;margin-top:6px!important}
+.ux-home .perf-hero-copy small{margin-top:12px!important;font-size:9px!important}
+.ux-home .perf-start-cta{min-height:46px!important}
+.ux-home .perf-sequence{margin-top:14px!important}
+.ux-home .perf-seq{min-height:46px!important}
+.ux-home .perf-seq b{font-size:13px!important}
+.ux-home .perf-seq span{font-size:10px!important}
+
+.ux-home .perf-metrics{
+  gap:6px!important;
+  margin-top:9px!important;
+}
+.ux-home .perf-metrics article{
+  min-height:82px!important;
+  padding:9px 8px!important;
+}
+.ux-home .perf-metric-icon{
+  width:20px!important;height:20px!important;
+  margin-bottom:8px!important;
+}
+.ux-home .perf-metric-icon svg{width:16px!important;height:16px!important}
+.ux-home .perf-metrics article>b{font-size:21px!important}
+.ux-home .perf-metrics article>small{margin-top:4px!important}
+
+.ux-home .perf-home-links{
+  grid-template-columns:1fr 1fr!important;
+  gap:6px!important;
+  margin-top:9px!important;
+}
+.ux-home .perf-home-links button{
+  grid-template-columns:24px 1fr auto!important;
+  min-height:52px!important;
+  padding:9px 10px!important;
+}
+.ux-home .perf-home-links svg{width:16px!important}
+.ux-home .perf-home-links b{font-size:9px!important}
+.ux-home .perf-home-links small{font-size:7px!important}
+
+.ux-home-attention{gap:6px!important;margin-bottom:10px!important}
+.ux-home .evo-best-today{margin-bottom:9px!important}
+.ux-home-more{margin-top:7px!important}
+
+/* Corpo: títulos mais curtos e respiro controlado */
+.ux-body-panel{gap:9px!important}
+.ux-body-tabs{top:calc(env(safe-area-inset-top) + 2px)!important}
+.ux-body .page-head{margin-bottom:8px!important}
+.ux-food-more,.ux-overview-measures,.ux-overview-more{border-radius:11px!important}
+
+/* Mais: grupos mais compactos */
+.ux-settings-groups{gap:6px!important}
+.ux-settings-group>summary{min-height:52px!important;padding:8px 12px!important}
+.ux-settings-group>summary b{font-size:11px!important}
+.ux-settings-group>summary small{font-size:8px!important}
+
+/* Evolução: 30 dias mais enxuto */
+.ux-progress-30{padding:11px!important;margin-bottom:10px!important}
+.ux-progress-30>div{gap:5px!important;margin-top:8px!important}
+.ux-progress-30 article{padding:8px 6px!important}
+.ux-progress-30 article b{font-size:15px!important}
+
+@media(max-width:390px){
+  .ux-home .perf-home-links{grid-template-columns:1fr!important}
+  .ux-home .perf-home-links button{min-height:48px!important}
+}
