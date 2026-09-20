@@ -380,7 +380,10 @@
     const today=main.querySelector('.perf-workout-hero, .today-card');
     if(!today)return;
     today.insertAdjacentHTML('afterend','<div id="tracoDailyHome">'+dailyCardMarkup(true)+'</div>');
-    const open=qs('#tracoOpenBodyLog');if(open)open.onclick=function(){state.page='body';renderBody();setTimeout(function(){qs('#tracoDailyCard')&&qs('#tracoDailyCard').scrollIntoView({behavior:'smooth',block:'start'});},40);};
+    const open=qs('#tracoOpenBodyLog');if(open)open.onclick=function(){
+      if(window.TracoUXPolish?.openBodyTab){window.TracoUXPolish.openBodyTab('food');return;}
+      state.page='body';localStorage.setItem('traco_ux_body_tab_v1','food');renderBody();
+    };
   }
   function bodySectionsMarkup(){
     return '<div id="tracoBodyCoach">'+dailyCardMarkup(false)+foodLimitsMarkup()+photoCadenceMarkup()+quickLogMarkup()+weeklyDashboardMarkup()+flankCardMarkup()+movingAveragesMarkup()+correlationMarkup()+plateauMarkup()+goalMarkup()+choicesMarkup()+photoCompareMarkup()+'</div>';
