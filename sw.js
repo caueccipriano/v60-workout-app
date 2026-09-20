@@ -69,21 +69,23 @@ self.addEventListener('fetch', event => {
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  const target = new URL(event.notification?.data?.url || './?rest_done=1', self.location.href).href;
+  const kind = event.notification?.data?.kind || 'rest-finished';
+  const target = new URL(event.notification?.data?.url || (kind==='photo-checkin'?'./?photo_due=1':'./?rest_done=1'), self.location.href).href;
+  const messageType = kind==='photo-checkin' ? 'TRACO_PHOTO_FOCUS' : 'TRACO_REST_FOCUS';
   event.waitUntil((async () => {
     const clients = await self.clients.matchAll({type:'window', includeUncontrolled:true});
     for (const client of clients) {
       try {
         if ('focus' in client) {
           await client.focus();
-          client.postMessage({type:'TRACO_REST_FOCUS'});
+          client.postMessage({type:messageType});
           return;
         }
       } catch (_) {}
     }
     if (self.clients.openWindow) {
       const opened = await self.clients.openWindow(target);
-      try { opened?.postMessage?.({type:'TRACO_REST_FOCUS'}); } catch (_) {}
+      try { opened?.postMessage?.({type:messageType}); } catch (_) {}
     }
   })());
 });
