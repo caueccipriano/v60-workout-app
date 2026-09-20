@@ -96,12 +96,18 @@
 
   function refineHome(){
     const main=q('.perf-home');if(!main)return;
-    // Garante uma única entrada de alimentação e uma única entrada de fotos.
     qa('#runtimeFoodHome').forEach(n=>n.remove());
+    qa('.runtime-photo-home').forEach(n=>n.remove());
     const menu=q('#tracoMenuHomeCard');
     if(menu)menu.classList.add('final-home-primary-card');
-    const photo=q('.runtime-photo-home');
-    if(photo)photo.classList.add('final-home-secondary-card');
+    let photo=main.querySelector('.final-home-photo-link');
+    if(!photo){
+      photo=document.createElement('button');
+      photo.className='final-home-photo-link';
+      photo.innerHTML='<span>◫</span><div><b>fotos de evolução</b><small>check-in quinzenal · frente · perfil · costas</small></div><i>→</i>';
+      (menu||main.querySelector('.perf-workout-hero')||main.querySelector('.perf-greeting'))?.insertAdjacentElement('afterend',photo);
+      photo.onclick=()=>go('photos');
+    }
   }
 
   function refineFood(){
@@ -143,11 +149,19 @@
     requestAnimationFrame(()=>{scheduled=false;apply();});
   }
 
+  function honorDeepLink(){
+    const params=new URLSearchParams(location.search);
+    if(params.get('view')!=='photos')return false;
+    history.replaceState({},'',location.pathname+location.hash);
+    if(state.page!=='photos'){state.page='photos';render();}
+    return true;
+  }
+
   const app=q('#app');
   if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:true});
   window.addEventListener('pageshow',schedule);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule();});
-  setTimeout(schedule,30);
-  window.TracoFinalUI={version:VERSION,apply};
+  setTimeout(()=>{honorDeepLink();schedule();},30);
+  window.TracoFinalUI={version:VERSION,apply,honorDeepLink};
   document.documentElement.dataset.tracoFinalUi=VERSION;
 })();
