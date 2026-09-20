@@ -28,6 +28,7 @@
   function startOfWeek(d=new Date()){const x=new Date(d),diff=(x.getDay()+6)%7;x.setDate(x.getDate()-diff);x.setHours(0,0,0,0);return x}
   function monthKey(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
   function todayEvolution(){const all=read(DAILY_KEY,{}),k=dateKey();return Object.assign({feelings:[],note:'',motivation:''},all[k]||{})}
+  function latestBody(){return body().slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')))[0]||null}
   function saveTodayEvolution(patch){const all=read(DAILY_KEY,{}),k=dateKey();all[k]=Object.assign({},todayEvolution(),patch,{date:k,updatedAt:Date.now()});write(DAILY_KEY,all);try{haptic()}catch{}}
 
   const DUMBBELL_LATERAL_SETS_FIX_KEY='traco_manual_fix_2026_09_20_lateral_dumbbell_sets_v1';
