@@ -403,7 +403,8 @@ html[data-theme="dark"] .toast{background:#F7F7F2;color:#111}
 
 /* Dark polish from QA screenshots */
 html[data-theme="dark"] .traco-about-card img{
-  filter:hue-rotate(310deg) saturate(1.35) brightness(1.02);
+  filter:none !important;
+  background:#090909;
 }
 html[data-theme="dark"] .history-card-reported::before{background:#FF3B30}
 html[data-theme="dark"] .baseline-chart{
@@ -854,3 +855,15 @@ html[data-theme="dark"] .measure-form .unit-input::before{
 .body-stats>div.is-empty p{
   text-align:center;
 }
+
+/* Build 287: unified icon language */
+html[data-theme="dark"] .traco-about-card img,
+html[data-theme="light"] .traco-about-card img{filter:none!important}
+html[data-design="performance"] .perf-bottom-nav .nav-btn .ico{color:inherit}
+html[data-design="performance"] .perf-bottom-nav .nav-btn .ico svg{
+  stroke:currentColor!important;
+  color:inherit!important;
+}
+html[data-theme="dark"][data-design="performance"] .perf-bottom-nav .nav-btn{color:#666}
+html[data-theme="dark"][data-design="performance"] .perf-bottom-nav .nav-btn.active{color:#FF3B30}
+html[data-theme="dark"][data-design="performance"] .perf-bottom-nav .nav-btn.active span:last-child{color:#FF3B30}
