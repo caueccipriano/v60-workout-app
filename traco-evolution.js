@@ -30,6 +30,44 @@
   function todayEvolution(){const all=read(DAILY_KEY,{}),k=dateKey();return Object.assign({feelings:[],note:'',motivation:''},all[k]||{})}
   function saveTodayEvolution(patch){const all=read(DAILY_KEY,{}),k=dateKey();all[k]=Object.assign({},todayEvolution(),patch,{date:k,updatedAt:Date.now()});write(DAILY_KEY,all);try{haptic()}catch{}}
 
+  const DUMBBELL_LATERAL_FIX_KEY='traco_manual_fix_2026_09_20_lateral_dumbbell_v1';
+  function markDumbbellLateral(ex){
+    if(!ex||!/eleva[cç][aã]o lateral/i.test(String(ex.name||''))||!/polia|crossover/i.test(String(ex.equipment||'')))return false;
+    ex.equipmentOriginal=ex.equipment;
+    ex.equipment='Halteres';
+    ex.progressionKey='elevacao-lateral-halter';
+    ex.performedVariation='halteres';
+    ex.substitutionReason='academia lotada · polia ocupada';
+    ex.manualEquipmentCorrection=true;
+    return true;
+  }
+  function applyReportedDumbbellLateralRaise(){
+    if(localStorage.getItem(DUMBBELL_LATERAL_FIX_KEY)==='1')return false;
+    const targetDate='2026-09-20';
+    let changed=false;
+
+    const draft=load(K.draft,null);
+    if(draft&&dateKey(new Date(draft.startedAt))===targetDate){
+      const hit=(draft.exercises||[]).find(markDumbbellLateral);
+      if(hit){save(K.draft,draft);changed=true;}
+    }
+
+    const all=sessions();
+    const candidates=all.filter(s=>s.finishedAt&&dateKey(new Date(s.startedAt))===targetDate).sort((a,b)=>b.startedAt-a.startedAt);
+    for(const session of candidates){
+      const hit=(session.exercises||[]).find(markDumbbellLateral);
+      if(hit){save(K.sessions,all);changed=true;break;}
+    }
+
+    if(state.activeSession&&dateKey(new Date(state.activeSession.startedAt))===targetDate){
+      const hit=(state.activeSession.exercises||[]).find(markDumbbellLateral);
+      if(hit){save(K.draft,state.activeSession);changed=true;}
+    }
+
+    if(changed)localStorage.setItem(DUMBBELL_LATERAL_FIX_KEY,'1');
+    return changed;
+  }
+
   /* MIGRATIONS */
   async function migrate(){
     let v=Number(localStorage.getItem(SCHEMA_KEY)||0);
@@ -45,6 +83,7 @@
       const prefs=read('traco_exercise_preferences_v1',{});
       write('traco_exercise_preferences_v1',prefs);v=3;
     }
+    applyReportedDumbbellLateralRaise();
     localStorage.setItem(SCHEMA_KEY,String(SCHEMA_VERSION));
   }
 
