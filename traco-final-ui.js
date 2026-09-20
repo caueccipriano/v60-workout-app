@@ -49,8 +49,12 @@
     }
     const m=await photoMeta();
     if(!card.isConnected)return;
-    card.innerHTML='<div><span>EVOLUÇÃO VISUAL</span><h3>'+(m.latest?'último check-in · '+m.latest.date:'acompanhe seu corpo por fotos')+'</h3><small>'+m.due+' · '+m.count+' check-in'+(m.count===1?'':'s')+'</small></div><button>abrir fotos</button>';
-    card.querySelector('button').onclick=()=>go('photos');
+    const signature=[m.latest?.date||'',m.due,m.count].join('|');
+    if(card.dataset.signature!==signature){
+      card.dataset.signature=signature;
+      card.innerHTML='<div><span>EVOLUÇÃO VISUAL</span><h3>'+(m.latest?'último check-in · '+m.latest.date:'acompanhe seu corpo por fotos')+'</h3><small>'+m.due+' · '+m.count+' check-in'+(m.count===1?'':'s')+'</small></div><button>abrir fotos</button>';
+      card.querySelector('button').onclick=()=>go('photos');
+    }
 
     // Evita duplicidade: o card final substitui a versão assíncrona antiga.
     qa('.perf-progress .evo-progress-photos').forEach(n=>n.remove());
