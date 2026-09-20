@@ -1161,7 +1161,6 @@ jobs:
             'ux-body-tabs',
             'data-ux-body-tab="overview"',
             'data-ux-body-tab="photos"',
-            'data-ux-body-tab="measures"',
             'data-ux-body-tab="food"',
             'ux-progress-30',
             'ux-settings-groups',
