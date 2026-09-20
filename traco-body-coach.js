@@ -377,7 +377,7 @@
 
   function decorateHome(){
     const main=qs('.home-card');if(!main||qs('#tracoDailyHome'))return;
-    const today=main.querySelector('.today-card');
+    const today=main.querySelector('.perf-workout-hero, .today-card');
     if(!today)return;
     today.insertAdjacentHTML('afterend','<div id="tracoDailyHome">'+dailyCardMarkup(true)+'</div>');
     const open=qs('#tracoOpenBodyLog');if(open)open.onclick=function(){state.page='body';renderBody();setTimeout(function(){qs('#tracoDailyCard')&&qs('#tracoDailyCard').scrollIntoView({behavior:'smooth',block:'start'});},40);};
