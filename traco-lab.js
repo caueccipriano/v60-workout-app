@@ -252,9 +252,10 @@
   function groceryMarkup(){
     const saved=read(GROCERY_KEY,[]);
     const defaults=['frango/atum/ovos','iogurte/leite','arroz/feijão/batata','frutas','legumes/salada','pão/aveia','opção rápida de proteína'];
+    const items=[...new Set([...defaults,...saved])];
     return '<details class="lab-grocery-card"><summary><span>SUPERMERCADO</span><b>lista prática</b><i>+</i></summary><div>'+
-      defaults.map(item=>'<label><input type="checkbox" data-grocery="'+esc(item)+'" '+(saved.includes(item)?'checked':'')+'><span>'+esc(item)+'</span></label>').join('')+
-      '<p>favoritos simples para montar refeições sem depender de delivery.</p></div></details>';
+      items.map(item=>'<label><input type="checkbox" data-grocery="'+esc(item)+'" '+(saved.includes(item)?'checked':'')+'><span>'+esc(item)+'</span></label>').join('')+
+      '<p>favoritos simples para montar refeições sem depender de delivery. itens enviados pelos Cardápios aparecem aqui também.</p></div></details>';
   }
   function hungerMarkup(){
     const v=todayLab().hungerType||'';
