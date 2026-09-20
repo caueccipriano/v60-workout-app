@@ -172,3 +172,19 @@
   .traco-menu-question{grid-template-columns:1fr}
   .traco-menu-question>div{justify-content:flex-start}
 }
+
+/* Build 293: Cardápios como destino principal */
+.traco-menu-home-card{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin:0 0 10px;padding:11px 12px;border:1px solid rgba(255,59,48,.34);
+  border-radius:13px;background:linear-gradient(135deg,rgba(255,59,48,.09),var(--surface-soft));
+}
+.traco-menu-home-card>div{min-width:0;display:grid;gap:2px}
+.traco-menu-home-card span{font-size:8px;font-weight:900;letter-spacing:.12em;color:var(--perf-orange,#FF3B30)}
+.traco-menu-home-card b{font-size:13px;line-height:1.2}
+.traco-menu-home-card small{font-size:8px;color:var(--muted)}
+.traco-menu-home-card button{
+  flex:0 0 auto;min-height:36px;padding:0 12px;border:0;border-radius:10px;
+  background:var(--perf-orange,#FF3B30);color:#fff;font-size:8px;font-weight:900;text-transform:uppercase
+}
+html[data-theme="light"] .traco-menu-home-card{background:#FFF5F3}
