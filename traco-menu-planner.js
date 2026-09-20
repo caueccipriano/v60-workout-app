@@ -283,7 +283,6 @@
       const merged=[...new Set([...(read(GROCERY_KEY,[])||[]),...groceryItems()])];
       write(GROCERY_KEY,merged);
       try{toast('lista enviada para Supermercado')}catch{}
-      if(typeof renderBody==='function')renderBody();
     });
     document.querySelector('#tracoMenuCopy')?.addEventListener('click',async()=>{
       const txt='Lista do Traço\n• '+groceryItems().join('\n• ');
