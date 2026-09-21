@@ -138,8 +138,10 @@ function hydrateDraft(raw){
   raw.wName=w.name;
   raw.exercises=w.exercises.map(plan=>{
     const old=existing.get(plan.id);
-    const count=Math.max(1,Number(plan.sets)||old?.sets?.length||1);
     const oldSets=Array.isArray(old?.sets)?old.sets:[];
+    // Never discard an in-progress set when the current plan reduces its set count.
+    // New plan sets may be added, but recorded/completed draft sets always survive hydration.
+    const count=Math.max(1,Number(plan.sets)||1,oldSets.length);
     const sets=Array.from({length:count},(_,i)=>({...oldSets[i],n:i+1,weight:tracoExerciseUsesLoad(plan)?(oldSets[i]?.weight??''):'',reps:oldSets[i]?.reps??'',done:Boolean(oldSets[i]?.done),skipped:Boolean(oldSets[i]?.skipped)}));
     return {...plan,...old,name:plan.name,equipment:plan.equipment,min:plan.min,max:plan.max,rest:plan.rest,icon:plan.icon,usesLoad:plan.usesLoad,sets};
   });
