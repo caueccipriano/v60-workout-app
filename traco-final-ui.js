@@ -114,8 +114,16 @@
     const main=q('.perf-food');if(!main)return;
     // Cardápios is its own route. These shortcuts must navigate, never reuse
     // the old body-tab shell (which caused Cardápios to render "meu corpo").
-    qa('.perf-food [data-food-route="body"],.perf-food [data-food-body],.perf-food .traco-food-body-link').forEach(btn=>btn.onclick=()=>go('body'));
-    qa('.perf-food [data-food-route="photos"],.perf-food [data-food-photos],.perf-food .traco-food-photo-link').forEach(btn=>btn.onclick=()=>go('photos'));
+    const shortcuts=[...qa('.perf-food button,.perf-food [role="button"],.perf-food a')];
+    shortcuts.forEach(btn=>{
+      const txt=String(btn.textContent||'').trim().toLowerCase();
+      if(btn.matches('[data-food-route="body"],[data-food-body],.traco-food-body-link')||txt==='corpo'||txt.startsWith('corpo ')){
+        btn.dataset.foodRoute='body';btn.onclick=e=>{e.preventDefault();e.stopPropagation();go('body');};
+      }
+      if(btn.matches('[data-food-route="photos"],[data-food-photos],.traco-food-photo-link')||txt==='fotos'||txt.startsWith('fotos ')){
+        btn.dataset.foodRoute='photos';btn.onclick=e=>{e.preventDefault();e.stopPropagation();go('photos');};
+      }
+    });
     main.querySelector('.traco-menu-planner')?.classList.add('final-menu-planner');
     const quick=main.querySelector('.traco-food-quicknav');
     if(quick)quick.classList.add('final-food-quicknav');
