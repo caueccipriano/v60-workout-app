@@ -235,7 +235,18 @@ function renderSession(){
   $('#sessionBack').onclick=()=>{if(state.currentExercise>0){state.currentExercise--;renderSession()}else{state.page='home';render()}};$('#finishEarly').onclick=()=>{if(confirm('encerrar o treino agora?'))finishSession()};
   clearInterval(state.sessionClock);state.sessionClock=setInterval(()=>{const el=$('#sessionTime');if(el)el.textContent=fmtClock(sessionElapsed())},1000);if(state.restRemaining>0)showRestOverlay();
 }
-function completeCurrentSet(){const s=state.activeSession,ex=s.exercises[state.currentExercise],si=currentSetIndex(ex),set=ex.sets[si],usesLoad=tracoExerciseUsesLoad(ex);if(!set.reps){toast('faltou preencher as reps');return}if(usesLoad&&!set.weight){toast('faltou preencher a carga');return}const previous={weight:set.weight,done:set.done,skipped:set.skipped,lastActivityAt:s.lastActivityAt};if(!usesLoad)set.weight='';set.done=true;set.skipped=false;s.lastActivityAt=Date.now();if(!save(K.draft,s)){set.weight=previous.weight;set.done=previous.done;set.skipped=previous.skipped;s.lastActivityAt=previous.lastActivityAt;toast('série não concluída · falha ao salvar');return}haptic();const exDone=ex.sets.every(x=>x.done),allDone=s.exercises.every(x=>x.sets.every(z=>z.done));if(allDone){finishSession();return}if(exDone)state.currentExercise=Math.min(state.currentExercise+1,s.exercises.length-1);startRest(ex.rest||settings().defaultRest||60);}
+function tracoLivePR(ex,set){
+  if(!tracoExerciseUsesLoad(ex)||!set?.weight)return null;
+  const previous=sessions().filter(x=>x.finishedAt);
+  let best=0;
+  previous.forEach(sess=>(sess.exercises||[]).forEach(item=>{
+    if(tracoExerciseProgressionKey(item)!==tracoExerciseProgressionKey(ex))return;
+    (item.sets||[]).filter(z=>z.done&&!z.skipped).forEach(z=>{best=Math.max(best,Number(z.weight||0));});
+  }));
+  const weight=Number(set.weight||0);
+  return weight>best&&weight>0?{weight,previous:best}:null;
+}
+function completeCurrentSet(){const s=state.activeSession,ex=s.exercises[state.currentExercise],si=currentSetIndex(ex),set=ex.sets[si],usesLoad=tracoExerciseUsesLoad(ex);if(!set.reps){toast('faltou preencher as reps');return}if(usesLoad&&!set.weight){toast('faltou preencher a carga');return}const previous={weight:set.weight,done:set.done,skipped:set.skipped,lastActivityAt:s.lastActivityAt};if(!usesLoad)set.weight='';set.done=true;set.skipped=false;s.lastActivityAt=Date.now();if(!save(K.draft,s)){set.weight=previous.weight;set.done=previous.done;set.skipped=previous.skipped;s.lastActivityAt=previous.lastActivityAt;toast('série não concluída · falha ao salvar');return}const livePR=tracoLivePR(ex,set);haptic();if(livePR){toast(livePR.previous>0?`novo PR · ${livePR.weight} kg 🔥`:`primeira referência · ${livePR.weight} kg`);try{navigator.vibrate?.([18,35,18]);}catch{}}else{toast(`série ${si+1} concluída ✓`);}const exDone=ex.sets.every(x=>x.done),allDone=s.exercises.every(x=>x.sets.every(z=>z.done));if(allDone){finishSession();return}if(exDone)state.currentExercise=Math.min(state.currentExercise+1,s.exercises.length-1);startRest(ex.rest||settings().defaultRest||60);}
 function skipCurrentExercise(){
   // Legacy-safe behavior: "skip" now means change the current order, never
   // mutate or erase unfinished sets. The Gym UX picker persists the queue.
