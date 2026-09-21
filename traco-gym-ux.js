@@ -3,7 +3,7 @@
  * Final UX layer: gym-first, fast touch targets, achievement color, clearer copy.
  * Internal v60_* storage keys remain for backwards compatibility.
  */
-const TRACO_GYM_UX_VERSION='2.9.0';
+const TRACO_GYM_UX_VERSION='2.9.1';
 const TRACO_ACHIEVEMENT='#F4C542';
 const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
 const TRACO_SET_ORDER_KEY='traco_set_order_v1';
@@ -490,9 +490,12 @@ function tracoGymDecorateSession(){
     if(!input||!activeSet||!Number.isFinite(delta))return;
     const step=kind==='weight'?0.5:1,current=Number(input.value||0);
     const next=Math.max(0,Math.round((current+delta)/step)*step);
-    input.value=kind==='weight'?String(Number(next.toFixed(1))):String(Math.round(next));
-    activeSet[kind]=input.value;save(K.draft,session);
-    input.dispatchEvent(new Event('input',{bubbles:true}));haptic();
+    const desired=kind==='weight'?String(Number(next.toFixed(1))):String(Math.round(next));
+    // Core input handlers are the single persistence path. This preserves
+    // their rollback behavior if localStorage is unavailable.
+    input.value=desired;
+    input.dispatchEvent(new Event('input',{bubbles:true}));
+    if(input.value===desired)haptic();
   });
 
   const progress=main.querySelector('.perf-session-progress');
