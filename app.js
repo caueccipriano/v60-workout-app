@@ -199,7 +199,12 @@ function cancelSession(){if(!confirm('cancelar este treino? o rascunho será apa
 function renderFinish(){const x=state.finishSummary;if(!x){state.page='home';render();return}const pr=x.prs[0];$('#app').innerHTML=`<main class="finish-shell"><section class="finish-card"><button class="finish-close" id="finishClose">${iconSvg('close')}</button><div class="finish-check">${iconSvg('check')}</div><h1>treino fechado</h1><p>${x.name}</p><div class="finish-stats"><div><span>tempo</span><strong>${Math.max(1,Math.round(x.duration/60))}min</strong></div><div><span>carga total</span><strong>${formatLoad(x.total)}</strong></div></div>${pr?`<div class="finish-pr">${iconSvg('trophy')}<div><b>novo recorde pessoal</b><span>${pr.name} — ${pr.weight}kg × ${pr.reps}</span></div></div>`:`<div class="finish-note">sem PR hoje — consistência também conta.</div>`}<div class="finish-streak">${iconSvg('flame')}<span>streak</span><b>${x.streak} dias</b></div><button class="cta-lime" id="backHome">voltar pro início</button></section></main>`;$('#backHome').onclick=$('#finishClose').onclick=()=>{state.finishSummary=null;state.page='home';render()};}
 
 function tracoEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));}
-function tracoDateKey(ms){const d=new Date(ms);return d.toISOString().slice(0,10);}
+function tracoDateKey(ms){
+  // Workout days are local calendar days. UTC conversion can move late-night
+  // sessions to the previous/next day depending on timezone.
+  const d=new Date(ms);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
 function tracoRecomputePRs(){
   const all=sessions().filter(x=>x.finishedAt).sort((a,b)=>a.startedAt-b.startedAt);
   const best={};
