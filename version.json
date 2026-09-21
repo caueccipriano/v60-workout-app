@@ -1,7 +1,7 @@
 {
-  "version": "2.10.1",
+  "version": "2.11.0",
   "legacyVersion": "3.7.1",
   "name": "Traço",
   "design": "gym-first-performance-local-first",
-  "build": "fast-set-entry-v324"
+  "build": "smart-progression-v325"
 }
