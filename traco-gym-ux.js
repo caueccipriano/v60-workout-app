@@ -3,7 +3,7 @@
  * Final UX layer: gym-first, fast touch targets, achievement color, clearer copy.
  * Internal v60_* storage keys remain for backwards compatibility.
  */
-const TRACO_GYM_UX_VERSION='2.6.0';
+const TRACO_GYM_UX_VERSION='2.7.0';
 const TRACO_ACHIEVEMENT='#F4C542';
 const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
 const TRACO_SET_ORDER_KEY='traco_set_order_v1';
@@ -434,19 +434,18 @@ function tracoGymOpenExercisePicker(){
 }
 
 /* ACTIVE WORKOUT */
-const tracoGymBaseSession=renderSession;
-renderSession=function(){
-  if(state.activeSession){
-    try{
-      tracoGymEnsureSessionQueue(state.activeSession);
-      tracoGymSyncQueueCursor(state.activeSession);
-      save(K.draft,state.activeSession);
-    }catch(error){
-      console.error('Traço session queue init failed',error);
-      delete state.activeSession.tracoSetQueue;
-    }
+function tracoGymPrepareSessionRender(){
+  if(!state.activeSession)return;
+  try{
+    tracoGymEnsureSessionQueue(state.activeSession);
+    tracoGymSyncQueueCursor(state.activeSession);
+    save(K.draft,state.activeSession);
+  }catch(error){
+    console.error('Traço session queue init failed',error);
+    delete state.activeSession.tracoSetQueue;
   }
-  tracoGymBaseSession();
+}
+function tracoGymDecorateSession(){  }
   const main=document.querySelector('.perf-session');if(!main||!state.activeSession)return;
   main.setAttribute('data-traco-gym-version','2.4.1');
   const session=state.activeSession;
@@ -496,8 +495,7 @@ renderSession=function(){
     const edit=$('#tracoV241EditOrder');if(edit)edit.onclick=()=>tracoGymOpenSetOrderEditor(session.workoutId,{session});
   }
   tracoGymRepairOverlayState();
-};
-
+}
 const tracoGymBaseCompleteSet=completeCurrentSet;
 completeCurrentSet=function(){
   const s=state.activeSession,ex=s?.exercises?.[state.currentExercise],si=ex?currentSetIndex(ex):-1,set=si>=0?ex.sets[si]:null;
@@ -643,7 +641,8 @@ function tracoGymDecorateFinish(){
 
 let tracoGymDecorateScheduled=false;
 function tracoGymDecorateCurrentPage(){
-  if(state.page==='home')tracoGymDecorateHome();
+  if(state.page==='session'){tracoGymPrepareSessionRender();tracoGymDecorateSession();}
+  else if(state.page==='home')tracoGymDecorateHome();
   else if(state.page==='progress')tracoGymDecorateProgress();
   else if(state.page==='body')tracoGymDecorateBody();
   else if(state.page==='settings')tracoGymDecorateSettings();
