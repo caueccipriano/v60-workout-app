@@ -541,5 +541,5 @@ function importData(e){const f=e.target.files?.[0];if(!f)return;const r=new File
 
 function render(){if(state.page!=='session')clearInterval(state.sessionClock);switch(state.page){case'home':renderHome();break;case'workouts':renderWorkouts();break;case'history':renderHistory();break;case'progress':renderProgress();break;case'photos':window.TracoCoach?.renderPhotosPage?window.TracoCoach.renderPhotosPage():(state.page='progress',renderProgress());break;case'body':renderBody();break;case'food':window.TracoMenuPlanner?.renderFood?window.TracoMenuPlanner.renderFood():(state.page='body',renderBody());break;case'settings':renderSettings();break;case'session':renderSession();break;case'finish':renderFinish();break;default:state.page='home';renderHome();}}
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();state.installPrompt=e});
-if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=317').catch(()=>{}));
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=318').catch(()=>{}));
 render();
