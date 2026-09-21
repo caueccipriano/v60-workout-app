@@ -3,7 +3,7 @@
  * Final UX layer: gym-first, fast touch targets, achievement color, clearer copy.
  * Internal v60_* storage keys remain for backwards compatibility.
  */
-const TRACO_GYM_UX_VERSION='2.8.0';
+const TRACO_GYM_UX_VERSION='2.8.1';
 const TRACO_ACHIEVEMENT='#F4C542';
 const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
 const TRACO_SET_ORDER_KEY='traco_set_order_v1';
@@ -382,8 +382,13 @@ function tracoGymMoveExerciseNext(session,exerciseId){
   const chosen=remaining.filter(token=>tracoGymQueueParts(token).exerciseId===exerciseId);
   const other=remaining.filter(token=>tracoGymQueueParts(token).exerciseId!==exerciseId);
   if(!chosen.length)return false;
+  const previousQueue=Array.isArray(session.tracoSetQueue)?session.tracoSetQueue.slice():null;
   session.tracoSetQueue=[...doneTokens,...chosen,...other];
-  save(K.draft,session);
+  if(!save(K.draft,session)){
+    if(previousQueue)session.tracoSetQueue=previousQueue;else delete session.tracoSetQueue;
+    toast('não consegui alterar a fila · tente novamente');
+    return false;
+  }
   tracoGymSyncQueueCursor(session);
   return true;
 }
@@ -445,7 +450,7 @@ function tracoGymPrepareSessionRender(){
     delete state.activeSession.tracoSetQueue;
   }
 }
-function tracoGymDecorateSession(){  }
+function tracoGymDecorateSession(){
   const main=document.querySelector('.perf-session');if(!main||!state.activeSession)return;
   main.setAttribute('data-traco-gym-version','2.4.1');
   const session=state.activeSession;
