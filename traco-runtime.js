@@ -5,9 +5,9 @@
 (function(){
   'use strict';
 
-  const VERSION='1.6.1';
-  const BUILD='workout-integrity-v340';
-  const BUILD_NUMBER='340';
+  const VERSION='1.6.2';
+  const BUILD='route-cleanup-v343';
+  const BUILD_NUMBER='343';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
