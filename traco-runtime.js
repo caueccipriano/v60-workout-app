@@ -5,9 +5,9 @@
 (function(){
   'use strict';
 
-  const VERSION='1.4.0';
-  const BUILD='render-wrapper-cleanup-v311';
-  const BUILD_NUMBER='311';
+  const VERSION='1.5.0';
+  const BUILD='completed-draft-recovery-v320';
+  const BUILD_NUMBER='320';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
@@ -40,17 +40,21 @@
   }
 
   function recoverCompletedDraft(){
-    const draft=draftToday();if(!draft)return false;
+    const draft=activeDraft();if(!draft)return false;
     const progress=completion(draft);if(!progress.complete)return false;
     if(hasDuplicate(draft)){
       localStorage.removeItem(K.draft);
       return true;
     }
     if(sessionStorage.getItem('traco_runtime_recovered_'+draft.id)==='1')return false;
-    sessionStorage.setItem('traco_runtime_recovered_'+draft.id,'1');
-    state.activeSession=typeof hydrateDraft==='function'?hydrateDraft(draft):draft;
+    const recovered=typeof hydrateDraft==='function'?hydrateDraft(draft):draft;
+    // A completed draft may be reopened hours or days later. Use the last
+    // persisted set activity as its finish time instead of "now".
+    recovered.recoveryFinishedAt=Math.max(Number(recovered.startedAt||0),Number(draft.lastActivityAt||draft.startedAt||Date.now()));
+    state.activeSession=recovered;
     try{
       finishSession();
+      sessionStorage.setItem('traco_runtime_recovered_'+draft.id,'1');
       return true;
     }catch(e){
       state.activeSession=null;
