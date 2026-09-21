@@ -179,6 +179,20 @@ function currentSetIndex(ex){const i=ex.sets.findIndex(s=>!s.done);return i<0?ex
 function lastSetText(exId){const last=lastExercisePerf(exId);if(!last)return 'primeira vez — cria sua referência';const done=last.sets.filter(s=>s.done&&!s.skipped);if(!done.length)return 'sem série registrada';if(!tracoExerciseUsesLoad(last)){const best=Math.max(0,...done.map(s=>Number(s.reps||0)));return best?`${best} reps — bora bater`:'feito sem carga';}const best=done.reduce((a,b)=>Number(b.weight||0)>Number(a.weight||0)?b:a,done[0]);if(best.weight&&best.reps)return `${best.weight}kg × ${best.reps} — bora bater`;if(best.weight)return `${best.weight}kg · sem reps registradas`;return 'sem carga registrada';}
 function renderSession(){
   const s=state.activeSession;if(!s){state.page='home';render();return}const ex=s.exercises[state.currentExercise],si=currentSetIndex(ex),set=ex.sets[si];
+  // Prefill a new set from the immediately previous completed set. This only
+  // seeds blank fields; anything the user already entered always wins.
+  if(si>0&&!set.done){
+    const prev=ex.sets[si-1];
+    if(prev?.done&&!prev.skipped){
+      let seeded=false;
+      if(tracoExerciseUsesLoad(ex)&&set.weight===''&&prev.weight!==''){set.weight=prev.weight;seeded=true;}
+      if(set.reps===''&&prev.reps!==''){set.reps=prev.reps;seeded=true;}
+      if(seeded&&!save(K.draft,s)){
+        if(tracoExerciseUsesLoad(ex)&&set.weight===prev.weight)set.weight='';
+        if(set.reps===prev.reps)set.reps='';
+      }
+    }
+  }
   shell(`<div class="session-topbar"><button class="plain-icon" id="sessionBack">${iconSvg('back')}</button><span>exercício ${state.currentExercise+1} de ${s.exercises.length}</span><button class="plain-icon" id="cancelSession">${iconSvg('close')}</button></div>
     <div class="session-progress"><span style="width:${((state.currentExercise+(si/ex.sets.length))/s.exercises.length)*100}%"></span></div>
     <section class="exercise-hero"><span class="exercise-badge">${ex.icon}</span><h1>${ex.name}</h1><small>${ex.equipment}</small></section>
