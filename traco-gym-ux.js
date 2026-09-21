@@ -3,7 +3,7 @@
  * Final UX layer: gym-first, fast touch targets, achievement color, clearer copy.
  * Internal v60_* storage keys remain for backwards compatibility.
  */
-const TRACO_GYM_UX_VERSION='2.7.0';
+const TRACO_GYM_UX_VERSION='2.8.0';
 const TRACO_ACHIEVEMENT='#F4C542';
 const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
 const TRACO_SET_ORDER_KEY='traco_set_order_v1';
@@ -496,17 +496,20 @@ function tracoGymDecorateSession(){  }
   }
   tracoGymRepairOverlayState();
 }
-const tracoGymBaseCompleteSet=completeCurrentSet;
-completeCurrentSet=function(){
+function tracoGymFlashSavedSet(){
+  const s=state.activeSession,ex=s?.exercises?.[state.currentExercise],si=ex?currentSetIndex(ex):-1;
+  const btn=$('#completeSet'),dot=si>=0?$('.perf-set-track span')[si]:null;
+  if(btn){btn.classList.add('traco-saved');btn.innerHTML='<span>salvando série</span><b>✓</b>';}
+  if(dot)dot.classList.add('traco-flash');
+}
+// Visual feedback no longer wraps/delays the persistence path. The core save
+// runs synchronously; this hook only decorates the button before it fires.
+document.addEventListener('pointerdown',event=>{
+  const btn=event.target?.closest?.('#completeSet');if(!btn||btn.disabled)return;
   const s=state.activeSession,ex=s?.exercises?.[state.currentExercise],si=ex?currentSetIndex(ex):-1,set=si>=0?ex.sets[si]:null;
   const usesLoad=typeof tracoExerciseUsesLoad==='function'?tracoExerciseUsesLoad(ex):true;
-  if(!set||!set.reps||(usesLoad&&!set.weight)){tracoGymBaseCompleteSet();return;}
-  const btn=$('#completeSet'),dot=$$('.perf-set-track span')[si];
-  if(btn){btn.disabled=true;btn.classList.add('traco-saved');btn.innerHTML='<span>série salva</span><b>✓</b>';}
-  if(dot){dot.classList.add('done','traco-flash');const b=dot.querySelector('b');if(b)b.textContent='✓';}
-  haptic();
-  setTimeout(()=>tracoGymBaseCompleteSet(),160);
-};
+  if(set?.reps&&(!usesLoad||set.weight))tracoGymFlashSavedSet();
+},{passive:true});
 
 /* WORKOUT LIBRARY */
 const tracoGymBaseWorkouts=renderWorkouts;
