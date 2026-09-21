@@ -229,7 +229,8 @@ function tracoGymOpenSetOrderEditor(workoutId,{session=null}={}){
     }
     const all=tracoGymSetOrders();
     if(ids.join('|')===canonical.join('|'))delete all[workoutId];else all[workoutId]=ids.slice();
-    localStorage.setItem(TRACO_SET_ORDER_KEY,JSON.stringify(all));
+    try{localStorage.setItem(TRACO_SET_ORDER_KEY,JSON.stringify(all));}
+    catch(error){console.error('Traço set order write failed',error);toast('não consegui salvar a ordem');return;}
     tracoGymCloseOrderEditor();
     toast('ordem das séries salva');
     haptic();
@@ -552,14 +553,8 @@ function tracoGymFlashSavedSet(){
   if(btn){btn.classList.add('traco-saved');btn.innerHTML='<span>salvando série</span><b>✓</b>';}
   if(dot)dot.classList.add('traco-flash');
 }
-// Visual feedback no longer wraps/delays the persistence path. The core save
-// runs synchronously; this hook only decorates the button before it fires.
-document.addEventListener('pointerdown',event=>{
-  const btn=event.target?.closest?.('#completeSet');if(!btn||btn.disabled)return;
-  const s=state.activeSession,ex=s?.exercises?.[state.currentExercise],si=ex?currentSetIndex(ex):-1,set=si>=0?ex.sets[si]:null;
-  const usesLoad=typeof tracoExerciseUsesLoad==='function'?tracoExerciseUsesLoad(ex):true;
-  if(set?.reps&&(!usesLoad||set.weight))tracoGymFlashSavedSet();
-},{passive:true});
+// Persistence owns success feedback. Avoid saying "salvando" before the
+// core write succeeds; failed writes must never look completed.
 
 /* WORKOUT LIBRARY */
 const tracoGymBaseWorkouts=renderWorkouts;
