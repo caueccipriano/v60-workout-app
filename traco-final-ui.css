@@ -204,3 +204,6 @@ html[data-theme="light"][data-design="performance"] .perf-food :is(button,[role=
 /* v344 screenshot QA: actual workout selector + home coach contrast */
 html[data-theme="light"][data-design="performance"] .workout-select.active{background:#181818!important;color:#f7f6f2!important;border-color:#6a2621!important}html[data-theme="light"][data-design="performance"] .workout-select.active :is(b,strong,h3,p,small,span:not(.workout-num)){color:#f7f6f2!important}html[data-theme="light"][data-design="performance"] .workout-select.active .workout-num{color:#ff4138!important}html[data-theme="light"][data-design="performance"] .workout-select.active :is(svg,path){stroke:#f7f6f2!important}
 html[data-theme="light"][data-design="performance"] .perf-home :is(.evo-best-today,.perf-today-plan,.adaptive-coach) :is(.chip,.badge,em,small){color:#595954}html[data-theme="light"][data-design="performance"] .perf-home :is(.evo-best-today,.perf-today-plan,.adaptive-coach) :is(.chip,.badge,em){background:#efede7!important;border-color:#d8d6d0!important}
+
+/* v345 Cardápios quicknav click safety */
+.traco-food-quicknav{position:relative;z-index:5}.traco-food-quicknav button{position:relative;z-index:6;pointer-events:auto!important;touch-action:manipulation;-webkit-tap-highlight-color:rgba(255,65,56,.12)}.traco-food-quicknav button>*{pointer-events:none}
