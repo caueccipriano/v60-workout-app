@@ -172,3 +172,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+.final-busy-help{display:block;margin:5px 4px 0;text-align:center;font-size:8px;line-height:1.35;color:var(--muted)}
+.perf-session button:disabled{opacity:.45;pointer-events:none}
