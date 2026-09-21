@@ -1,7 +1,7 @@
 {
-  "version": "2.5.4",
+  "version": "2.5.5",
   "legacyVersion": "3.7.1",
   "name": "Traço",
   "design": "gym-first-performance-local-first",
-  "build": "runtime-timer-date-qa-v309"
+  "build": "draft-recovery-performance-v310"
 }
