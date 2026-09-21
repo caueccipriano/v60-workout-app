@@ -5,9 +5,9 @@
 (function(){
   'use strict';
 
-  const VERSION='1.3.0';
-  const BUILD='draft-recovery-performance-v310';
-  const BUILD_NUMBER='310';
+  const VERSION='1.4.0';
+  const BUILD='render-wrapper-cleanup-v311';
+  const BUILD_NUMBER='311';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
@@ -162,14 +162,22 @@
     }
   }
 
-  const baseHome=renderHome;
-  renderHome=function(){baseHome();decorateHome();};
-
-  const baseSettings=renderSettings;
-  renderSettings=function(){baseSettings();decorateSettings();};
-
-  const baseBody=renderBody;
-  renderBody=function(){baseBody();decorateBody();};
+  // Runtime decoration is applied by one guarded observer instead of
+  // monkey-patching core render functions. This avoids wrapper stacking with
+  // Gym UX / UX Polish while keeping the module backwards-compatible.
+  let decorateScheduled=false;
+  function decorateCurrentPage(){
+    if(state.page==='home')decorateHome();
+    else if(state.page==='settings')decorateSettings();
+    else if(state.page==='body')decorateBody();
+  }
+  function scheduleDecoration(){
+    if(decorateScheduled)return;
+    decorateScheduled=true;
+    requestAnimationFrame(()=>{decorateScheduled=false;decorateCurrentPage();});
+  }
+  const runtimeApp=qs('#app');
+  if(runtimeApp)new MutationObserver(scheduleDecoration).observe(runtimeApp,{childList:true,subtree:false});
 
   async function refreshPwa(manual=false){
     if(!('serviceWorker' in navigator))return;
