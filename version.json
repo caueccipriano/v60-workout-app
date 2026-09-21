@@ -1,7 +1,7 @@
 {
-  "version": "2.26.0",
+  "version": "2.27.0",
   "legacyVersion": "3.7.1",
   "name": "Traço",
   "design": "gym-first-performance-local-first",
-  "build": "shape-lab-qa-v346"
+  "build": "refinement-v348"
 }
