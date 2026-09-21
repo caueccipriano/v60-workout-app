@@ -1,7 +1,7 @@
 {
-  "version": "2.17.0",
+  "version": "2.18.0",
   "legacyVersion": "3.7.1",
   "name": "Traço",
   "design": "gym-first-performance-local-first",
-  "build": "traco-plus-hub-v331"
+  "build": "functional-traco-plus-v332"
 }
