@@ -44,6 +44,8 @@ function tracoPerfSequence(){
   }).join('')}</div></section>`;
 }
 
+function tracoPerfTodayPlan(workout){const r=typeof tracoTodayReadiness==='function'?tracoTodayReadiness():null,score=typeof tracoReadinessScore==='function'?tracoReadinessScore(r):null,muscle=typeof tracoMuscleCoach==='function'?tracoMuscleCoach():'complete a programação da semana';let readiness='faça o check-in para personalizar o plano';if(score!==null)readiness=score>=70?'readiness '+score+'% · boa margem para progredir com técnica':score>=50?'readiness '+score+'% · avance com cautela hoje':'readiness '+score+'% · priorize execução e recuperação';let opportunities=0;(workout?.exercises||[]).forEach(ex=>{try{if(tracoSetSuggestion(ex))opportunities++;}catch{}});return {score,readiness,muscle,opportunities};}
+function tracoPerfOpenTodayPlan(workout){const p=tracoPerfTodayPlan(workout);document.body.insertAdjacentHTML('beforeend',`<div class="plus-sheet" id="todayPlanSheet"><button class="plus-sheet-backdrop" aria-label="fechar"></button><section><header><div><span>✦ TRAÇO+</span><h2>Plano de hoje</h2></div><button id="todayPlanClose" aria-label="fechar">×</button></header><div class="today-plan-grid"><article><span>01 · READINESS</span><b>${tracoPerfEsc(p.readiness)}</b></article><article><span>02 · SEMANA</span><b>${tracoPerfEsc(p.muscle)}</b></article><article><span>03 · PROGRESSÃO</span><b>${p.opportunities?p.opportunities+' exercícios com referência para progressão':'o histórico ainda está formando suas referências'}</b></article></div><p class="plus-note">o plano orienta sua sessão, mas não altera cargas, séries ou exercícios sem sua ação.</p><button class="cta-lime" id="todayPlanStart">${p.score===null?'fazer check-in primeiro':'começar treino'}</button></section></div>`);const close=()=>$('#todayPlanSheet')?.remove();$('#todayPlanClose').onclick=close;$('#todayPlanSheet .plus-sheet-backdrop').onclick=close;$('#todayPlanStart').onclick=()=>{close();if(p.score===null&&typeof tracoOpenReadiness==='function')return tracoOpenReadiness();startSession(workout.id);};}
 renderHome=function(){
   const w=typeof v60RecommendedWorkout==='function'?v60RecommendedWorkout():todayWorkout();
   const item=typeof v60SequenceItem==='function'?v60SequenceItem(w.id):{letter:'A'};
@@ -54,6 +56,7 @@ renderHome=function(){
   const goal=Math.max(1,Number(profile.weeklyGoal)||5);
   const draft=load(K.draft,null),draftPct=sessionCompletion(draft);
   const xp=xpStats();
+  const todayPlan=tracoPerfTodayPlan(w);
   shell(`
     <header class="perf-topbar">
       <div class="perf-wordmark"><i></i><strong>traço</strong></div>
@@ -61,6 +64,7 @@ renderHome=function(){
     </header>
     <section class="perf-greeting"><h1>e aí, ${tracoPerfEsc((profile.name||'Cauê').toLowerCase())}</h1><p>foco hoje. resultado amanhã.</p></section>
     ${draft?`<section class="perf-resume"><div><span>EM ANDAMENTO</span><b>${tracoPerfEsc(draft.wName)}</b><small>${draftPct}% concluído</small></div><button id="resumeWorkout">continuar →</button></section>`:''}
+    <button class="perf-today-plan" id="openTodayPlan"><span>✦ TRAÇO+ · PLANO DE HOJE</span><b>${todayPlan.score===null?'personalizar treino':todayPlan.score+'% readiness · '+todayPlan.opportunities+' progressões'}</b><small>${tracoPerfEsc(todayPlan.muscle)}</small><i>abrir →</i></button>
     <button class="perf-workout-hero" id="startToday" aria-label="começar treino ${item.letter}">
       <div class="perf-hero-grid"></div>
       <div class="perf-hero-top"><span>PRÓXIMO TREINO</span><b>TRC-${item.letter}</b></div>
@@ -78,6 +82,7 @@ renderHome=function(){
       <button id="perfAllWorkouts">${tracoPerfDumbbell()}<span><b>todos os treinos</b><small>sequência A–E</small></span><i>→</i></button>
     </section>
   `,{classes:'home-card perf-home'});
+  $('#openTodayPlan').onclick=()=>tracoPerfOpenTodayPlan(w);
   $('#startToday').onclick=()=>startSession(w.id);
   if($('#resumeWorkout'))$('#resumeWorkout').onclick=()=>startSession(draft.workoutId);
   $('#perfHistory').onclick=()=>{state.page='history';renderHistory();};
