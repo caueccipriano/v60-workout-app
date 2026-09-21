@@ -96,21 +96,7 @@
     selectBodyTab();
   }
 
-  function compactFoodTools(main){return;
-    const food=main.querySelector('[data-ux-panel="food"]');if(!food)return;
-    let more=food.querySelector('.ux-food-more');
-    if(!more){
-      more=document.createElement('details');
-      more.className='ux-food-more';
-      more.innerHTML='<summary><div><b>mais ferramentas</b><small>construtor · supermercado · favoritos · contexto</small></div><span>+</span></summary><div class="ux-food-more-body"></div>';
-      food.appendChild(more);
-    }
-    const target=more.querySelector('.ux-food-more-body');
-    [
-      '.traco-food-limits','.traco-habit-card','.traco-choice-card','.evo-mini-plan',
-      '.lab-food-coach','.lab-meal-card','.lab-grocery-card','.lab-hunger-card'
-    ].forEach(selector=>food.querySelectorAll(selector).forEach(node=>move(node,target)));
-  }
+  function compactFoodTools(){ /* food is a standalone route */ }
 
   function compactOverview(main){
     const overview=main.querySelector('[data-ux-panel="overview"]');if(!overview)return;
@@ -143,7 +129,7 @@
   function openBodyTab(tab){
     if(tab==='photos'){state.page='photos';render();return;}
     if(tab==='food'){state.page='food';render();return;}
-    state.page='body';localStorage.setItem(BODY_TAB_KEY,'overview');renderBody();
+    state.page='body';localStorage.setItem(BODY_TAB_KEY,'overview');render();
   }
 
   function body(){
@@ -152,8 +138,7 @@
     regroupBody(main);
     compactOverview(main);
     compactFoodTools(main);
-    setTimeout(()=>{regroupBody(main);compactOverview(main);compactFoodTools(main)},80);
-    setTimeout(()=>{regroupBody(main);compactOverview(main);compactFoodTools(main)},320);
+    requestAnimationFrame(()=>{regroupBody(main);compactOverview(main)});
   }
 
   function last30(){
