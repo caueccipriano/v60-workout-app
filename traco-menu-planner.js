@@ -229,12 +229,15 @@
     if(mount)mount.innerHTML=markup();
     bind();
     const bodyBtn=document.querySelector('#tracoFoodBodyOverview');
-    if(bodyBtn)bodyBtn.onclick=()=>{
+    if(bodyBtn){bodyBtn.type='button';bodyBtn.dataset.foodRoute='body';bodyBtn.onclick=e=>{
+      e.preventDefault();e.stopPropagation();
       localStorage.setItem('traco_ux_body_tab_v1','overview');
       state.page='body';render();
-    };
+    };}
     const photosBtn=document.querySelector('#tracoFoodPhotos');
-    if(photosBtn)photosBtn.onclick=()=>{state.page='photos';render();};
+    if(photosBtn){photosBtn.type='button';photosBtn.dataset.foodRoute='photos';photosBtn.onclick=e=>{
+      e.preventDefault();e.stopPropagation();state.page='photos';render();
+    };}
   }
 
   function homeCardMarkup(){
