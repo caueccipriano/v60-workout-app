@@ -216,7 +216,7 @@
       '<button data-lab-mode="travel-cable"><b>viagem · polia</b><small>treino temporário com polia</small></button>'+
       '<button data-lab-mode="travel-body"><b>sem academia</b><small>versão simples de peso corporal</small></button></div>'+
       '<p>esses modos alteram só o treino em andamento; seu V60 base continua intacto.</p></section></div>');
-    qs('#tracoLabClose').onclick=closeLabModal;qs('#tracoLabModal').onclick=e=>{if(e.target.id==='tracoLabModal')closeLabModal()};
+    const closeBtn=qs('#tracoLabClose'),modal=qs('#tracoLabModal');if(closeBtn)closeBtn.onclick=closeLabModal;if(modal)modal.onclick=e=>{if(e.target.id==='tracoLabModal')closeLabModal()};
     qsa('[data-lab-mode]').forEach(btn=>btn.onclick=()=>{
       const m=btn.dataset.labMode;if(m==='crowded'){closeLabModal();crowdedGym()}else if(m==='short'){closeLabModal();compactCurrentWorkout(30)}
       else if(m==='travel-db')activateTravel('dumbbells');else if(m==='travel-cable')activateTravel('cable');else activateTravel('bodyweight');
@@ -455,7 +455,7 @@
       const latest=rows[rows.length-1],old=rows[0];
       holder.innerHTML='<label class="lab-photo-note">nota do check-in atual<textarea id="labPhotoNote" placeholder="ex.: comecei novo treino, viajei, estava mais inchado…">'+esc(latest.note||'')+'</textarea><button id="labPhotoNoteSave">salvar nota</button></label>'+
         (rows.length>1?'<div class="lab-region-compare"><span>comparar região</span><div class="lab-region-buttons">'+[['waist','cintura/flancos'],['chest','peito'],['arms','braços'],['back','costas']].map(([k,l])=>'<button data-region="'+k+'">'+l+'</button>').join('')+'</div><div class="lab-region-images" data-region-view="waist"><img src="'+old.front+'" alt=""><img src="'+latest.front+'" alt=""></div></div>':'');
-      qs('#labPhotoNoteSave').onclick=async()=>{await updatePhoto(latest.id,{note:qs('#labPhotoNote').value});toast('anotação salva')};
+      const noteSave=qs('#labPhotoNoteSave');if(noteSave)noteSave.onclick=async()=>{const note=qs('#labPhotoNote');await updatePhoto(latest.id,{note:note?.value||''});toast('anotação salva')};
       qsa('[data-region]').forEach(btn=>btn.onclick=()=>{
         const view=qs('.lab-region-images');if(!view)return;view.dataset.regionView=btn.dataset.region;
         const src=btn.dataset.region==='back'?'back':'front';view.innerHTML='<img src="'+old[src]+'" alt=""><img src="'+latest[src]+'" alt="">';
@@ -474,7 +474,7 @@
       stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
       closeLabModal();document.body.classList.add('traco-lab-modal-open');
       document.body.insertAdjacentHTML('beforeend','<div class="traco-lab-backdrop" id="tracoLabModal"><section class="traco-lab-camera"><header><div><span>FOTO PADRONIZADA</span><h3 id="labCamTitle">frente</h3></div><button id="tracoLabClose">×</button></header><div class="lab-camera-view"><video id="labCameraVideo" autoplay playsinline></video><div class="lab-pose-guide"><i></i><i></i><i></i></div></div><p id="labCamTip">câmera na altura do abdômen · corpo inteiro · relaxado</p><button id="labCapture">capturar frente</button></section></div>');
-      const v=qs('#labCameraVideo');v.srcObject=stream;qs('#tracoLabClose').onclick=()=>{stopCamera();closeLabModal()};qs('#labCapture').onclick=captureGuided;
+      const v=qs('#labCameraVideo'),close=qs('#tracoLabClose'),capture=qs('#labCapture');if(!v||!close||!capture)throw new Error('camera UI unavailable');v.srcObject=stream;close.onclick=()=>{stopCamera();closeLabModal()};capture.onclick=captureGuided;
     }catch{toast('não consegui abrir a câmera')}
   }
   function stopCamera(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}}
@@ -502,7 +502,7 @@
   function decorateHome(){
     const main=qs('.home-card');if(!main||qs('.lab-home-card'))return;
     const daily=qs('#tracoDailyHome');if(daily)daily.insertAdjacentHTML('afterend',labHomeMarkup());else main.insertAdjacentHTML('beforeend',labHomeMarkup());
-    qs('#labOpenBody').onclick=()=>{state.page='body';renderBody()};
+    const openBody=qs('#labOpenBody');if(openBody)openBody.onclick=()=>{state.page='body';render()};
   }
   function decorateBody(){
     const main=qs('.body-page');if(!main||qs('.lab-recovery-card'))return;
@@ -531,7 +531,7 @@
     main.insertAdjacentHTML('beforeend',phaseMarkup()+goalsMarkup()+recordsMarkup()+wrappedMarkup());
     qsa('[data-phase]').forEach(btn=>btn.onclick=()=>setPhase(btn.dataset.phase));
     if(qs('#labChangePhase'))qs('#labChangePhase').onclick=()=>{localStorage.removeItem(PHASE_KEY);renderProgress()};
-    qs('#labGoalAdd').onclick=()=>{const t=qs('#labGoalType').value,n=Number(qs('#labGoalTarget').value);if(!n)return toast('define um alvo');addGoal(t,n)};
+    const goalAdd=qs('#labGoalAdd');if(goalAdd)goalAdd.onclick=()=>{const type=qs('#labGoalType'),target=qs('#labGoalTarget');if(!type||!target)return;const n=Number(target.value);if(!n)return toast('define um alvo');addGoal(type.value,n)};
     qsa('[data-goal-remove]').forEach(btn=>btn.onclick=()=>{write(GOALS_KEY,goals().filter(g=>String(g.id)!==btn.dataset.goalRemove));renderProgress()});
   }
   function decorateSession(){
@@ -540,7 +540,7 @@
     const consoleEl=main.querySelector('.perf-exercise-console');if(!consoleEl)return;
     consoleEl.insertAdjacentHTML('beforeend','<section class="lab-session-tools">'+exerciseFeelMarkup(ex)+'<button id="labTrainingModes">adaptar treino / academia cheia</button></section>');
     qsa('[data-ex-feel]').forEach(btn=>btn.onclick=()=>saveExerciseFeel(ex.id,btn.dataset.exFeel));
-    qs('#labTrainingModes').onclick=openTrainingModes;
+    const trainingModes=qs('#labTrainingModes');if(trainingModes)trainingModes.onclick=openTrainingModes;
     const r=readiness();
     if(r.score<65&&!qs('.lab-readiness-banner'))consoleEl.insertAdjacentHTML('afterbegin','<div class="lab-readiness-banner '+r.level+'"><b>prontidão '+r.score+'%</b><span>'+esc(r.text)+'</span></div>');
   }
