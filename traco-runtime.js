@@ -5,9 +5,9 @@
 (function(){
   'use strict';
 
-  const VERSION='1.5.0';
-  const BUILD='completed-draft-recovery-v320';
-  const BUILD_NUMBER='320';
+  const VERSION='1.6.0';
+  const BUILD='contrast-release-v338';
+  const BUILD_NUMBER='338';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
