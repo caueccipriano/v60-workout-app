@@ -1,7 +1,7 @@
 {
-  "version": "2.24.1",
+  "version": "2.25.0",
   "legacyVersion": "3.7.1",
   "name": "Traço",
   "design": "gym-first-performance-local-first",
-  "build": "food-navigation-v341"
+  "build": "route-separation-v342"
 }
