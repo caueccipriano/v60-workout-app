@@ -66,50 +66,34 @@
   };
 
   function bodyShell(main){
-    let tabs=main.querySelector('.ux-body-tabs');
-    if(!tabs){
-      tabs=document.createElement('nav');
-      tabs.className='ux-body-tabs';
-      tabs.setAttribute('aria-label','áreas do corpo');
-      tabs.innerHTML='<button data-ux-body-tab="overview">visão geral</button><button data-ux-body-route="photos">fotos</button><button data-ux-body-route="food">cardápios</button>';
-      main.querySelector('.page-head')?.insertAdjacentElement('afterend',tabs);
-    }
     let panels=main.querySelector('.ux-body-panels');
+    main.querySelector('.ux-body-tabs')?.remove();
     if(!panels){
       panels=document.createElement('div');
       panels.className='ux-body-panels';
-      panels.innerHTML='<section class="ux-body-panel" data-ux-panel="overview"></section><section class="ux-body-panel" data-ux-panel="photos"></section><section class="ux-body-panel" data-ux-panel="food"></section>';
-      tabs.insertAdjacentElement('afterend',panels);
+      panels.innerHTML='<section class="ux-body-panel" data-ux-panel="overview"></section>';
+      main.querySelector('.page-head')?.insertAdjacentElement('afterend',panels);
+    }else{
+      panels.querySelectorAll('[data-ux-panel]:not([data-ux-panel="overview"])').forEach(panel=>{
+        Array.from(panel.children).forEach(node=>main.appendChild(node));panel.remove();
+      });
+      if(!panels.querySelector('[data-ux-panel="overview"]')){
+        const p=document.createElement('section');p.className='ux-body-panel';p.dataset.uxPanel='overview';panels.appendChild(p);
+      }
     }
-    return {tabs,panels};
+    return {panels};
   }
 
-  function selectBodyTab(tab){
-    const main=qs('.perf-body');if(!main)return;
-    const valid=tab==='overview'?'overview':'overview';
-    localStorage.setItem(BODY_TAB_KEY,valid);
-    main.querySelectorAll('[data-ux-body-tab]').forEach(btn=>{
-      const on=btn.dataset.uxBodyTab===valid;
-      btn.classList.toggle('is-active',on);
-      btn.setAttribute('aria-selected',String(on));
-    });
-    main.querySelectorAll('[data-ux-panel]').forEach(panel=>panel.hidden=panel.dataset.uxPanel!==valid);
+  function selectBodyTab(){
+    localStorage.setItem(BODY_TAB_KEY,'overview');
   }
 
   function regroupBody(main){
-    const shell=bodyShell(main);
-    Object.entries(BODY).forEach(([key,selectors])=>{
-      const panel=shell.panels.querySelector('[data-ux-panel="'+key+'"]');
-      selectors.forEach(selector=>{
-        main.querySelectorAll(selector).forEach(node=>{
-          if(!node.closest('.ux-body-panel'))move(node,panel);
-        });
-      });
-    });
-    shell.tabs.querySelectorAll('[data-ux-body-tab]').forEach(btn=>btn.onclick=()=>selectBodyTab(btn.dataset.uxBodyTab));
-    shell.tabs.querySelector('[data-ux-body-route="photos"]')?.addEventListener('click',()=>{state.page='photos';render();});
-    shell.tabs.querySelector('[data-ux-body-route="food"]')?.addEventListener('click',()=>{state.page='food';render();});
-    selectBodyTab(localStorage.getItem(BODY_TAB_KEY)||'overview');
+    const shell=bodyShell(main),panel=shell.panels.querySelector('[data-ux-panel="overview"]');
+    BODY.overview.forEach(selector=>main.querySelectorAll(selector).forEach(node=>{
+      if(!node.closest('[data-ux-panel="overview"]'))move(node,panel);
+    }));
+    selectBodyTab();
   }
 
   function compactFoodTools(main){return;
