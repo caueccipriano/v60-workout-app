@@ -186,11 +186,18 @@ function renderSession(){
     <div class="record-strip">${iconSvg('trophy')}<span>última vez: <b>${lastSetText(ex.id)}</b></span></div>
     <div class="set-dots">${ex.sets.map((x,i)=>`<span class="${x.done?'done':''} ${i===si?'current':''}">${i+1}</span>`).join('')}</div>
     <div class="session-footer"><span id="sessionTime">${fmtClock(sessionElapsed())}</span><button class="text-link" id="finishEarly">encerrar treino</button></div>`,{showNav:false,classes:'session-page'});
-  if($('#weightInput'))$('#weightInput').oninput=e=>{set.weight=e.target.value;save(K.draft,s)};$('#repsInput').oninput=e=>{set.reps=e.target.value;save(K.draft,s)};$('#completeSet').onclick=completeCurrentSet;$('#cancelSession').onclick=cancelSession;
+  if($('#weightInput'))$('#weightInput').oninput=e=>{
+    const previous=set.weight;set.weight=e.target.value;
+    if(!save(K.draft,s)){set.weight=previous;e.target.value=previous;toast('não consegui salvar a carga');}
+  };
+  $('#repsInput').oninput=e=>{
+    const previous=set.reps;set.reps=e.target.value;
+    if(!save(K.draft,s)){set.reps=previous;e.target.value=previous;toast('não consegui salvar as reps');}
+  };$('#completeSet').onclick=completeCurrentSet;$('#cancelSession').onclick=cancelSession;
   $('#sessionBack').onclick=()=>{if(state.currentExercise>0){state.currentExercise--;renderSession()}else{state.page='home';render()}};$('#finishEarly').onclick=()=>{if(confirm('encerrar o treino agora?'))finishSession()};
   clearInterval(state.sessionClock);state.sessionClock=setInterval(()=>{const el=$('#sessionTime');if(el)el.textContent=fmtClock(sessionElapsed())},1000);if(state.restRemaining>0)showRestOverlay();
 }
-function completeCurrentSet(){const s=state.activeSession,ex=s.exercises[state.currentExercise],si=currentSetIndex(ex),set=ex.sets[si],usesLoad=tracoExerciseUsesLoad(ex);if(!set.reps){toast('faltou preencher as reps');return}if(usesLoad&&!set.weight){toast('faltou preencher a carga');return}if(!usesLoad)set.weight='';set.done=true;set.skipped=false;if(!save(K.draft,s)){set.done=false;toast('série não concluída · falha ao salvar');return}haptic();const exDone=ex.sets.every(x=>x.done),allDone=s.exercises.every(x=>x.sets.every(z=>z.done));if(allDone){finishSession();return}if(exDone)state.currentExercise=Math.min(state.currentExercise+1,s.exercises.length-1);startRest(ex.rest||settings().defaultRest||60);}
+function completeCurrentSet(){const s=state.activeSession,ex=s.exercises[state.currentExercise],si=currentSetIndex(ex),set=ex.sets[si],usesLoad=tracoExerciseUsesLoad(ex);if(!set.reps){toast('faltou preencher as reps');return}if(usesLoad&&!set.weight){toast('faltou preencher a carga');return}const previous={weight:set.weight,done:set.done,skipped:set.skipped};if(!usesLoad)set.weight='';set.done=true;set.skipped=false;if(!save(K.draft,s)){set.weight=previous.weight;set.done=previous.done;set.skipped=previous.skipped;toast('série não concluída · falha ao salvar');return}haptic();const exDone=ex.sets.every(x=>x.done),allDone=s.exercises.every(x=>x.sets.every(z=>z.done));if(allDone){finishSession();return}if(exDone)state.currentExercise=Math.min(state.currentExercise+1,s.exercises.length-1);startRest(ex.rest||settings().defaultRest||60);}
 function skipCurrentExercise(){
   // Legacy-safe behavior: "skip" now means change the current order, never
   // mutate or erase unfinished sets. The Gym UX picker persists the queue.
