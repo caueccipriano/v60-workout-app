@@ -4,7 +4,7 @@
  */
 (function(){
   'use strict';
-  const VERSION='1.0.0';
+  const VERSION='1.1.0';
   const q=s=>document.querySelector(s);
   const qa=s=>Array.from(document.querySelectorAll(s));
   let scheduled=false,working=false;
@@ -131,6 +131,29 @@
     q('.perf-session')?.classList.add('final-session');
   }
 
+  function repairDuplicateIds(){
+    const seen=new Set();
+    qa('[id]').forEach(node=>{
+      if(!seen.has(node.id)){seen.add(node.id);return;}
+      // Duplicate ids make event binding unpredictable. Keep the first canonical
+      // node and strip the duplicate id without deleting user-visible content.
+      node.removeAttribute('id');
+      node.dataset.tracoDuplicateId='repaired';
+    });
+  }
+
+  function hardenExternalLinks(){
+    qa('a[target="_blank"]').forEach(link=>{
+      const rel=new Set(String(link.rel||'').split(/\s+/).filter(Boolean));
+      rel.add('noopener');rel.add('noreferrer');link.rel=[...rel].join(' ');
+    });
+  }
+
+  function polishAccessibility(){
+    qa('button:not([type])').forEach(btn=>btn.type='button');
+    qa('img:not([alt])').forEach(img=>img.alt='');
+  }
+
   async function apply(){
     if(working)return;working=true;
     try{
@@ -139,6 +162,9 @@
       refineWorkouts();
       refineSettings();
       refineSession();
+      repairDuplicateIds();
+      hardenExternalLinks();
+      polishAccessibility();
       await ensureProgressPhotos();
       await ensurePhotos();
     }finally{working=false;}
