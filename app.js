@@ -39,7 +39,7 @@ const workoutPlan = [
     ['crunch-2','crunch na polia','Polia alta',3,10,15,60,'◼️'] ]}
 ].map(w=>({...w, exercises:w.exercises.map(e=>({id:e[0],name:e[1],equipment:e[2],sets:e[3],min:e[4],max:e[5],rest:e[6],icon:e[7]}))}));
 
-const K={sessions:'v60_sessions', body:'v60_body', settings:'v60_settings', draft:'v60_draft'};
+const K={sessions:'v60_sessions', body:'v60_body', settings:'v60_settings', draft:'v60_draft', readiness:'traco_readiness'};
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
 const load=(k,def)=>{try{return JSON.parse(localStorage.getItem(k))??def}catch{return def}};
@@ -115,8 +115,11 @@ function nav(){const items=[['home','home','hoje'],['history','history','histór
 function shell(content,{showNav=true,classes=''}={}){$('#app').innerHTML=`<main class="app-shell"><section class="main-card ${classes}">${content}</section>${showNav?nav():''}</main>`;bindCommon();}
 function bindCommon(){$$('[data-nav]').forEach(b=>b.onclick=()=>{state.page=b.dataset.nav;render()});}
 
+function tracoTodayReadiness(){const all=load(K.readiness,{}),key=tracoDateKey(Date.now());return all[key]||null;}
+function tracoReadinessScore(r){if(!r)return null;return Math.round((Number(r.energy)+Number(r.sleep)+(6-Number(r.soreness)))/15*100);}
+function tracoOpenReadiness(){const current=tracoTodayReadiness();document.body.insertAdjacentHTML('beforeend',`<div class="plus-sheet readiness-sheet" id="readinessSheet"><button class="plus-sheet-backdrop" aria-label="fechar"></button><section><header><div><span>✦ TRAÇO+</span><h2>Readiness</h2></div><button id="readinessClose" aria-label="fechar">×</button></header><p class="plus-note">check-in rápido antes do treino · isso não muda sua ficha sozinho</p>${[['energy','energia'],['sleep','sono'],['soreness','dor muscular']].map(([key,label])=>`<label class="readiness-row"><span><b>${label}</b><em id="${key}Value">${current?.[key]||3}/5</em></span><input id="ready-${key}" type="range" min="1" max="5" value="${current?.[key]||3}"></label>`).join('')}<button class="cta-lime" id="saveReadiness">salvar check-in</button></section></div>`);const close=()=>$('#readinessSheet')?.remove();$('#readinessClose').onclick=close;$('.readiness-sheet .plus-sheet-backdrop').onclick=close;['energy','sleep','soreness'].forEach(key=>{$('#ready-'+key).oninput=e=>$('#'+key+'Value').textContent=e.target.value+'/5';});$('#saveReadiness').onclick=()=>{const entry={energy:Number($('#ready-energy').value),sleep:Number($('#ready-sleep').value),soreness:Number($('#ready-soreness').value),at:Date.now()},all=load(K.readiness,{});all[tracoDateKey(Date.now())]=entry;if(save(K.readiness,all)){toast('readiness salvo ✓');haptic();close();renderHome();}};}
 function renderHome(){
-  const w=todayWorkout(),ws=weekSessions(),streak=calcStreak(),weeklyLoad=ws.reduce((a,s)=>a+volumeOfSession(s),0),partial=hasPartialVolume(ws),loadCount=recordedLoadCount(ws),pr=latestPR(),draft=load(K.draft,null),draftPct=sessionCompletion(draft);
+  const w=todayWorkout(),ws=weekSessions(),streak=calcStreak(),weeklyLoad=ws.reduce((a,s)=>a+volumeOfSession(s),0),partial=hasPartialVolume(ws),loadCount=recordedLoadCount(ws),pr=latestPR(),draft=load(K.draft,null),draftPct=sessionCompletion(draft),readiness=tracoTodayReadiness(),readinessScore=tracoReadinessScore(readiness);
   const recordHtml=pr
     ? `<div class="kpi-card kpi-orange"><span>novo recorde</span><strong>${pr.name}</strong><small>${pr.weight}kg${pr.reps?` × ${pr.reps}`:''}</small></div>`
     : `<div class="kpi-card kpi-record-empty"><span>primeiro PR</span><strong>bora buscar</strong><small>ainda sem recorde</small></div>`;
@@ -124,13 +127,13 @@ function renderHome(){
     ? `<div class="kpi-card kpi-black"><span>cargas registradas</span><strong>${loadCount}</strong><small>reps pendentes · volume parcial</small></div>`
     : `<div class="kpi-card kpi-black"><span>carga total</span><strong>${formatLoad(weeklyLoad)}</strong><small>esta semana</small></div>`;
   shell(`<header class="home-head"><div class="streak-pill">${iconSvg('flame')}<b>${streak}</b> dias</div><button class="profile-btn" data-nav="settings" aria-label="perfil">${iconSvg('user')}</button></header>
-    <div class="weekday">${weekdayLabel().toUpperCase()}</div><h1 class="editorial-title">${w.short}</h1>
+    <div class="weekday">${weekdayLabel().toUpperCase()}</div><h1 class="editorial-title">${w.short}</h1>\n    <button class="readiness-card" id="openReadiness"><span>✦ TRAÇO+ · READINESS</span><b>${readinessScore!==null?readinessScore+'%':'como você chega hoje?'}</b><small>${readiness?'energia '+readiness.energy+'/5 · sono '+readiness.sleep+'/5 · dor '+readiness.soreness+'/5':'check-in de 15 segundos antes de treinar'}</small></button>
     ${draft?`<section class="resume-card"><div><span>treino em andamento</span><strong>${draft.wName}</strong><small>${draftPct}% fechado</small></div><button id="resumeWorkout">continuar</button></section>`:''}
     <button class="today-card" id="startToday" aria-label="começar treino"><div><span class="card-kicker">treino de hoje</span><strong>${w.exercises.length} exercícios</strong><small>~ 60 min</small></div><span class="play-dot">${iconSvg('play')}</span></button>
     <section class="kpi-grid">${loadKpi}${recordHtml}</section>
     <section class="week-strip">${workoutPlan.map(x=>{const done=ws.some(s=>s.workoutId===x.id);return `<button class="week-chip ${done?'done':''} ${x.id===w.id?'today':''}" data-workout="${x.id}"><b>${x.id}</b><span>${done?'✓':'·'}</span></button>`}).join('')}</section>
     <button class="text-link week-link" id="seeWeek">ver semana de treino</button>`,{classes:'home-card'});
-  $('#startToday').onclick=()=>startSession(w.id);if($('#resumeWorkout'))$('#resumeWorkout').onclick=()=>startSession(draft.workoutId);
+  $('#openReadiness').onclick=tracoOpenReadiness;$('#startToday').onclick=()=>startSession(w.id);if($('#resumeWorkout'))$('#resumeWorkout').onclick=()=>startSession(draft.workoutId);
   $('#seeWeek').onclick=()=>{state.page='workouts';state.selectedWorkout=w.id;renderWorkouts()};
   $$('[data-workout]').forEach(el=>el.onclick=()=>{state.page='workouts';state.selectedWorkout=el.dataset.workout;renderWorkouts()});
 }
