@@ -138,11 +138,16 @@ renderSession=function(){
   document.querySelectorAll('[data-native-exercise-index]').forEach(btn=>btn.onclick=()=>{const next=Number(btn.dataset.nativeExerciseIndex);if(Number.isInteger(next)&&next>=0&&next<s.exercises.length){state.currentExercise=next;save(K.draft,s);renderSession();}});
     $('#completeSet').onclick=completeCurrentSet;
   if($('#skipExercise'))$('#skipExercise').onclick=()=>{
+    // Usa a mesma fila persistente da lista de exercícios. Assim a troca por
+    // aparelho ocupado nunca apaga séries/cargas/reps nem é desfeita pelo
+    // sincronizador de fila do polish carregado depois.
+    if(typeof tracoGymOpenExercisePicker==='function'){
+      tracoGymOpenExercisePicker();
+      return;
+    }
     const current=state.currentExercise;
     const next=s.exercises.findIndex((item,i)=>i!==current&&(item.sets||[]).some(x=>!x.done));
     if(next<0)return toast('não há outro exercício pendente');
-    // Academia cheia: apenas muda o exercício em foco. Não conclui, não zera e não
-    // altera nenhuma série já registrada; o exercício atual continua pendente.
     state.currentExercise=next;
     save(K.draft,s);
     toast('beleza · voltamos neste depois');
