@@ -1,7 +1,7 @@
 {
-  "version": "2.8.2",
+  "version": "2.8.3",
   "legacyVersion": "3.7.1",
   "name": "Traço",
   "design": "gym-first-performance-local-first",
-  "build": "persistent-rest-v318"
+  "build": "storage-resilience-v319"
 }
