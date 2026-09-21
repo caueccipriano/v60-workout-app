@@ -1,7 +1,7 @@
 {
-  "version": "2.5.6",
+  "version": "2.5.7",
   "legacyVersion": "3.7.1",
   "name": "Traço",
   "design": "gym-first-performance-local-first",
-  "build": "render-wrapper-cleanup-v311"
+  "build": "ux-render-cleanup-v312"
 }
