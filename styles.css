@@ -92,3 +92,6 @@ svg{display:block;width:1.25em;height:1.25em}
 @media (max-width:380px){:root{--side:18px}.editorial-title{font-size:42px}.page-head h2{font-size:42px}.today-card{padding:22px;min-height:170px}.play-dot{width:68px;height:68px;flex-basis:68px}.kpi-card{padding:18px}.bottom-nav{padding-left:10px;padding-right:10px}.nav-btn{font-size:8.5px}.body-stats{gap:9px}.body-stats>div{padding:15px}.form-grid{gap:10px}}
 @media (min-width:720px){.main-card{padding-left:28px;padding-right:28px}.bottom-nav{padding-left:max(28px,calc((100vw - var(--page-max))/2 + 28px));padding-right:max(28px,calc((100vw - var(--page-max))/2 + 28px))}}
 @media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* v327 rest controls */
+.rest-inner p b{color:#fff}.rest-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}.rest-actions button{margin:0;background:#fff;color:#111;border:0;min-height:48px;padding:10px 16px;font-weight:800}.rest-inner>#skipRest{margin-top:12px;min-height:48px;width:100%}
