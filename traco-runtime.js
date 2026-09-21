@@ -53,9 +53,13 @@
     recovered.recoveryFinishedAt=Math.max(Number(recovered.startedAt||0),Number(draft.lastActivityAt||draft.startedAt||Date.now()));
     state.activeSession=recovered;
     try{
-      finishSession();
-      sessionStorage.setItem('traco_runtime_recovered_'+draft.id,'1');
-      return true;
+      const finished=finishSession()===true;
+      if(finished){
+        sessionStorage.setItem('traco_runtime_recovered_'+draft.id,'1');
+        return true;
+      }
+      state.activeSession=null;
+      return false;
     }catch(e){
       state.activeSession=null;
       return false;
