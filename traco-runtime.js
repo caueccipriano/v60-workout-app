@@ -5,9 +5,9 @@
 (function(){
   'use strict';
 
-  const VERSION='1.1.0';
-  const BUILD='ux-qa-coherence-v303';
-  const BUILD_NUMBER='303';
+  const VERSION='1.2.0';
+  const BUILD='runtime-timer-date-qa-v309';
+  const BUILD_NUMBER='309';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
@@ -140,7 +140,7 @@
   function decorateSettings(){
     const about=qs('.traco-about-card');if(about){
       const img=about.querySelector('img');if(img)img.src='./assets/icon.svg?v='+BUILD_NUMBER;
-      const small=about.querySelector('small');if(small)small.textContent='treino · evolução · constância · versão 2.4.1';
+      const small=about.querySelector('small');if(small)small.textContent='treino · evolução · constância · versão 2.5.4';
     }
     const main=qs('.settings-page');
     if(main&&!qs('#runtimeBuildCard')){
