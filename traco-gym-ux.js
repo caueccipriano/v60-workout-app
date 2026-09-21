@@ -452,6 +452,12 @@ renderSession=function(){
   main.setAttribute('data-traco-gym-version','2.4.1');
   const session=state.activeSession;
   const ex=session.exercises[state.currentExercise];
+  const busy=$('#skipExercise');
+  if(busy){
+    busy.textContent='trocar exercício · aparelho ocupado';
+    busy.setAttribute('aria-label','escolher outro exercício sem perder o progresso');
+    busy.onclick=()=>tracoGymOpenExercisePicker();
+  }
   const media=main.querySelector('.perf-media-block');
   if(media){
     media.innerHTML=`<div class="perf-media-heading"><span>execução</span><b>sem distração no treino</b></div>${typeof v60GuidePreview==='function'?v60GuidePreview(ex):''}`;
