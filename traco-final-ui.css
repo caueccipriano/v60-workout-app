@@ -146,3 +146,29 @@
 .final-home-photo-link b{font-size:9px}
 .final-home-photo-link small{font-size:8px;color:var(--muted);line-height:1.25}
 .final-home-photo-link>i{font-style:normal;color:var(--perf-orange,#FF3B30);font-size:16px}
+
+
+/* 2.5.2 — UX/QA mobile hardening */
+html,body{max-width:100%;overflow-x:hidden}
+#app{max-width:100%;overflow-x:clip}
+button,a,input,select,summary{-webkit-tap-highlight-color:transparent}
+button,summary,[role="button"]{touch-action:manipulation}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{
+  outline:2px solid var(--perf-orange,#FF3B30);outline-offset:2px
+}
+.perf-bottom-nav .nav-btn,.perf-session-bar .plain-icon{
+  min-width:44px;min-height:44px
+}
+.final-session .perf-skip-exercise{
+  min-height:48px;font-size:10px;line-height:1.25;padding:8px 12px
+}
+.final-session .perf-set-done,.final-session [data-complete-set]{
+  min-height:52px
+}
+@media(max-width:390px){
+  .final-session .perf-inputs{gap:7px}
+  .final-session .perf-value-panel{min-width:0}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
