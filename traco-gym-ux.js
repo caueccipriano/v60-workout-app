@@ -402,6 +402,35 @@ function tracoGymCloseExercisePicker(){
   document.body.classList.remove('traco-exercise-picker-open');
   tracoGymRepairOverlayState();
 }
+const TRACO_SMART_SWAPS={
+  'supino-inclinado':[{name:'supino inclinado com halteres',equipment:'Halteres + banco',why:'mesmo padrão de empurrar com foco no peitoral superior'}],
+  'desenvolvimento':[{name:'desenvolvimento com halteres',equipment:'Halteres',why:'mantém o padrão vertical para ombros'}],
+  'crucifixo-baixo-alto':[{name:'crucifixo inclinado com halteres',equipment:'Halteres + banco',why:'mantém adução do peito com ênfase superior'}],
+  'triceps-pushdown':[{name:'tríceps testa com halteres',equipment:'Halteres',why:'mantém foco no tríceps sem depender da polia'}],
+  'leg-press':[{name:'agachamento goblet',equipment:'Halter',why:'mantém dominante de joelho e quadríceps'}],
+  'extensora':[{name:'agachamento espanhol',equipment:'Faixa / apoio',why:'alternativa simples com forte demanda de quadríceps'}],
+  'flexora':[{name:'mesa flexora',equipment:'Máquina flexora',why:'mesmo padrão de flexão de joelho'}],
+  'puxada-aberta':[{name:'puxada neutra',equipment:'Máquina / polia alta',why:'mantém puxada vertical e foco dorsal'}],
+  'remada-baixa':[{name:'remada unilateral com halter',equipment:'Halter + banco',why:'mantém puxada horizontal para costas'}],
+  'pullover':[{name:'pullover com halter',equipment:'Halter + banco',why:'mantém extensão de ombro com foco dorsal'}],
+  'crucifixo-inverso':[{name:'crucifixo inverso com halteres',equipment:'Halteres',why:'mantém foco em deltoide posterior'}],
+  'rosca-polia':[{name:'rosca direta com halteres',equipment:'Halteres',why:'mantém flexão de cotovelo para bíceps'}],
+  'supino-reto':[{name:'supino reto com halteres',equipment:'Halteres + banco',why:'mesmo padrão de empurrar horizontal'}],
+  'crucifixo-reto':[{name:'crucifixo reto com halteres',equipment:'Halteres + banco',why:'mantém adução horizontal do peito'}],
+  'face-pull':[{name:'voador inverso na máquina',equipment:'Peck deck',why:'mantém deltoide posterior e parte alta das costas'}],
+  'rdl':[{name:'stiff com halteres',equipment:'Halteres',why:'mantém dobradiça de quadril e posterior'}],
+  'leg-press-alto':[{name:'agachamento sumô com halter',equipment:'Halter',why:'mantém trabalho de pernas com maior ênfase posterior'}],
+  'puxada-neutra':[{name:'puxada aberta',equipment:'Máquina / polia alta',why:'mantém puxada vertical para dorsais'}]
+};
+function tracoGymOpenSmartSwap(){
+  const session=state.activeSession,ex=session?.exercises?.[state.currentExercise];if(!session||!ex)return;
+  const options=TRACO_SMART_SWAPS[ex.id]||[];
+  if(!options.length){toast('sem troca equivalente cadastrada para este exercício');return tracoGymOpenExercisePicker();}
+  $('#tracoSmartSwap')?.remove();
+  document.body.insertAdjacentHTML('beforeend',`<div class="traco-exercise-picker-backdrop" id="tracoSmartSwap"><section class="traco-exercise-picker-sheet traco-smart-swap" role="dialog" aria-modal="true"><header class="traco-exercise-picker-head"><div><span>✦ TRAÇO+ · SMART SWAP</span><h3>aparelho ocupado?</h3><small>troque sem apagar o que você já fez</small></div><button id="tracoSmartSwapClose" type="button">×</button></header><div class="traco-smart-original"><span>agora</span><b>${tracoGymEsc(ex.name)}</b><small>${tracoGymEsc(ex.equipment)}</small></div>${options.map((o,i)=>`<button class="traco-swap-choice" data-smart-swap="${i}"><span>⇄</span><div><b>${tracoGymEsc(o.name)}</b><small>${tracoGymEsc(o.equipment)} · ${tracoGymEsc(o.why)}</small></div><em>usar</em></button>`).join('')}<button class="traco-exercise-picker-queue" id="tracoSwapJustReorder">só fazer outro exercício agora →</button></section></div>`);
+  const close=()=>$('#tracoSmartSwap')?.remove();$('#tracoSmartSwapClose').onclick=close;$('#tracoSmartSwap').onclick=e=>{if(e.target.id==='tracoSmartSwap')close();};$('#tracoSwapJustReorder').onclick=()=>{close();tracoGymOpenExercisePicker();};
+  $('[data-smart-swap]').forEach(btn=>btn.onclick=()=>{const o=options[Number(btn.dataset.smartSwap)],previous={name:ex.name,equipment:ex.equipment,performedVariation:ex.performedVariation,substitutionReason:ex.substitutionReason};ex.name=o.name;ex.equipment=o.equipment;ex.performedVariation=o.name;ex.substitutionReason='Smart Swap · aparelho ocupado';if(!save(K.draft,session)){Object.assign(ex,previous);return toast('não consegui salvar a troca');}close();toast('Smart Swap aplicado · progresso preservado');haptic();renderSession();});
+}
 function tracoGymOpenExercisePicker(){
   const session=state.activeSession;if(!session)return;
   $('#tracoExercisePicker')?.remove();
@@ -472,7 +501,7 @@ function tracoGymDecorateSession(){
   if(busy){
     busy.textContent='trocar exercício · aparelho ocupado';
     busy.setAttribute('aria-label','escolher outro exercício sem perder o progresso');
-    busy.onclick=()=>tracoGymOpenExercisePicker();
+    busy.onclick=()=>tracoGymOpenSmartSwap();
   }
   const media=main.querySelector('.perf-media-block');
   if(media){
