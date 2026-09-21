@@ -565,10 +565,11 @@ function renderHistory(){
   if($('#emptyStart'))$('#emptyStart').onclick=()=>startSession(todayWorkout().id);
   $$('[data-edit-session]').forEach(btn=>btn.onclick=()=>tracoOpenSessionEditor(btn.dataset.editSession));
 }
+function tracoPremiumInsights(ss){const finished=(ss||sessions()).filter(s=>s.finishedAt),recent=finished.slice().sort((a,b)=>b.startedAt-a.startedAt).slice(0,8),map=new Map();recent.forEach(sess=>(sess.exercises||[]).forEach(ex=>{const key=tracoExerciseProgressionKey(ex),done=(ex.sets||[]).filter(z=>z.done&&!z.skipped);if(!done.length)return;const load=Math.max(0,...done.map(z=>Number(z.weight||0))),row=map.get(key)||{name:ex.name,loads:[]};row.loads.push(load);map.set(key,row);}));let rising=0;map.forEach(row=>{if(row.loads.length>1&&row.loads[0]>row.loads[row.loads.length-1])rising++;});const prs=recent.reduce((n,s)=>n+(s.prs?.length||0),0),workouts=recent.length,coach=!workouts?'fecha seu primeiro treino para liberar análises':rising?(rising+' exercício'+(rising>1?'s':'')+' com tendência de alta · mantenha a progressão controlada'):'base consistente · priorize reps limpas antes de subir carga';return {workouts,prs,rising,coach};}
 function renderProgress(){
   const ss=sessions().filter(s=>s.finishedAt).sort((a,b)=>b.startedAt-a.startedAt),exOptions=[...new Map(workoutPlan.flatMap(w=>w.exercises).map(e=>[e.id,e])).values()],selected=state.progressEx||exOptions[0].id,points=[];
   ss.slice().reverse().forEach(s=>{const ex=s.exercises.find(e=>e.id===selected);if(ex){const weights=ex.sets.filter(z=>z.done&&Number(z.weight)>0).map(z=>Number(z.weight));if(weights.length)points.push({date:new Date(s.startedAt),value:Math.max(...weights)})}});
-  const max=Math.max(1,...points.map(p=>p.value)),min=Math.min(...points.map(p=>p.value),max),xp=xpStats(),partial=hasPartialVolume(ss),loads=recordedLoadCount(ss);
+  const max=Math.max(1,...points.map(p=>p.value)),min=Math.min(...points.map(p=>p.value),max),xp=xpStats(),partial=hasPartialVolume(ss),loads=recordedLoadCount(ss),premium=tracoPremiumInsights(ss);
   const chart=points.length===1
     ? `<div class="baseline-chart"><b>${points[0].value}kg</b><span>baseline salvo · o próximo registro mostra sua evolução</span></div>`
     : points.length>1
@@ -581,7 +582,7 @@ function renderProgress(){
     <section class="xp-band"><div><span>nível ${xp.level}</span><b>${xp.current} / 100 XP</b></div><small>${100-xp.current} XP pro próximo nível · 20 XP por treino + 10 por PR</small><div class="xp-track"><i style="width:${xp.pct}%"></i></div></section>
     <div class="select-wrap"><label>exercício</label><select id="progressEx">${exOptions.map(e=>`<option value="${e.id}" ${e.id===selected?'selected':''}>${e.name}</option>`).join('')}</select></div>
     <section class="progress-blue"><div class="progress-copy"><span>melhor carga</span><strong>${points.length?Math.max(...points.map(p=>p.value))+'kg':'— kg'}</strong><small>${points.length>1?`+${Math.max(0,Math.max(...points.map(p=>p.value))-min)}kg desde o início`:points.length===1?'baseline real salvo':'primeiro registro libera seu gráfico'}</small></div><div class="mini-chart ${points.length===1?'mini-chart-baseline':''}">${chart}</div></section>
-    <section class="xp-grid"><div><span>treinos</span><b>${ss.length}</b></div>${volumeKpi}</section>`,{classes:'progress-page'});$('#progressEx').onchange=e=>{state.progressEx=e.target.value;renderProgress()};
+    <section class="xp-grid"><div><span>treinos</span><b>${ss.length}</b></div>${volumeKpi}</section><section class="traco-plus-card"><div class="traco-plus-head"><span>✦ TRAÇO+</span><small>coach inteligente</small></div><h3>${premium.coach}</h3><div class="traco-plus-stats"><div><b>${premium.prs}</b><span>PRs recentes</span></div><div><b>${premium.rising}</b><span>em evolução</span></div><div><b>${premium.workouts}</b><span>treinos analisados</span></div></div><p>análise local do seu histórico · sem alterar seu treino automaticamente</p></section>`,{classes:'progress-page'});$('#progressEx').onchange=e=>{state.progressEx=e.target.value;renderProgress()};
 }
 
 function renderBody(){
