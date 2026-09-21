@@ -29,7 +29,7 @@ nav=function(){
     ['food','plate','cardápios'],
     ['settings','gear','mais']
   ];
-  return `<nav class="bottom-nav perf-bottom-nav">${items.map(([p,i,l])=>{const active=state.page===p||(p==='food'&&state.page==='body')||(p==='progress'&&state.page==='photos');const icon=i==='dumbbell'?tracoPerfDumbbell():i==='plate'?tracoPerfPlate():iconSvg(i);return `<button class="nav-btn ${active?'active':''}" data-nav="${p}" aria-label="${l}"><span class="ico">${icon}</span><span>${l}</span></button>`}).join('')}</nav>`;
+  return `<nav class="bottom-nav perf-bottom-nav">${items.map(([p,i,l])=>{const active=state.page===p||(p==='progress'&&state.page==='photos');const icon=i==='dumbbell'?tracoPerfDumbbell():i==='plate'?tracoPerfPlate():iconSvg(i);return `<button class="nav-btn ${active?'active':''}" data-nav="${p}" aria-label="${l}"><span class="ico">${icon}</span><span>${l}</span></button>`}).join('')}</nav>`;
 };
 
 function tracoPerfSequence(){
