@@ -7,7 +7,7 @@ PWA pessoal de treino, progressão e consistência, feita para acompanhar o trei
 - recomendação automática do próximo treino
 - registro persistente de carga e repetições
 - descanso automático e cronômetro de sessão
-- core obrigatório nos 5 treinos
+- core concentrado em sessões estratégicas, sem obrigação diária
 - cardio opcional e registrável
 - meta semanal e streak
 - histórico por sessão
@@ -39,10 +39,13 @@ python -m http.server 8080
 
 Depois abra `http://localhost:8080`.
 
-## Próximo grande bloco
-- Traço Account via Supabase Auth
-- sincronização celular/PC
-- banco de histórico e evolução
-- fotos de evolução
-- notificações
-- edição de ficha e ciclos dentro do app
+## Estado atual
+- PWA local-first com treino, histórico, progressão, medidas e fotos de evolução
+- fila persistente permite trocar a ordem durante o treino sem perder séries, cargas ou repetições
+- backup/importação preserva os dados locais
+- camadas visuais mantêm compatibilidade com instalações V60 anteriores
+
+## Próximos blocos
+- sincronização opcional entre dispositivos
+- testes automatizados de regressão da sessão e das migrações
+- consolidação gradual das camadas legadas de UI
