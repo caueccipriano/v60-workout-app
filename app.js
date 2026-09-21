@@ -183,7 +183,7 @@ function renderSession(){
     <div class="session-progress"><span style="width:${((state.currentExercise+(si/ex.sets.length))/s.exercises.length)*100}%"></span></div>
     <section class="exercise-hero"><span class="exercise-badge">${ex.icon}</span><h1>${ex.name}</h1><small>${ex.equipment}</small></section>
     <div class="series-label">série ${si+1} de ${ex.sets.length}</div>
-    <section class="input-grid ${tracoExerciseUsesLoad(ex)?'':'is-no-load'}">${tracoExerciseUsesLoad(ex)?`<label><span>carga (kg)</span><input id="weightInput" type="number" inputmode="decimal" step="0.5" value="${set.weight}" placeholder="0"></label>`:''}<label><span>repetições</span><input id="repsInput" type="number" inputmode="numeric" value="${set.reps}" placeholder="0"></label></section>
+    <section class="input-grid ${tracoExerciseUsesLoad(ex)?'':'is-no-load'}">${tracoExerciseUsesLoad(ex)?`<label><span>carga (kg)</span><input id="weightInput" type="number" inputmode="decimal" enterkeyhint="next" step="0.5" min="0" value="${set.weight}" placeholder="0" aria-label="carga em quilos"></label>`:''}<label><span>repetições</span><input id="repsInput" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="${set.reps}" placeholder="0" aria-label="número de repetições"></label></section>
     <button class="cta-lime session-cta" id="completeSet">concluir série</button>
     <div class="record-strip">${iconSvg('trophy')}<span>última vez: <b>${lastSetText(ex.id)}</b></span></div>
     <div class="set-dots">${ex.sets.map((x,i)=>`<span class="${x.done?'done':''} ${i===si?'current':''}">${i+1}</span>`).join('')}</div>
@@ -195,7 +195,11 @@ function renderSession(){
   $('#repsInput').oninput=e=>{
     const previous=set.reps;set.reps=e.target.value;
     if(!save(K.draft,s)){set.reps=previous;e.target.value=previous;toast('não consegui salvar as reps');}
-  };$('#completeSet').onclick=completeCurrentSet;$('#cancelSession').onclick=cancelSession;
+  };
+  const weightInput=$('#weightInput'),repsInput=$('#repsInput');
+  if(weightInput)weightInput.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();repsInput?.focus();repsInput?.select?.();}};
+  if(repsInput)repsInput.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();repsInput.blur();completeCurrentSet();}};
+  $('#completeSet').onclick=completeCurrentSet;$('#cancelSession').onclick=cancelSession;
   $('#sessionBack').onclick=()=>{if(state.currentExercise>0){state.currentExercise--;renderSession()}else{state.page='home';render()}};$('#finishEarly').onclick=()=>{if(confirm('encerrar o treino agora?'))finishSession()};
   clearInterval(state.sessionClock);state.sessionClock=setInterval(()=>{const el=$('#sessionTime');if(el)el.textContent=fmtClock(sessionElapsed())},1000);if(state.restRemaining>0)showRestOverlay();
 }
