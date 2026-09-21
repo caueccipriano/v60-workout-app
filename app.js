@@ -177,6 +177,16 @@ function startSession(workoutId){
 function sessionElapsed(){return state.activeSession?Math.floor((Date.now()-state.activeSession.startedAt)/1000):0}
 function currentSetIndex(ex){const i=ex.sets.findIndex(s=>!s.done);return i<0?ex.sets.length-1:i}
 function lastSetText(exId){const last=lastExercisePerf(exId);if(!last)return 'primeira vez — cria sua referência';const done=last.sets.filter(s=>s.done&&!s.skipped);if(!done.length)return 'sem série registrada';if(!tracoExerciseUsesLoad(last)){const best=Math.max(0,...done.map(s=>Number(s.reps||0)));return best?`${best} reps — bora bater`:'feito sem carga';}const best=done.reduce((a,b)=>Number(b.weight||0)>Number(a.weight||0)?b:a,done[0]);if(best.weight&&best.reps)return `${best.weight}kg × ${best.reps} — bora bater`;if(best.weight)return `${best.weight}kg · sem reps registradas`;return 'sem carga registrada';}
+function tracoSetSuggestion(ex){
+  const last=lastExercisePerf(tracoExerciseProgressionKey(ex));if(!last)return null;
+  const done=(last.sets||[]).filter(s=>s.done&&!s.skipped);if(!done.length)return null;
+  const min=Math.max(1,Number(ex.min)||1),max=Math.max(min,Number(ex.max)||min);
+  if(!tracoExerciseUsesLoad(ex)){const reps=Math.max(...done.map(s=>Number(s.reps||0)));return reps?{weight:'',reps:String(Math.min(max,Math.max(min,reps))),label:'referência: '+reps+' reps'}:null;}
+  const valid=done.filter(s=>Number(s.weight)>0&&Number(s.reps)>0);if(!valid.length)return null;
+  const best=valid.reduce((a,b)=>Number(b.weight)>Number(a.weight)?b:a,valid[0]),weight=Number(best.weight),reps=Number(best.reps);
+  if(reps>=max)return {weight:String(Number((weight+0.5).toFixed(1))),reps:String(min),label:'progressão sugerida: +0,5 kg · '+min+' reps'};
+  return {weight:String(weight),reps:String(Math.min(max,reps+1)),label:'progressão sugerida: mesma carga · '+Math.min(max,reps+1)+' reps'};
+}
 function renderSession(){
   const s=state.activeSession;if(!s){state.page='home';render();return}const ex=s.exercises[state.currentExercise],si=currentSetIndex(ex),set=ex.sets[si];
   // Prefill a new set from the immediately previous completed set. This only
@@ -193,12 +203,13 @@ function renderSession(){
       }
     }
   }
+  const suggestion=si===0?tracoSetSuggestion(ex):null;
   shell(`<div class="session-topbar"><button class="plain-icon" id="sessionBack">${iconSvg('back')}</button><span>exercício ${state.currentExercise+1} de ${s.exercises.length}</span><button class="plain-icon" id="cancelSession">${iconSvg('close')}</button></div>
     <div class="session-progress"><span style="width:${((state.currentExercise+(si/ex.sets.length))/s.exercises.length)*100}%"></span></div>
     <section class="exercise-hero"><span class="exercise-badge">${ex.icon}</span><h1>${ex.name}</h1><small>${ex.equipment}</small></section>
     <div class="series-label">série ${si+1} de ${ex.sets.length}</div>
     <section class="input-grid ${tracoExerciseUsesLoad(ex)?'':'is-no-load'}">${tracoExerciseUsesLoad(ex)?`<label><span>carga (kg)</span><input id="weightInput" type="number" inputmode="decimal" enterkeyhint="next" step="0.5" min="0" value="${set.weight}" placeholder="0" aria-label="carga em quilos"></label>`:''}<label><span>repetições</span><input id="repsInput" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="${set.reps}" placeholder="0" aria-label="número de repetições"></label></section>
-    <button class="cta-lime session-cta" id="completeSet">concluir série</button>
+    ${suggestion?`<button class="record-strip" id="useSetSuggestion" type="button"><span><b>${suggestion.label}</b> · usar sugestão</span></button>`:'\'}\n    <button class="cta-lime session-cta" id="completeSet">concluir série</button>
     <div class="record-strip">${iconSvg('trophy')}<span>última vez: <b>${lastSetText(ex.id)}</b></span></div>
     <div class="set-dots">${ex.sets.map((x,i)=>`<span class="${x.done?'done':''} ${i===si?'current':''}">${i+1}</span>`).join('')}</div>
     <div class="session-footer"><span id="sessionTime">${fmtClock(sessionElapsed())}</span><button class="text-link" id="finishEarly">encerrar treino</button></div>`,{showNav:false,classes:'session-page'});
@@ -211,6 +222,12 @@ function renderSession(){
     if(!save(K.draft,s)){set.reps=previous;e.target.value=previous;toast('não consegui salvar as reps');}
   };
   const weightInput=$('#weightInput'),repsInput=$('#repsInput');
+  const suggestionBtn=$('#useSetSuggestion');
+  if(suggestionBtn&&suggestion)suggestionBtn.onclick=()=>{
+    if(weightInput&&suggestion.weight!==''){weightInput.value=suggestion.weight;weightInput.dispatchEvent(new Event('input',{bubbles:true}));}
+    if(repsInput&&suggestion.reps!==''){repsInput.value=suggestion.reps;repsInput.dispatchEvent(new Event('input',{bubbles:true}));}
+    haptic();toast('sugestão aplicada');
+  };
   if(weightInput)weightInput.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();repsInput?.focus();repsInput?.select?.();}};
   if(repsInput)repsInput.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();repsInput.blur();completeCurrentSet();}};
   $('#completeSet').onclick=completeCurrentSet;$('#cancelSession').onclick=cancelSession;
