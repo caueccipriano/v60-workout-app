@@ -157,12 +157,20 @@ function hydrateDraft(raw){
   return raw;
 }
 function startSession(workoutId){
-  const w=workoutPlan.find(x=>x.id===workoutId),draft=load(K.draft,null);
-  if(draft&&draft.workoutId===workoutId&&!draft.finishedAt){state.activeSession=hydrateDraft(draft);}else{
-    if(draft&&!draft.finishedAt&&!confirm('tem outro treino em andamento. começar este e substituir o rascunho?'))return;
-    state.activeSession={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),workoutId,wName:w.name,startedAt:Date.now(),exercises:w.exercises.map(ex=>({...ex,sets:Array.from({length:ex.sets},(_,i)=>({n:i+1,weight:'',reps:'',done:false}))}))};save(K.draft,state.activeSession);
+  const w=workoutPlan.find(x=>x.id===workoutId);if(!w){toast('treino não encontrado');return null;}
+  const draft=load(K.draft,null);
+  if(draft&&draft.workoutId===workoutId&&!draft.finishedAt){
+    state.activeSession=hydrateDraft(draft);
+  }else{
+    if(draft&&!draft.finishedAt&&!confirm('tem outro treino em andamento. começar este e substituir o rascunho?'))return null;
+    const next={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),workoutId,wName:w.name,startedAt:Date.now(),exercises:w.exercises.map(ex=>({...ex,sets:Array.from({length:ex.sets},(_,i)=>({n:i+1,weight:'',reps:'',done:false}))}))};
+    // Never replace an existing recoverable draft in memory/UI unless the new
+    // workout was persisted successfully.
+    if(!save(K.draft,next)){toast('não consegui iniciar · seu treino anterior foi preservado');return null;}
+    state.activeSession=next;
   }
-  state.currentExercise=Math.max(0,state.activeSession.exercises.findIndex(ex=>ex.sets.some(s=>!s.done)));if(state.currentExercise<0)state.currentExercise=0;state.page='session';renderSession();
+  state.currentExercise=Math.max(0,state.activeSession.exercises.findIndex(ex=>ex.sets.some(s=>!s.done)));if(state.currentExercise<0)state.currentExercise=0;
+  state.page='session';renderSession();return state.activeSession;
 }
 function sessionElapsed(){return state.activeSession?Math.floor((Date.now()-state.activeSession.startedAt)/1000):0}
 function currentSetIndex(ex){const i=ex.sets.findIndex(s=>!s.done);return i<0?ex.sets.length-1:i}
