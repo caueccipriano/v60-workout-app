@@ -43,13 +43,15 @@ const K={sessions:'v60_sessions', body:'v60_body', settings:'v60_settings', draf
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
 const load=(k,def)=>{try{return JSON.parse(localStorage.getItem(k))??def}catch{return def}};
+let tracoLastStorageErrorAt=0;
 const save=(k,v)=>{
   try{
     localStorage.setItem(k,JSON.stringify(v));
     return true;
   }catch(error){
     console.error('Traço storage write failed',k,error);
-    try{toast('não consegui salvar · libere espaço no aparelho');}catch{}
+    const now=Date.now();
+    if(now-tracoLastStorageErrorAt>3500){tracoLastStorageErrorAt=now;try{toast('não consegui salvar · libere espaço no aparelho');}catch{}}
     return false;
   }
 };
@@ -223,8 +225,15 @@ function restoreRestFromSession(session){
   return false;
 }
 function startRest(seconds){
+  const previousEndsAt=state.activeSession?.restEndsAt;
   state.restRemaining=Math.max(0,Number(seconds)||0);state.restEndsAt=Date.now()+state.restRemaining*1000;
-  if(state.activeSession){state.activeSession.restEndsAt=state.restEndsAt;save(K.draft,state.activeSession);}
+  if(state.activeSession){
+    state.activeSession.restEndsAt=state.restEndsAt;
+    if(!save(K.draft,state.activeSession)){
+      if(previousEndsAt)state.activeSession.restEndsAt=previousEndsAt;else delete state.activeSession.restEndsAt;
+      state.restEndsAt=0;state.restRemaining=0;toast('descanso não iniciado · falha ao salvar');return;
+    }
+  }
   showRestOverlay();beginRestTicker();
 }
 function showRestOverlay(){let el=$('#restOverlay');if(!el){document.body.insertAdjacentHTML('beforeend',`<div class="rest-overlay" id="restOverlay"><div class="rest-inner"><span>DESCANSO</span><strong id="restTime">${fmtClock(state.restRemaining)}</strong><p>respira. a próxima já tá pronta.</p><button id="skipRest">pular descanso</button></div></div>`);el=$('#restOverlay')}el.classList.add('show');$('#skipRest').onclick=stopRest;}
