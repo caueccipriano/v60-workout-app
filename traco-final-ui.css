@@ -175,3 +175,16 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 
 .final-busy-help{display:block;margin:5px 4px 0;text-align:center;font-size:8px;line-height:1.35;color:var(--muted)}
 .perf-session button:disabled{opacity:.45;pointer-events:none}
+
+/* v338 contrast safety — readable in both themes */
+html[data-theme="dark"]{--traco-safe-bg:#151515;--traco-safe-text:#F5F4F0;--traco-safe-muted:#B9B9B3;--traco-safe-line:#363638}html[data-theme="light"]{--traco-safe-bg:#FFFFFF;--traco-safe-text:#171717;--traco-safe-muted:#62625E;--traco-safe-line:#D8D6D0}
+html[data-design="performance"] .main-card,html[data-design="performance"] .page,html[data-design="performance"] .perf-page{color:var(--text)}
+html[data-theme="dark"][data-design="performance"] :is(.perf-today-plan,.readiness-card,.adaptive-coach,.traco-plus-card,.traco-plus-features article,.today-plan-grid article,.plus-report,.plus-empty,.traco-smart-original,.traco-swap-choice){color:#F5F4F0}
+html[data-theme="dark"] :is(.plus-sheet>section,.traco-exercise-picker-sheet){background:#101010!important;color:#F5F4F0!important}
+html[data-theme="light"] :is(.plus-sheet>section,.traco-exercise-picker-sheet){background:#FAF9F6!important;color:#171717!important;border-color:#D8D6D0!important}
+html[data-theme="light"][data-design="performance"] :is(.perf-today-plan,.readiness-card,.adaptive-coach,.traco-plus-card,.traco-plus-features article,.today-plan-grid article,.plus-report,.plus-empty,.traco-smart-original,.traco-swap-choice){background:#FFFFFF!important;color:#171717!important;border-color:#D8D6D0!important}
+html[data-theme="light"] :is(.plus-sheet,.plus-sheet *,#tracoSmartSwap,#tracoSmartSwap *) :is(b,strong,h1,h2,h3,label){color:#171717}
+html[data-theme="light"] :is(.plus-note,.plus-report p,.plus-muscles em,.traco-smart-original small,.traco-swap-choice small,.adaptive-coach small,.perf-today-plan small,.readiness-card small){color:#62625E!important}
+html[data-theme="dark"] :is(.plus-note,.plus-report p,.plus-muscles em,.traco-smart-original small,.traco-swap-choice small,.adaptive-coach small,.perf-today-plan small,.readiness-card small){color:#B9B9B3!important}
+html[data-theme="light"] .plus-pr-list>div{background:#FFF;border-color:#D8D6D0;color:#171717}html[data-theme="light"] .plus-muscles i{background:#E5E3DD}html[data-theme="light"] .plus-sheet header button{background:#EEECE6;color:#171717;border-color:#D8D6D0}
+html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea{color:#F5F4F0}html[data-theme="light"] input,html[data-theme="light"] select,html[data-theme="light"] textarea{color:#171717}
