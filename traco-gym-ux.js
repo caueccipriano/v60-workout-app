@@ -3,7 +3,7 @@
  * Final UX layer: gym-first, fast touch targets, achievement color, clearer copy.
  * Internal v60_* storage keys remain for backwards compatibility.
  */
-const TRACO_GYM_UX_VERSION='2.5.3';
+const TRACO_GYM_UX_VERSION='2.6.0';
 const TRACO_ACHIEVEMENT='#F4C542';
 const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
 const TRACO_SET_ORDER_KEY='traco_set_order_v1';
@@ -343,9 +343,7 @@ function tracoGymDirectStart(workoutId){
 startSession=tracoGymDirectStart;
 
 /* HOME */
-const tracoGymBaseHome=renderHome;
-renderHome=function(){
-  tracoGymBaseHome();
+function tracoGymDecorateHome(){
   const main=document.querySelector('.perf-home'); if(!main)return;
   const xp=xpStats();
   const homeWorkout=typeof v60RecommendedWorkout==='function'?v60RecommendedWorkout():todayWorkout();
@@ -369,7 +367,8 @@ renderHome=function(){
       <small>${xp.current===0&&xp.total>0?'novo nível começou':`${100-xp.current} XP pro próximo nível`}</small>
     </section>`);
   }
-};
+}
+
 
 function tracoGymExerciseStatus(session,ex){
   const done=(ex.sets||[]).filter(set=>set.done).length;
@@ -551,9 +550,7 @@ renderWorkouts=function(){
 };
 
 /* PROGRESS */
-const tracoGymBaseProgress=renderProgress;
-renderProgress=function(){
-  tracoGymBaseProgress();
+function tracoGymDecorateProgress(){
   const main=document.querySelector('.perf-progress'); if(!main)return;
 
   const filter=main.querySelector('.select-wrap label');
@@ -573,12 +570,11 @@ renderProgress=function(){
     if(label)label.textContent='exercícios com histórico';
     if(value)value.textContent=String(tracoGymExerciseHistoryCount());
   }
-};
+}
+
 
 /* BODY */
-const tracoGymBaseBody=renderBody;
-renderBody=function(){
-  tracoGymBaseBody();
+function tracoGymDecorateBody(){
   const main=document.querySelector('.perf-body'); if(!main)return;
 
   const head=main.querySelector('.page-head');
@@ -592,7 +588,8 @@ renderBody=function(){
   const status=main.querySelector('.body-blue-title small');
   if(status&&!entries){status.textContent='sem registro';status.classList.add('traco-status-badge');}
   main.querySelector('.body-empty-copy')?.remove();
-};
+}
+
 
 function tracoGymClearAll(){
   if(!confirm('apagar todos os dados do Traço neste aparelho? essa ação não pode ser desfeita.'))return;
@@ -604,9 +601,7 @@ function tracoGymClearAll(){
 }
 
 /* SETTINGS */
-const tracoGymBaseSettings=renderSettings;
-renderSettings=function(){
-  tracoGymBaseSettings();
+function tracoGymDecorateSettings(){
   const main=document.querySelector('.perf-settings'); if(!main)return;
 
   const goal=$('#v60WeeklyGoal');
@@ -628,12 +623,11 @@ renderSettings=function(){
     </section>`);
     $('#tracoClearAll').onclick=tracoGymClearAll;
   }
-};
+}
+
 
 /* FINISH / ACHIEVEMENTS */
-const tracoGymBaseFinish=renderFinish;
-renderFinish=function(){
-  tracoGymBaseFinish();
+function tracoGymDecorateFinish(){
   const shellEl=document.querySelector('.finish-shell');if(!shellEl)return;
   const xp=xpStats(),previous=Number(localStorage.getItem(TRACO_LAST_LEVEL_KEY)||xp.level);
   const hasPR=Boolean(state.finishSummary?.prs?.length);
@@ -644,10 +638,26 @@ renderFinish=function(){
     navigator.vibrate?.([18,35,28,35,18]);
   }
   localStorage.setItem(TRACO_LAST_LEVEL_KEY,String(xp.level));
-};
+}
+
+
+let tracoGymDecorateScheduled=false;
+function tracoGymDecorateCurrentPage(){
+  if(state.page==='home')tracoGymDecorateHome();
+  else if(state.page==='progress')tracoGymDecorateProgress();
+  else if(state.page==='body')tracoGymDecorateBody();
+  else if(state.page==='settings')tracoGymDecorateSettings();
+  else if(state.page==='finish')tracoGymDecorateFinish();
+}
+function tracoGymScheduleDecoration(){
+  if(tracoGymDecorateScheduled)return;
+  tracoGymDecorateScheduled=true;
+  requestAnimationFrame(()=>{tracoGymDecorateScheduled=false;tracoGymDecorateCurrentPage();});
+}
+const tracoGymApp=document.querySelector('#app');
+if(tracoGymApp)new MutationObserver(tracoGymScheduleDecoration).observe(tracoGymApp,{childList:true,subtree:false});
 
 tracoGymRepairOverlayState();
 tracoGymClearTransientOverlays();
-tracoGymClearTransientOverlays();
-tracoGymRepairOverlayState();
+tracoGymScheduleDecoration();
 render();
