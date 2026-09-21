@@ -515,15 +515,15 @@
     if(coach)coach.insertAdjacentHTML('beforebegin',html);else main.insertAdjacentHTML('beforeend',html);
     bindRecovery();decorateTimelinePhotos();
     qsa('[data-hunger-type]').forEach(btn=>btn.onclick=()=>{saveTodayLab({hungerType:btn.dataset.hungerType});renderBody()});
-    qs('#labFoodAsk').onclick=()=>{qs('#labFoodAnswer').textContent=foodDecision(qs('#labFoodInput').value)};
-    qs('#labBuildMeal').onclick=()=>{
-      const pick=k=>qs('[data-meal="'+k+'"]').value;
-      qs('#labMealResult').textContent=pick('protein')+' + '+pick('carbs')+' + '+pick('produce')+' + um pouco de '+pick('fats')+'. ajuste a porção pela fome.';
+    const foodAsk=qs('#labFoodAsk');if(foodAsk)foodAsk.onclick=()=>{const answer=qs('#labFoodAnswer'),input=qs('#labFoodInput');if(answer&&input)answer.textContent=foodDecision(input.value)};
+    const mealBuild=qs('#labBuildMeal');if(mealBuild)mealBuild.onclick=()=>{
+      const pick=k=>qs('[data-meal="'+k+'"]')?.value||'';const result=qs('#labMealResult');
+      if(result)result.textContent=pick('protein')+' + '+pick('carbs')+' + '+pick('produce')+' + um pouco de '+pick('fats')+'. ajuste a porção pela fome.';
     };
     qsa('[data-grocery]').forEach(i=>i.onchange=()=>write(GROCERY_KEY,qsa('[data-grocery]:checked').map(x=>x.dataset.grocery)));
     qsa('[data-start-exp]').forEach(btn=>btn.onclick=()=>startExperiment(btn.dataset.startExp));
     qsa('[data-exp-answer]').forEach(btn=>btn.onclick=()=>markExperiment(btn.dataset.expAnswer==='1'));
-    qs('#labGuidedCamera').onclick=startGuidedCamera;
+    const cameraBtn=qs('#labGuidedCamera');if(cameraBtn)cameraBtn.onclick=startGuidedCamera;
     decoratePhotoLab();
   }
   function decorateProgress(){
