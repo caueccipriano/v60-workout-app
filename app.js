@@ -242,8 +242,18 @@ function renderSession(){
   const weightInput=$('#weightInput'),repsInput=$('#repsInput');
   const suggestionBtn=$('#useSetSuggestion');
   if(suggestionBtn&&suggestion)suggestionBtn.onclick=()=>{
-    if(weightInput&&suggestion.weight!==''){weightInput.value=suggestion.weight;weightInput.dispatchEvent(new Event('input',{bubbles:true}));}
-    if(repsInput&&suggestion.reps!==''){repsInput.value=suggestion.reps;repsInput.dispatchEvent(new Event('input',{bubbles:true}));}
+    const previous={weight:set.weight,reps:set.reps};
+    if(weightInput&&suggestion.weight!=='')set.weight=suggestion.weight;
+    if(repsInput&&suggestion.reps!=='')set.reps=suggestion.reps;
+    if(!save(K.draft,s)){
+      set.weight=previous.weight;set.reps=previous.reps;
+      if(weightInput)weightInput.value=previous.weight;
+      if(repsInput)repsInput.value=previous.reps;
+      toast('não consegui aplicar a sugestão');
+      return;
+    }
+    if(weightInput)weightInput.value=set.weight;
+    if(repsInput)repsInput.value=set.reps;
     haptic();toast('sugestão aplicada');
   };
   if(weightInput)weightInput.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();repsInput?.focus();repsInput?.select?.();}};
