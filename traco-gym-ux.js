@@ -3,7 +3,7 @@
  * Final UX layer: gym-first, fast touch targets, achievement color, clearer copy.
  * Internal v60_* storage keys remain for backwards compatibility.
  */
-const TRACO_GYM_UX_VERSION='2.8.1';
+const TRACO_GYM_UX_VERSION='2.9.0';
 const TRACO_ACHIEVEMENT='#F4C542';
 const TRACO_LAST_LEVEL_KEY='traco_last_level_v1';
 const TRACO_SET_ORDER_KEY='traco_set_order_v1';
@@ -213,8 +213,13 @@ function tracoGymOpenSetOrderEditor(workoutId,{session=null}={}){
   };
   $('#tracoOrderSave').onclick=()=>{
     if(session){
+      const previousQueue=Array.isArray(session.tracoSetQueue)?session.tracoSetQueue.slice():null;
       session.tracoSetQueue=[...fixed,...ids];
-      save(K.draft,session);
+      if(!save(K.draft,session)){
+        if(previousQueue)session.tracoSetQueue=previousQueue;else delete session.tracoSetQueue;
+        toast('não consegui salvar a nova fila');
+        return;
+      }
       tracoGymSyncQueueCursor(session);
       tracoGymCloseOrderEditor();
       toast('fila atualizada');
@@ -442,9 +447,17 @@ function tracoGymOpenExercisePicker(){
 function tracoGymPrepareSessionRender(){
   if(!state.activeSession)return;
   try{
+    const beforeQueue=JSON.stringify(state.activeSession.tracoSetQueue||null);
+    const beforeExercise=state.currentExercise;
     tracoGymEnsureSessionQueue(state.activeSession);
     tracoGymSyncQueueCursor(state.activeSession);
-    save(K.draft,state.activeSession);
+    const changed=beforeQueue!==JSON.stringify(state.activeSession.tracoSetQueue||null);
+    if(changed&&!save(K.draft,state.activeSession)){
+      console.error('Traço session queue persistence failed');
+      state.currentExercise=beforeExercise;
+      return false;
+    }
+    return beforeExercise!==state.currentExercise;
   }catch(error){
     console.error('Traço session queue init failed',error);
     delete state.activeSession.tracoSetQueue;
@@ -649,7 +662,11 @@ function tracoGymDecorateFinish(){
 
 let tracoGymDecorateScheduled=false;
 function tracoGymDecorateCurrentPage(){
-  if(state.page==='session'){tracoGymPrepareSessionRender();tracoGymDecorateSession();}
+  if(state.page==='session'){
+    const cursorChanged=tracoGymPrepareSessionRender();
+    if(cursorChanged){renderSession();return;}
+    tracoGymDecorateSession();
+  }
   else if(state.page==='home')tracoGymDecorateHome();
   else if(state.page==='progress')tracoGymDecorateProgress();
   else if(state.page==='body')tracoGymDecorateBody();
