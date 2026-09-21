@@ -108,7 +108,7 @@ renderSession=function(){
       </div>
       <div class="perf-set-track">${ex.sets.map((x,i)=>`<span class="${x.done?'done':''} ${i===si?'current':''}"><b>${i+1}</b></span>`).join('')}</div>
       <button class="perf-complete-set" id="completeSet"><span>concluir série</span><b>→</b></button>
-      <button class="perf-skip-exercise" id="skipExercise" type="button">pular exercício</button>
+      <button class="perf-skip-exercise" id="skipExercise" type="button">fazer outro agora · aparelho ocupado</button>
     </section>
     <section class="perf-native-exercise-list" id="perfNativeExerciseList">
       <header><div><small>TREINO EM ANDAMENTO</small><h2>lista de exercícios</h2><p>toque no exercício que você quer fazer agora</p></div></header>
@@ -137,7 +137,18 @@ renderSession=function(){
   });
   document.querySelectorAll('[data-native-exercise-index]').forEach(btn=>btn.onclick=()=>{const next=Number(btn.dataset.nativeExerciseIndex);if(Number.isInteger(next)&&next>=0&&next<s.exercises.length){state.currentExercise=next;save(K.draft,s);renderSession();}});
     $('#completeSet').onclick=completeCurrentSet;
-  if($('#skipExercise'))$('#skipExercise').onclick=()=>{if(confirm('pular este exercício?'))skipCurrentExercise();};
+  if($('#skipExercise'))$('#skipExercise').onclick=()=>{
+    const current=state.currentExercise;
+    const next=s.exercises.findIndex((item,i)=>i!==current&&(item.sets||[]).some(x=>!x.done));
+    if(next<0)return toast('não há outro exercício pendente');
+    // Academia cheia: apenas muda o exercício em foco. Não conclui, não zera e não
+    // altera nenhuma série já registrada; o exercício atual continua pendente.
+    state.currentExercise=next;
+    save(K.draft,s);
+    toast('beleza · voltamos neste depois');
+    haptic();
+    renderSession();
+  };
   $('#cancelSession').onclick=()=>{typeof v60CloseGuide==='function'&&v60CloseGuide();cancelSession();};
   $('#sessionBack').onclick=()=>{typeof v60CloseGuide==='function'&&v60CloseGuide();if(state.currentExercise>0){state.currentExercise--;renderSession();}else{state.page='home';render();}};
   $('#finishEarly').onclick=()=>{if(confirm('encerrar o treino agora?')){typeof v60CloseGuide==='function'&&v60CloseGuide();finishSession();}};
