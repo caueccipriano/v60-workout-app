@@ -220,3 +220,16 @@ html[data-theme="light"][data-design="performance"] .perf-progress :is(.progress
 html[data-theme="light"][data-design="performance"] .perf-progress :is(.progress-hero,.evo-progress-hero,.progress-best,.evo-best-load) p{color:#65655f!important}
 html[data-theme="light"][data-design="performance"] .perf-photos .traco-photo-slot :is(b,strong,span){color:#f5f4f0!important}
 html[data-theme="light"][data-design="performance"] .perf-photos .traco-photo-slot small{color:#d2d1cc!important}
+
+/* v348 refinement pass — density, hierarchy, tap clarity */
+html[data-design="performance"] :is(.perf-home,.perf-progress,.perf-workouts,.perf-body,.perf-food,.perf-photos){padding-left:14px;padding-right:14px}
+html[data-design="performance"] :is(.perf-home,.perf-progress,.perf-workouts,.perf-body,.perf-food,.perf-photos)>section{margin-bottom:10px}
+html[data-design="performance"] .workout-stack{gap:6px}
+html[data-design="performance"] .workout-select{min-height:70px;padding:11px 13px}
+html[data-design="performance"] .workout-select :is(h3,b){line-height:1.1}
+html[data-design="performance"] :is(.ux-overview-measures,.ux-overview-more,.ux-home-more)>summary{min-height:54px}
+html[data-design="performance"] button{touch-action:manipulation}
+html[data-design="performance"] :is(.traco-food-quicknav button,.workout-select,.final-progress-tabs button){-webkit-tap-highlight-color:rgba(255,59,48,.12)}
+html[data-design="performance"] .perf-body .ux-body-tabs{display:none!important}
+html[data-design="performance"] .perf-body .ux-body-panels>[data-ux-panel="photos"],
+html[data-design="performance"] .perf-body .ux-body-panels>[data-ux-panel="food"]{display:none!important}
