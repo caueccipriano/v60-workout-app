@@ -1,7 +1,7 @@
 {
-  "version": "2.23.1",
+  "version": "2.23.2",
   "legacyVersion": "3.7.1",
   "name": "Traço",
   "design": "gym-first-performance-local-first",
-  "build": "contrast-release-v338"
+  "build": "navigation-contrast-v339"
 }
