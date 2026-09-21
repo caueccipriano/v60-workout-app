@@ -170,7 +170,7 @@ function startSession(workoutId){
     state.activeSession=next;
   }
   state.currentExercise=Math.max(0,state.activeSession.exercises.findIndex(ex=>ex.sets.some(s=>!s.done)));if(state.currentExercise<0)state.currentExercise=0;
-  state.page='session';renderSession();return state.activeSession;
+  restoreRestFromSession(state.activeSession);state.page='session';renderSession();return state.activeSession;
 }
 function sessionElapsed(){return state.activeSession?Math.floor((Date.now()-state.activeSession.startedAt)/1000):0}
 function currentSetIndex(ex){const i=ex.sets.findIndex(s=>!s.done);return i<0?ex.sets.length-1:i}
@@ -212,10 +212,24 @@ function skipCurrentExercise(){
   state.currentExercise=nextIndex;
   save(K.draft,s);haptic();toast('beleza · voltamos neste depois');renderSession();
 }
-function startRest(seconds){state.restRemaining=Math.max(0,Number(seconds)||0);state.restEndsAt=Date.now()+state.restRemaining*1000;showRestOverlay();beginRestTicker()}
+function restoreRestFromSession(session){
+  const endsAt=Number(session?.restEndsAt||0);
+  if(endsAt>Date.now()){
+    state.restEndsAt=endsAt;state.restRemaining=Math.max(0,Math.ceil((endsAt-Date.now())/1000));
+    beginRestTicker();return true;
+  }
+  state.restEndsAt=0;state.restRemaining=0;
+  if(session?.restEndsAt){delete session.restEndsAt;save(K.draft,session);}
+  return false;
+}
+function startRest(seconds){
+  state.restRemaining=Math.max(0,Number(seconds)||0);state.restEndsAt=Date.now()+state.restRemaining*1000;
+  if(state.activeSession){state.activeSession.restEndsAt=state.restEndsAt;save(K.draft,state.activeSession);}
+  showRestOverlay();beginRestTicker();
+}
 function showRestOverlay(){let el=$('#restOverlay');if(!el){document.body.insertAdjacentHTML('beforeend',`<div class="rest-overlay" id="restOverlay"><div class="rest-inner"><span>DESCANSO</span><strong id="restTime">${fmtClock(state.restRemaining)}</strong><p>respira. a próxima já tá pronta.</p><button id="skipRest">pular descanso</button></div></div>`);el=$('#restOverlay')}el.classList.add('show');$('#skipRest').onclick=stopRest;}
 function beginRestTicker(){clearInterval(state.restTimer);state.restTimer=setInterval(()=>{state.restRemaining=state.restEndsAt?Math.max(0,Math.ceil((state.restEndsAt-Date.now())/1000)):Math.max(0,state.restRemaining-1);const el=$('#restTime');if(el)el.textContent=fmtClock(state.restRemaining);if(state.restRemaining<=0){stopRest();toast('bora pra próxima série');haptic()}},250)}
-function stopRest(){clearInterval(state.restTimer);state.restRemaining=0;state.restEndsAt=0;$('#restOverlay')?.remove();if(state.page==='session')renderSession()}
+function stopRest(){clearInterval(state.restTimer);state.restRemaining=0;state.restEndsAt=0;if(state.activeSession?.restEndsAt){delete state.activeSession.restEndsAt;save(K.draft,state.activeSession);}$('#restOverlay')?.remove();if(state.page==='session')renderSession()}
 function detectPRs(s){const prev=sessions().filter(x=>x.finishedAt),best={};prev.forEach(sess=>sess.exercises.forEach(ex=>{const key=tracoExerciseProgressionKey(ex),mx=Math.max(0,...ex.sets.filter(z=>z.done).map(z=>Number(z.weight||0)));best[key]=Math.max(best[key]||0,mx)}));return s.exercises.map(ex=>{const key=tracoExerciseProgressionKey(ex),mx=Math.max(0,...ex.sets.filter(z=>z.done).map(z=>Number(z.weight||0)));return mx>(best[key]||0)&&mx>0?{id:ex.id,progressionKey:key,name:ex.name,weight:mx,reps:Math.max(0,...ex.sets.filter(z=>z.done&&Number(z.weight||0)===mx).map(z=>Number(z.reps||0)))}:null}).filter(Boolean);}
 function finishSession(){
   const s=state.activeSession;if(!s)return;
