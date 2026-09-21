@@ -507,8 +507,11 @@
   function decorateBody(){
     const main=qs('.body-page');if(!main||qs('.lab-recovery-card'))return;
     const coach=qs('#tracoBodyCoach');
-    const html=recoveryMarkup()+antiFlankMarkup()+hungerMarkup()+foodCoachMarkup()+mealBuilderMarkup()+groceryMarkup()+experimentMarkup()+timelineMarkup()+photoLabMarkup()+
-      '<section class="lab-camera-entry"><div><span>FOTOS PADRONIZADAS</span><b>câmera com molde de pose</b><small>mesma altura, distância e enquadramento</small></div><button id="labGuidedCamera">abrir câmera</button></section>';
+    const html='<section class="lab-shape-focus"><span>SHAPE LAB</span><h3>seu shape, sem ruído</h3><p>recuperação e cintura primeiro. alimentação, experimentos e ferramentas ficam organizados abaixo.</p></section>'+
+      recoveryMarkup()+antiFlankMarkup()+
+      '<details class="lab-shape-more"><summary><div><b>hábitos & alimentação</b><small>fome · escolhas · refeições · supermercado</small></div><span>+</span></summary><div class="lab-shape-more-body">'+hungerMarkup()+foodCoachMarkup()+mealBuilderMarkup()+groceryMarkup()+'</div></details>'+
+      '<details class="lab-shape-more"><summary><div><b>experimentos & evolução</b><small>testes · linha do tempo · fotos padronizadas</small></div><span>+</span></summary><div class="lab-shape-more-body">'+experimentMarkup()+timelineMarkup()+photoLabMarkup()+
+      '<section class="lab-camera-entry"><div><span>FOTOS PADRONIZADAS</span><b>câmera com molde de pose</b><small>mesma altura, distância e enquadramento</small></div><button id="labGuidedCamera">abrir câmera</button></section></div></details>';
     if(coach)coach.insertAdjacentHTML('beforebegin',html);else main.insertAdjacentHTML('beforeend',html);
     bindRecovery();decorateTimelinePhotos();
     qsa('[data-hunger-type]').forEach(btn=>btn.onclick=()=>{saveTodayLab({hungerType:btn.dataset.hungerType});renderBody()});
