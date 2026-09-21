@@ -4,7 +4,7 @@
  */
 (function(){
   'use strict';
-  const VERSION='1.1.0';
+  const VERSION='1.2.0';
   const q=s=>document.querySelector(s);
   const qa=s=>Array.from(document.querySelectorAll(s));
   let scheduled=false,working=false;
@@ -155,10 +155,13 @@
   }
 
   function repairViewportOverflow(){
-    qa('body *').forEach(node=>{
-      if(!(node instanceof HTMLElement))return;
+    // Keep this runtime guard intentionally narrow. Measuring every element on
+    // every render caused unnecessary layout work and could mask valid wide UI.
+    const root=q('#app');if(!root)return;
+    qa('#app main, #app section, #app article, #app .card, #app .perf-session, #app .perf-home').forEach(node=>{
+      if(!(node instanceof HTMLElement)||node.closest('.ux-body-tabs,[role="dialog"],.traco-exercise-picker'))return;
       const rect=node.getBoundingClientRect();
-      if(rect.width>window.innerWidth+8&&!node.closest('.ux-body-tabs,[role="dialog"],.traco-exercise-picker')){
+      if(rect.right>window.innerWidth+8||rect.left<-8){
         node.style.maxWidth='100%';
         node.style.boxSizing='border-box';
       }
