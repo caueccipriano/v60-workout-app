@@ -154,6 +154,32 @@
     qa('img:not([alt])').forEach(img=>img.alt='');
   }
 
+  function repairViewportOverflow(){
+    qa('body *').forEach(node=>{
+      if(!(node instanceof HTMLElement))return;
+      const rect=node.getBoundingClientRect();
+      if(rect.width>window.innerWidth+8&&!node.closest('.ux-body-tabs,[role="dialog"],.traco-exercise-picker')){
+        node.style.maxWidth='100%';
+        node.style.boxSizing='border-box';
+      }
+    });
+  }
+
+  function sessionSafety(){
+    const main=q('.perf-session');if(!main)return;
+    const busy=q('#skipExercise');
+    if(busy){
+      busy.disabled=!state.activeSession;
+      busy.setAttribute('aria-describedby','tracoBusyHelp');
+      if(!q('#tracoBusyHelp')){
+        const help=document.createElement('small');
+        help.id='tracoBusyHelp';help.className='final-busy-help';
+        help.textContent='troca a ordem sem apagar séries, carga ou repetições';
+        busy.insertAdjacentElement('afterend',help);
+      }
+    }
+  }
+
   async function apply(){
     if(working)return;working=true;
     try{
@@ -165,6 +191,8 @@
       repairDuplicateIds();
       hardenExternalLinks();
       polishAccessibility();
+      sessionSafety();
+      repairViewportOverflow();
       await ensureProgressPhotos();
       await ensurePhotos();
     }finally{working=false;}
