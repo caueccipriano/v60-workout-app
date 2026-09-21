@@ -1,7 +1,7 @@
 {
-  "version": "2.25.0",
+  "version": "2.25.1",
   "legacyVersion": "3.7.1",
   "name": "Traço",
   "design": "gym-first-performance-local-first",
-  "build": "route-separation-v342"
+  "build": "route-cleanup-v343"
 }
