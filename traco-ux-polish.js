@@ -72,7 +72,7 @@
       tabs=document.createElement('nav');
       tabs.className='ux-body-tabs';
       tabs.setAttribute('aria-label','áreas do corpo');
-      tabs.innerHTML='<button data-ux-body-tab="overview">visão geral</button><button data-ux-body-tab="photos">fotos</button><button data-ux-body-tab="food">cardápios</button>';
+      tabs.innerHTML='<button data-ux-body-tab="overview">visão geral</button><button data-ux-body-route="photos">fotos</button><button data-ux-body-route="food">cardápios</button>';
       main.querySelector('.page-head')?.insertAdjacentElement('afterend',tabs);
     }
     let panels=main.querySelector('.ux-body-panels');
@@ -108,6 +108,8 @@
       });
     });
     shell.tabs.querySelectorAll('[data-ux-body-tab]').forEach(btn=>btn.onclick=()=>selectBodyTab(btn.dataset.uxBodyTab));
+    shell.tabs.querySelector('[data-ux-body-route="photos"]')?.addEventListener('click',()=>{state.page='photos';render();});
+    shell.tabs.querySelector('[data-ux-body-route="food"]')?.addEventListener('click',()=>{state.page='food';render();});
     selectBodyTab(localStorage.getItem(BODY_TAB_KEY)||'overview');
   }
 
