@@ -184,19 +184,18 @@ function renderSession(){
 }
 function completeCurrentSet(){const s=state.activeSession,ex=s.exercises[state.currentExercise],si=currentSetIndex(ex),set=ex.sets[si],usesLoad=tracoExerciseUsesLoad(ex);if(!set.reps){toast('faltou preencher as reps');return}if(usesLoad&&!set.weight){toast('faltou preencher a carga');return}if(!usesLoad)set.weight='';set.done=true;set.skipped=false;if(!save(K.draft,s)){set.done=false;toast('série não concluída · falha ao salvar');return}haptic();const exDone=ex.sets.every(x=>x.done),allDone=s.exercises.every(x=>x.sets.every(z=>z.done));if(allDone){finishSession();return}if(exDone)state.currentExercise=Math.min(state.currentExercise+1,s.exercises.length-1);startRest(ex.rest||settings().defaultRest||60);}
 function skipCurrentExercise(){
+  // Legacy-safe behavior: "skip" now means change the current order, never
+  // mutate or erase unfinished sets. The Gym UX picker persists the queue.
   const s=state.activeSession,ex=s?.exercises?.[state.currentExercise];if(!s||!ex)return;
   if(ex.sets.every(set=>set.done))return toast('esse exercício já terminou');
-  ex.skipped=true;
-  ex.sets.forEach(set=>{if(!set.done){set.done=true;set.skipped=true;set.weight='';set.reps='';}});
-  save(K.draft,s);haptic();
-  if(typeof tracoGymSyncQueueCursor==='function'){
-    const next=tracoGymSyncQueueCursor(s);
-    if(next){toast('exercício pulado');renderSession();return;}
+  if(typeof tracoGymOpenExercisePicker==='function'){
+    tracoGymOpenExercisePicker();
+    return;
   }
   const nextIndex=s.exercises.findIndex((item,i)=>i!==state.currentExercise&&(item.sets||[]).some(set=>!set.done));
-  if(nextIndex>=0){state.currentExercise=nextIndex;toast('exercício pulado');renderSession();return;}
-  toast('exercício pulado · treino encerrado');
-  finishSession();
+  if(nextIndex<0)return toast('não há outro exercício pendente');
+  state.currentExercise=nextIndex;
+  save(K.draft,s);haptic();toast('beleza · voltamos neste depois');renderSession();
 }
 function startRest(seconds){state.restRemaining=seconds;showRestOverlay();beginRestTicker()}
 function showRestOverlay(){let el=$('#restOverlay');if(!el){document.body.insertAdjacentHTML('beforeend',`<div class="rest-overlay" id="restOverlay"><div class="rest-inner"><span>DESCANSO</span><strong id="restTime">${fmtClock(state.restRemaining)}</strong><p>respira. a próxima já tá pronta.</p><button id="skipRest">pular descanso</button></div></div>`);el=$('#restOverlay')}el.classList.add('show');$('#skipRest').onclick=stopRest;}
