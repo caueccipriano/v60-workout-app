@@ -5,9 +5,9 @@
 (function(){
   'use strict';
 
-  const VERSION='1.2.0';
-  const BUILD='runtime-timer-date-qa-v309';
-  const BUILD_NUMBER='309';
+  const VERSION='1.3.0';
+  const BUILD='draft-recovery-performance-v310';
+  const BUILD_NUMBER='310';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
@@ -20,9 +20,13 @@
     const key=localDateKey();
     return sessions().filter(s=>s.finishedAt&&localDateKey(s.startedAt)===key).sort((a,b)=>b.startedAt-a.startedAt);
   }
-  function draftToday(){
+  function activeDraft(){
     const d=load(K.draft,null);
-    return d&&!d.finishedAt&&localDateKey(d.startedAt)===localDateKey()?d:null;
+    return d&&!d.finishedAt?d:null;
+  }
+  function draftToday(){
+    const d=activeDraft();
+    return d&&localDateKey(d.startedAt)===localDateKey()?d:null;
   }
   function completion(draft){
     const sets=(draft?.exercises||[]).flatMap(ex=>ex.sets||[]);
@@ -55,7 +59,7 @@
   }
 
   function todayStatusMarkup(){
-    const finished=todaySessions(),draft=draftToday();
+    const finished=todaySessions(),draft=activeDraft();
     if(finished.length){
       const s=finished[0],mins=Math.max(1,Math.round(Number(s.duration||0)/60));
       const volume=typeof volumeOfSession==='function'?volumeOfSession(s):0;
@@ -63,7 +67,7 @@
     }
     if(draft){
       const p=completion(draft);
-      return '<section class="runtime-today-status is-draft" id="runtimeTodayStatus"><div><span>HOJE · EM ANDAMENTO</span><h3>'+esc(draft.wName||'treino atual')+'</h3><small>'+p.done+'/'+p.total+' séries · '+p.pct+'%</small></div><button id="runtimeResumeToday">continuar</button></section>';
+      return '<section class="runtime-today-status is-draft" id="runtimeTodayStatus"><div><span>'+(localDateKey(draft.startedAt)===localDateKey()?'HOJE · EM ANDAMENTO':'TREINO PENDENTE')+'</span><h3>'+esc(draft.wName||'treino atual')+'</h3><small>'+p.done+'/'+p.total+' séries · '+p.pct+'%</small></div><button id="runtimeResumeToday">continuar</button></section>';
     }
     return '';
   }
@@ -126,7 +130,7 @@
 
     const resume=qs('#runtimeResumeToday');
     if(resume)resume.onclick=()=>{
-      const d=draftToday();if(!d)return;
+      const d=activeDraft();if(!d)return;
       state.activeSession=typeof hydrateDraft==='function'?hydrateDraft(d):d;
       state.page='session';
       state.currentExercise=Math.max(0,(state.activeSession.exercises||[]).findIndex(ex=>(ex.sets||[]).some(s=>!s.done)));
