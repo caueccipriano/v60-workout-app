@@ -1911,3 +1911,9 @@ html[data-design="performance"] .session-page .traco-gym-stepper{min-width:44px;
  html[data-design="performance"] .session-page .record-strip:not(#useSetSuggestion){padding:9px 11px}
  html[data-design="performance"] .session-page .set-dots{margin-top:9px}
 }
+
+/* v329 live workout pulse */
+html[data-design="performance"] .session-pulse{display:flex;align-items:center;gap:8px;margin:7px 1px 12px;overflow-x:auto;scrollbar-width:none;font-size:10px;color:var(--traco-muted);white-space:nowrap}
+html[data-design="performance"] .session-pulse::-webkit-scrollbar{display:none}
+html[data-design="performance"] .session-pulse b{font-family:var(--traco-numbers);font-size:13px;color:var(--traco-text)}
+html[data-design="performance"] .session-pulse span{padding:5px 8px;border:1px solid var(--traco-line);border-radius:999px;background:var(--traco-card)}
