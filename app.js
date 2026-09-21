@@ -43,7 +43,16 @@ const K={sessions:'v60_sessions', body:'v60_body', settings:'v60_settings', draf
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
 const load=(k,def)=>{try{return JSON.parse(localStorage.getItem(k))??def}catch{return def}};
-const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const save=(k,v)=>{
+  try{
+    localStorage.setItem(k,JSON.stringify(v));
+    return true;
+  }catch(error){
+    console.error('Traço storage write failed',k,error);
+    try{toast('não consegui salvar · libere espaço no aparelho');}catch{}
+    return false;
+  }
+};
 const state={page:'home',activeSession:null,currentExercise:0,restTimer:null,restRemaining:0,sessionClock:null,progressEx:null,installPrompt:null,finishSummary:null,selectedWorkout:null};
 const settings=()=>load(K.settings,{defaultRest:60});
 const sessions=()=>load(K.sessions,[]);
@@ -173,7 +182,7 @@ function renderSession(){
   $('#sessionBack').onclick=()=>{if(state.currentExercise>0){state.currentExercise--;renderSession()}else{state.page='home';render()}};$('#finishEarly').onclick=()=>{if(confirm('encerrar o treino agora?'))finishSession()};
   clearInterval(state.sessionClock);state.sessionClock=setInterval(()=>{const el=$('#sessionTime');if(el)el.textContent=fmtClock(sessionElapsed())},1000);if(state.restRemaining>0)showRestOverlay();
 }
-function completeCurrentSet(){const s=state.activeSession,ex=s.exercises[state.currentExercise],si=currentSetIndex(ex),set=ex.sets[si],usesLoad=tracoExerciseUsesLoad(ex);if(!set.reps){toast('faltou preencher as reps');return}if(usesLoad&&!set.weight){toast('faltou preencher a carga');return}if(!usesLoad)set.weight='';set.done=true;set.skipped=false;save(K.draft,s);haptic();const exDone=ex.sets.every(x=>x.done),allDone=s.exercises.every(x=>x.sets.every(z=>z.done));if(allDone){finishSession();return}if(exDone)state.currentExercise=Math.min(state.currentExercise+1,s.exercises.length-1);startRest(ex.rest||settings().defaultRest||60);}
+function completeCurrentSet(){const s=state.activeSession,ex=s.exercises[state.currentExercise],si=currentSetIndex(ex),set=ex.sets[si],usesLoad=tracoExerciseUsesLoad(ex);if(!set.reps){toast('faltou preencher as reps');return}if(usesLoad&&!set.weight){toast('faltou preencher a carga');return}if(!usesLoad)set.weight='';set.done=true;set.skipped=false;if(!save(K.draft,s)){set.done=false;toast('série não concluída · falha ao salvar');return}haptic();const exDone=ex.sets.every(x=>x.done),allDone=s.exercises.every(x=>x.sets.every(z=>z.done));if(allDone){finishSession();return}if(exDone)state.currentExercise=Math.min(state.currentExercise+1,s.exercises.length-1);startRest(ex.rest||settings().defaultRest||60);}
 function skipCurrentExercise(){
   const s=state.activeSession,ex=s?.exercises?.[state.currentExercise];if(!s||!ex)return;
   if(ex.sets.every(set=>set.done))return toast('esse exercício já terminou');
