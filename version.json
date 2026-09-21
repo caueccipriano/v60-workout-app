@@ -1,7 +1,7 @@
 {
-  "version": "2.8.0",
+  "version": "2.8.1",
   "legacyVersion": "3.7.1",
   "name": "Traço",
   "design": "gym-first-performance-local-first",
-  "build": "immediate-set-save-v316"
+  "build": "input-rollback-safety-v317"
 }
