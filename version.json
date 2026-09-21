@@ -1,7 +1,7 @@
 {
-  "version": "2.5.1",
+  "version": "2.5.2",
   "legacyVersion": "3.7.1",
   "name": "Traço",
   "design": "gym-first-performance-local-first",
-  "build": "hardening-polish-v300"
+  "build": "ux-qa-mobile-v301"
 }
