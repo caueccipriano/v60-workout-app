@@ -180,6 +180,7 @@ function startSession(workoutId){
 function sessionElapsed(){return state.activeSession?Math.floor((Date.now()-state.activeSession.startedAt)/1000):0}
 function currentSetIndex(ex){const i=ex.sets.findIndex(s=>!s.done);return i<0?ex.sets.length-1:i}
 function lastSetText(exId){const last=lastExercisePerf(exId);if(!last)return 'primeira vez — cria sua referência';const done=last.sets.filter(s=>s.done&&!s.skipped);if(!done.length)return 'sem série registrada';if(!tracoExerciseUsesLoad(last)){const best=Math.max(0,...done.map(s=>Number(s.reps||0)));return best?`${best} reps — bora bater`:'feito sem carga';}const best=done.reduce((a,b)=>Number(b.weight||0)>Number(a.weight||0)?b:a,done[0]);if(best.weight&&best.reps)return `${best.weight}kg × ${best.reps} — bora bater`;if(best.weight)return `${best.weight}kg · sem reps registradas`;return 'sem carga registrada';}
+function tracoAdaptiveCoach(ex){const r=tracoTodayReadiness(),score=tracoReadinessScore(r),base=tracoSetSuggestion(ex);if(score===null)return base?{tone:'neutral',title:'progressão disponível',text:base.label}:null;if(score<50)return {tone:'low',title:'dia de controle',text:'readiness '+score+'% · mantenha a carga confortável e priorize execução limpa'};if(score<70)return {tone:'mid',title:'progressão conservadora',text:base?base.label+' · sem necessidade de forçar PR':'readiness '+score+'% · mantenha sua referência'};return {tone:'high',title:'bom dia para progredir',text:base?base.label:'readiness '+score+'% · execute bem e avance se sobrar margem'};}
 function tracoSetSuggestion(ex){
   const last=lastExercisePerf(tracoExerciseProgressionKey(ex));if(!last)return null;
   const done=(last.sets||[]).filter(s=>s.done&&!s.skipped);if(!done.length)return null;
@@ -218,13 +219,14 @@ function renderSession(){
     }
   }
   const suggestion=si===0?tracoSetSuggestion(ex):null;
+  const adaptive=si===0?tracoAdaptiveCoach(ex):null;
   const pulse=tracoSessionPulse(s);
   shell(`<div class="session-topbar"><button class="plain-icon" id="sessionBack">${iconSvg('back')}</button><span>exercício ${state.currentExercise+1} de ${s.exercises.length}</span><button class="plain-icon" id="cancelSession">${iconSvg('close')}</button></div>
     <div class="session-progress"><span style="width:${pulse.pct}%"></span></div>\n    <div class="session-pulse" aria-label="progresso do treino"><b>${pulse.pct}%</b><span>${pulse.done}/${pulse.total} séries</span><span>${pulse.remaining} restantes</span>${pulse.eta?`<span>~${pulse.eta} min</span>`:''}</div>
     <section class="exercise-hero"><span class="exercise-badge">${ex.icon}</span><h1>${ex.name}</h1><small>${ex.equipment}</small></section>
     <div class="series-label">série ${si+1} de ${ex.sets.length}</div>
     <section class="input-grid ${tracoExerciseUsesLoad(ex)?'':'is-no-load'}">${tracoExerciseUsesLoad(ex)?`<label><span>carga (kg)</span><input id="weightInput" type="number" inputmode="decimal" enterkeyhint="next" step="0.5" min="0" value="${set.weight}" placeholder="0" aria-label="carga em quilos"></label>`:''}<label><span>repetições</span><input id="repsInput" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="${set.reps}" placeholder="0" aria-label="número de repetições"></label></section>
-    ${suggestion?`<button class="record-strip" id="useSetSuggestion" type="button"><span><b>${suggestion.label}</b> · usar sugestão</span></button>`:''}
+    ${adaptive?`<div class="adaptive-coach ${adaptive.tone}"><span>✦ TRAÇO+ COACH</span><b>${adaptive.title}</b><small>${adaptive.text}</small></div>`:''}\n    ${suggestion?`<button class="record-strip" id="useSetSuggestion" type="button"><span><b>${suggestion.label}</b> · usar sugestão</span></button>`:''}
     <button class="cta-lime session-cta" id="completeSet">concluir série</button>
     <div class="record-strip">${iconSvg('trophy')}<span>última vez: <b>${lastSetText(ex.id)}</b></span></div>
     <div class="set-dots">${ex.sets.map((x,i)=>`<span class="${x.done?'done':''} ${i===si?'current':''}">${i+1}</span>`).join('')}</div>
