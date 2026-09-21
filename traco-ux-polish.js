@@ -5,7 +5,7 @@
 (function(){
   'use strict';
 
-  const VERSION='1.0.0';
+  const VERSION='1.1.0';
   const BODY_TAB_KEY='traco_ux_body_tab_v1';
   const qs=s=>document.querySelector(s);
   const qsa=s=>Array.from(document.querySelectorAll(s));
@@ -259,14 +259,26 @@
     card.querySelector('.cta-lime')?.insertAdjacentElement('beforebegin',el);
   }
 
-  const homeBase=renderHome;renderHome=function(){homeBase();home();};
-  const bodyBase=renderBody;renderBody=function(){bodyBase();body();};
-  const progressBase=renderProgress;renderProgress=function(){progressBase();progress();};
-  const settingsBase=renderSettings;renderSettings=function(){settingsBase();settings();};
-  const sessionBase=renderSession;renderSession=function(){sessionBase();session();};
-  const finishBase=renderFinish;renderFinish=function(){finishBase();finish();};
+  // Apply polish after the core/modules render instead of wrapping six global
+  // render functions. One observer + one frame scheduler keeps ordering stable.
+  let polishScheduled=false;
+  function polishCurrentPage(){
+    if(state.page==='home')home();
+    else if(state.page==='body')body();
+    else if(state.page==='progress')progress();
+    else if(state.page==='settings')settings();
+    else if(state.page==='session')session();
+    else if(state.page==='finish')finish();
+  }
+  function schedulePolish(){
+    if(polishScheduled)return;
+    polishScheduled=true;
+    requestAnimationFrame(()=>{polishScheduled=false;polishCurrentPage();});
+  }
+  const polishApp=qs('#app');
+  if(polishApp)new MutationObserver(schedulePolish).observe(polishApp,{childList:true,subtree:false});
 
-  window.TracoUXPolish={version:VERSION,home,body,progress,settings,session,selectBodyTab,openBodyTab,compactOverview,compactFoodTools};
+  window.TracoUXPolish={version:VERSION,home,body,progress,settings,session,finish,selectBodyTab,openBodyTab,compactOverview,compactFoodTools,apply:polishCurrentPage};
   document.documentElement.dataset.tracoUx=VERSION;
-  setTimeout(()=>{if(state.page==='home')home();if(state.page==='body')body();if(state.page==='progress')progress();if(state.page==='settings')settings();if(state.page==='session')session();if(state.page==='finish')finish();},50);
+  setTimeout(schedulePolish,50);
 })();
