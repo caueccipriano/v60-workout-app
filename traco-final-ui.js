@@ -112,6 +112,10 @@
 
   function refineFood(){
     const main=q('.perf-food');if(!main)return;
+    // Cardápios is its own route. These shortcuts must navigate, never reuse
+    // the old body-tab shell (which caused Cardápios to render "meu corpo").
+    qa('.perf-food [data-food-route="body"],.perf-food [data-food-body],.perf-food .traco-food-body-link').forEach(btn=>btn.onclick=()=>go('body'));
+    qa('.perf-food [data-food-route="photos"],.perf-food [data-food-photos],.perf-food .traco-food-photo-link').forEach(btn=>btn.onclick=()=>go('photos'));
     main.querySelector('.traco-menu-planner')?.classList.add('final-menu-planner');
     const quick=main.querySelector('.traco-food-quicknav');
     if(quick)quick.classList.add('final-food-quicknav');
