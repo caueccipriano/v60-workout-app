@@ -209,7 +209,8 @@ function renderSession(){
     <section class="exercise-hero"><span class="exercise-badge">${ex.icon}</span><h1>${ex.name}</h1><small>${ex.equipment}</small></section>
     <div class="series-label">série ${si+1} de ${ex.sets.length}</div>
     <section class="input-grid ${tracoExerciseUsesLoad(ex)?'':'is-no-load'}">${tracoExerciseUsesLoad(ex)?`<label><span>carga (kg)</span><input id="weightInput" type="number" inputmode="decimal" enterkeyhint="next" step="0.5" min="0" value="${set.weight}" placeholder="0" aria-label="carga em quilos"></label>`:''}<label><span>repetições</span><input id="repsInput" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="${set.reps}" placeholder="0" aria-label="número de repetições"></label></section>
-    ${suggestion?`<button class="record-strip" id="useSetSuggestion" type="button"><span><b>${suggestion.label}</b> · usar sugestão</span></button>`:'\'}\n    <button class="cta-lime session-cta" id="completeSet">concluir série</button>
+    ${suggestion?`<button class="record-strip" id="useSetSuggestion" type="button"><span><b>${suggestion.label}</b> · usar sugestão</span></button>`:''}
+    <button class="cta-lime session-cta" id="completeSet">concluir série</button>
     <div class="record-strip">${iconSvg('trophy')}<span>última vez: <b>${lastSetText(ex.id)}</b></span></div>
     <div class="set-dots">${ex.sets.map((x,i)=>`<span class="${x.done?'done':''} ${i===si?'current':''}">${i+1}</span>`).join('')}</div>
     <div class="session-footer"><span id="sessionTime">${fmtClock(sessionElapsed())}</span><button class="text-link" id="finishEarly">encerrar treino</button></div>`,{showNav:false,classes:'session-page'});
