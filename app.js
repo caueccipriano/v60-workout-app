@@ -187,6 +187,17 @@ function tracoSetSuggestion(ex){
   if(reps>=max)return {weight:String(Number((weight+0.5).toFixed(1))),reps:String(min),label:'progressão sugerida: +0,5 kg · '+min+' reps'};
   return {weight:String(weight),reps:String(Math.min(max,reps+1)),label:'progressão sugerida: mesma carga · '+Math.min(max,reps+1)+' reps'};
 }
+function tracoSessionPulse(session){
+  const sets=(session?.exercises||[]).flatMap(ex=>ex.sets||[]),total=sets.length,done=sets.filter(set=>set.done).length,remaining=Math.max(0,total-done);
+  const pct=total?Math.round(done/total*100):0;
+  const elapsed=Math.max(0,sessionElapsed());
+  let eta=null;
+  if(done>=2&&remaining>0){
+    const secPerSet=Math.max(45,Math.min(240,elapsed/done));
+    eta=Math.ceil((remaining*secPerSet)/60);
+  }
+  return {total,done,remaining,pct,eta};
+}
 function renderSession(){
   const s=state.activeSession;if(!s){state.page='home';render();return}const ex=s.exercises[state.currentExercise],si=currentSetIndex(ex),set=ex.sets[si];
   // Prefill a new set from the immediately previous completed set. This only
@@ -204,8 +215,9 @@ function renderSession(){
     }
   }
   const suggestion=si===0?tracoSetSuggestion(ex):null;
+  const pulse=tracoSessionPulse(s);
   shell(`<div class="session-topbar"><button class="plain-icon" id="sessionBack">${iconSvg('back')}</button><span>exercício ${state.currentExercise+1} de ${s.exercises.length}</span><button class="plain-icon" id="cancelSession">${iconSvg('close')}</button></div>
-    <div class="session-progress"><span style="width:${((state.currentExercise+(si/ex.sets.length))/s.exercises.length)*100}%"></span></div>
+    <div class="session-progress"><span style="width:${pulse.pct}%"></span></div>\n    <div class="session-pulse" aria-label="progresso do treino"><b>${pulse.pct}%</b><span>${pulse.done}/${pulse.total} séries</span><span>${pulse.remaining} restantes</span>${pulse.eta?`<span>~${pulse.eta} min</span>`:''}</div>
     <section class="exercise-hero"><span class="exercise-badge">${ex.icon}</span><h1>${ex.name}</h1><small>${ex.equipment}</small></section>
     <div class="series-label">série ${si+1} de ${ex.sets.length}</div>
     <section class="input-grid ${tracoExerciseUsesLoad(ex)?'':'is-no-load'}">${tracoExerciseUsesLoad(ex)?`<label><span>carga (kg)</span><input id="weightInput" type="number" inputmode="decimal" enterkeyhint="next" step="0.5" min="0" value="${set.weight}" placeholder="0" aria-label="carga em quilos"></label>`:''}<label><span>repetições</span><input id="repsInput" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="${set.reps}" placeholder="0" aria-label="número de repetições"></label></section>
