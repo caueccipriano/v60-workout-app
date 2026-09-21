@@ -63,7 +63,6 @@
   const BODY={
     overview:['.traco-body-intro','.body-blue','.measure-form','.measure-history','.traco-moving-card','.traco-pattern-card','.traco-plateau-card','.evo-perception','.traco-week-shape','.traco-flank-card','.traco-goal-card','.evo-milestones','.evo-monthly','.evo-volume-map','.lab-recovery-card','.lab-antiflank-card','.lab-phase-card','.lab-goals-card','.lab-records-card','.lab-wrapped-card','.lab-exp-card','.lab-timeline-card'],
     photos:['.traco-photo-cadence','#tracoPhotoCheckin','.traco-photo-compare-card','.evo-photo-tools-card','.lab-photo-tools-card','.lab-camera-entry','#evoVaultMount'],
-    food:['.traco-menu-planner','.traco-daily-card','.traco-food-limits','.traco-habit-card','.traco-choice-card','.evo-mini-plan','.evo-hunger-sos','.lab-hunger-card','.lab-food-coach','.lab-meal-card','.lab-grocery-card']
   };
 
   function bodyShell(main){
@@ -87,7 +86,7 @@
 
   function selectBodyTab(tab){
     const main=qs('.perf-body');if(!main)return;
-    const valid=['overview','photos','food'].includes(tab)?tab:'overview';
+    const valid=tab==='overview'?'overview':'overview';
     localStorage.setItem(BODY_TAB_KEY,valid);
     main.querySelectorAll('[data-ux-body-tab]').forEach(btn=>{
       const on=btn.dataset.uxBodyTab===valid;
@@ -113,7 +112,7 @@
     selectBodyTab(localStorage.getItem(BODY_TAB_KEY)||'overview');
   }
 
-  function compactFoodTools(main){
+  function compactFoodTools(main){return;
     const food=main.querySelector('[data-ux-panel="food"]');if(!food)return;
     let more=food.querySelector('.ux-food-more');
     if(!more){
@@ -158,10 +157,9 @@
   }
 
   function openBodyTab(tab){
-    state.page='body';
-    localStorage.setItem(BODY_TAB_KEY,tab);
-    renderBody();
-    setTimeout(()=>selectBodyTab(tab),30);
+    if(tab==='photos'){state.page='photos';render();return;}
+    if(tab==='food'){state.page='food';render();return;}
+    state.page='body';localStorage.setItem(BODY_TAB_KEY,'overview');renderBody();
   }
 
   function body(){
