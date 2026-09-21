@@ -5,9 +5,9 @@
 (function(){
   'use strict';
 
-  const VERSION='1.0.0';
-  const BUILD='photos-guaranteed-access-2.4.1';
-  const BUILD_NUMBER='297';
+  const VERSION='1.1.0';
+  const BUILD='ux-qa-coherence-v303';
+  const BUILD_NUMBER='303';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
