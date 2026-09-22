@@ -326,3 +326,18 @@ html[data-design="performance"] .traco-plus-coach>summary small{color:var(--mute
 html[data-design="performance"] .traco-plus-coach>summary>em{font-size:22px;font-style:normal;color:var(--perf-orange);transition:transform .18s}
 html[data-design="performance"] .traco-plus-coach[open]>summary>em{transform:rotate(45deg)}
 html[data-design="performance"] .traco-plus-coach .traco-plus-card{margin:0 9px 9px!important;border-radius:11px}
+
+/* v356 history refinement */
+html[data-design="performance"] .history-summary{gap:7px;margin-bottom:8px}
+html[data-design="performance"] .history-summary>div{padding:11px!important;min-height:66px}
+html[data-design="performance"] .history-timeline{border:1px solid var(--line);border-radius:14px;background:var(--surface-soft);overflow:hidden}
+html[data-design="performance"] .history-timeline>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;cursor:pointer;touch-action:manipulation}
+html[data-design="performance"] .history-timeline>summary::-webkit-details-marker{display:none}
+html[data-design="performance"] .history-timeline>summary>div{display:grid;gap:2px}
+html[data-design="performance"] .history-timeline>summary small{font-size:9px;color:var(--muted)}
+html[data-design="performance"] .history-timeline>summary>span{font-size:20px;color:var(--perf-orange)}
+html[data-design="performance"] .history-timeline:not([open])>summary>span::after{content:'+';font-size:22px}
+html[data-design="performance"] .history-timeline:not([open])>summary>span{font-size:0}
+html[data-design="performance"] .history-timeline .history-list{padding:0 8px 8px}
+html[data-design="performance"] .history-card{margin:0!important;padding:10px 4px!important;min-height:64px}
+html[data-design="performance"] .history-card+.history-card{border-top:1px solid var(--line)}
