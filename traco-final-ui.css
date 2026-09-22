@@ -270,3 +270,11 @@ html[data-design="performance"] :is(.ux-home-secondary,.ux-progress-more)>summar
 html[data-design="performance"] :is(.ux-home-secondary,.ux-progress-more)[open]>summary>span{transform:rotate(45deg)}
 html[data-design="performance"] :is(.ux-home-secondary-body,.ux-progress-more-body){display:grid;gap:8px;padding:0 9px 9px}
 html[data-design="performance"] :is(.ux-home-secondary-body,.ux-progress-more-body)>*{margin:0!important}
+
+/* v352 interaction polish */
+html[data-design="performance"] details>summary{user-select:none;-webkit-user-select:none}
+html[data-design="performance"] details>summary:active{opacity:.72}
+html[data-design="performance"] :is(.ux-home-more,.ux-home-secondary,.ux-progress-more,.ux-overview-measures,.ux-overview-more,.ux-settings-group,.lab-shape-more)>summary{touch-action:manipulation}
+html[data-design="performance"] :is(.ux-home-more,.ux-home-secondary,.ux-progress-more,.ux-overview-measures,.ux-overview-more,.ux-settings-group,.lab-shape-more)>summary:focus-visible{outline:2px solid var(--perf-orange);outline-offset:-2px}
+html[data-design="performance"] :is(.ux-home-more-body,.ux-home-secondary-body,.ux-progress-more-body,.ux-overview-measures-body,.ux-overview-more-body)>:first-child{margin-top:0!important}
+html[data-design="performance"] :is(.ux-home-more-body,.ux-home-secondary-body,.ux-progress-more-body,.ux-overview-measures-body,.ux-overview-more-body)>:last-child{margin-bottom:0!important}
