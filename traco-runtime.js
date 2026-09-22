@@ -5,9 +5,9 @@
 (function(){
   'use strict';
 
-  const VERSION='1.6.6';
-  const BUILD='clean-final-v363';
-  const BUILD_NUMBER='363';
+  const VERSION='1.6.7';
+  const BUILD='workout-ui-v364';
+  const BUILD_NUMBER='364';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
