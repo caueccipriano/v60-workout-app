@@ -291,3 +291,14 @@ html[data-design="performance"] .workout-exercise-preview>summary>span{font-size
 html[data-design="performance"] .workout-exercise-preview[open]>summary>span{transform:rotate(45deg)}
 html[data-design="performance"] .workout-exercise-preview .exercise-preview{padding:0 9px 9px}
 html[data-design="performance"] .selected-block>.cta-lime{margin-top:2px!important}
+
+/* v354 empty-state + body refinement */
+html[data-design="performance"] :is(.perf-food,.perf-photos) .empty-card{margin:18px 14px;padding:18px;border:1px solid var(--line);border-radius:15px;background:var(--surface-soft);display:grid;gap:8px}
+html[data-design="performance"] :is(.perf-food,.perf-photos) .empty-card>b{font-size:20px}
+html[data-design="performance"] :is(.perf-food,.perf-photos) .empty-card>p{margin:0;color:var(--muted);line-height:1.4}
+html[data-design="performance"] :is(.perf-food,.perf-photos) .empty-card>button{min-height:46px;border-radius:12px;font-weight:800}
+html[data-design="performance"] .perf-body .body-blue{padding:14px!important}
+html[data-design="performance"] .perf-body .body-stats{gap:6px!important}
+html[data-design="performance"] .perf-body .body-stats>div{min-height:68px;padding:9px!important}
+html[data-design="performance"] .perf-body .body-stats p{margin-top:3px!important}
+html[data-design="performance"] .perf-body .measure-history>div{padding:10px 2px!important}
