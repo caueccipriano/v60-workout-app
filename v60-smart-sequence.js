@@ -406,14 +406,15 @@ finishSession=function(){
   const activeId=state.activeSession?.id;
   const workoutId=state.activeSession?.workoutId;
   const startedAt=state.activeSession?.startedAt;
-  v60SmartBaseFinishSession();
-  const finished=activeId&&sessions().some(s=>String(s.id)===String(activeId)&&s.finishedAt);
-  if(!finished)return;
+  const committed=v60SmartBaseFinishSession()===true;
+  const finished=committed&&activeId&&sessions().some(s=>String(s.id)===String(activeId)&&s.finishedAt);
+  if(!finished)return false;
   if(workoutId){
     v60AdvanceSequence(workoutId);
     const key=v60DateKey(startedAt||Date.now()),rows=v60LoadAttendance();
     if(!rows.some(x=>x.date===key)){rows.push({date:key,source:'logged-session'});v60SaveAttendance(rows);}
   }
+  return true;
 };
 
 function v60AttendanceStrip(){
