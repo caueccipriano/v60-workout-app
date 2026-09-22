@@ -167,7 +167,7 @@ renderSession=function(){
     const abs=$('#v60AddAbs'),cardio=$('#v60AddCardio'),clear=$('#v60ClearExtras');
     if(abs)abs.onclick=()=>v60OpenExtraModal('abs');
     if(cardio)cardio.onclick=()=>v60OpenExtraModal('cardio');
-    if(clear)clear.onclick=()=>{state.activeSession.extras=[];save(K.draft,state.activeSession);renderSession();};
+    if(clear)clear.onclick=()=>{const previous=Array.isArray(state.activeSession.extras)?state.activeSession.extras.slice():[];state.activeSession.extras=[];if(!save(K.draft,state.activeSession)){state.activeSession.extras=previous;toast('não consegui limpar os extras');return;}renderSession();};
   }
   clearInterval(state.sessionClock);
   state.sessionClock=setInterval(()=>{const el=$('#sessionTime');if(el)el.textContent=fmtClock(sessionElapsed());},1000);
