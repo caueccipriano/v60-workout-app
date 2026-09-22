@@ -176,6 +176,18 @@
     }
   }
 
+  function history(){
+    const main=qs('.perf-history,.history-page');if(!main)return;
+    main.classList.add('ux-history');
+    const list=main.querySelector('.history-list');if(!list||list.closest('.ux-history-more'))return;
+    const cards=Array.from(list.children);
+    if(cards.length<=5)return;
+    const more=document.createElement('details');more.className='ux-history-more';
+    more.innerHTML='<summary><div><b>histórico anterior</b><small>'+(cards.length-5)+' treino'+(cards.length-5===1?'':'s')+' mais antigo'+(cards.length-5===1?'':'s')+'</small></div><span>+</span></summary><div class="ux-history-more-body"></div>';
+    list.insertAdjacentElement('afterend',more);
+    cards.slice(5).forEach(card=>more.querySelector('.ux-history-more-body').appendChild(card));
+  }
+
   function settingsGroup(key,title,subtitle,open){
     const el=document.createElement('details');
     el.className='ux-settings-group';
@@ -244,6 +256,7 @@
     if(state.page==='home')home();
     else if(state.page==='body')body();
     else if(state.page==='progress')progress();
+    else if(state.page==='history')history();
     else if(state.page==='settings')settings();
     else if(state.page==='session')session();
     else if(state.page==='finish')finish();
@@ -256,7 +269,7 @@
   const polishApp=qs('#app');
   if(polishApp)new MutationObserver(schedulePolish).observe(polishApp,{childList:true,subtree:false});
 
-  window.TracoUXPolish={version:VERSION,home,body,progress,settings,session,finish,selectBodyTab,openBodyTab,compactOverview,compactFoodTools,apply:polishCurrentPage};
+  window.TracoUXPolish={version:VERSION,home,body,progress,history,settings,session,finish,selectBodyTab,openBodyTab,compactOverview,compactFoodTools,apply:polishCurrentPage};
   document.documentElement.dataset.tracoUx=VERSION;
   setTimeout(schedulePolish,50);
 })();
