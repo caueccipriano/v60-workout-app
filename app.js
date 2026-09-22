@@ -76,6 +76,18 @@ function hasPartialVolume(ss=[]){return ss.some(s=>s?.excludeFromVolume)}
 function recordedLoadCount(ss=[]){
   return ss.reduce((sum,s)=>sum+(s.exercises||[]).filter(ex=>(ex.sets||[]).some(set=>set.done&&Number(set.weight)>0)).length,0);
 }
+function tracoRepairReportedWorkoutA(){
+  const repairKey='traco_repair_a_2026_09_21_v1';
+  try{if(localStorage.getItem(repairKey)==='done')return;}catch{}
+  const targetDate='2026-09-21',workoutId='seg',all=sessions();
+  if(all.some(s=>s.finishedAt&&s.workoutId===workoutId&&tracoDateKey(s.startedAt)===targetDate)){try{localStorage.setItem(repairKey,'done')}catch{}return;}
+  const w=workoutPlan.find(x=>x.id===workoutId);if(!w)return;
+  const startedAt=new Date(targetDate+'T12:00:00').getTime();
+  const restored={id:'restored-a-'+targetDate,workoutId,wName:w.name,startedAt,finishedAt:startedAt+60*60*1000,duration:3600,manualConfirmed:true,excludeFromVolume:true,restored:true,exercises:w.exercises.map(ex=>({...ex,sets:Array.from({length:Number(ex.sets)||1},(_,i)=>({n:i+1,weight:'',reps:'',done:true,reported:true}))})),prs:[]};
+  if(save(K.sessions,[...all,restored])){try{localStorage.setItem(repairKey,'done')}catch{}}
+}
+tracoRepairReportedWorkoutA();
+
 function weekSessions(){const now=new Date();const start=new Date(now);const diff=(start.getDay()+6)%7;start.setDate(start.getDate()-diff);start.setHours(0,0,0,0);return sessions().filter(s=>s.finishedAt&&s.startedAt>=start.getTime())}
 function calcStreak(ss=sessions()){
   const days=[...new Set(ss.filter(s=>s.finishedAt).map(s=>tracoDateKey(s.startedAt)))].sort().reverse();
