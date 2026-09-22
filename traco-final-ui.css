@@ -381,3 +381,8 @@ html[data-design="performance"] .rest-inner>p{margin:10px auto!important;max-wid
 html[data-design="performance"] .rest-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
 html[data-design="performance"] .rest-actions button,html[data-design="performance"] #skipRest{min-height:48px;border-radius:12px}
 html[data-design="performance"] #skipRest{width:100%;font-weight:900}
+
+/* v360 restored/manual history clarity */
+html[data-design="performance"] .history-card-reported{background:var(--surface-soft)}
+html[data-design="performance"] .history-card-reported .history-main p{color:var(--muted)}
+html[data-design="performance"] .history-card-reported .history-main p::before{content:'✓ ';color:var(--perf-orange);font-weight:900}
