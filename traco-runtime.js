@@ -5,9 +5,9 @@
 (function(){
   'use strict';
 
-  const VERSION='1.6.8';
-  const BUILD='sequence-fix-v365';
-  const BUILD_NUMBER='365';
+  const VERSION='1.6.9';
+  const BUILD='sequence-anchor-v366';
+  const BUILD_NUMBER='366';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
