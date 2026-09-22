@@ -302,3 +302,15 @@ html[data-design="performance"] .perf-body .body-stats{gap:6px!important}
 html[data-design="performance"] .perf-body .body-stats>div{min-height:68px;padding:9px!important}
 html[data-design="performance"] .perf-body .body-stats p{margin-top:3px!important}
 html[data-design="performance"] .perf-body .measure-history>div{padding:10px 2px!important}
+
+/* v355 history refinement */
+html[data-design="performance"] .ux-history .history-list{display:grid;gap:7px}
+html[data-design="performance"] .ux-history .history-card{margin:0!important;min-height:64px;padding:9px 10px!important}
+html[data-design="performance"] .ux-history-more{margin-top:9px;border:1px solid var(--line);border-radius:14px;background:var(--surface-soft);overflow:hidden}
+html[data-design="performance"] .ux-history-more>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px;padding:11px 13px;cursor:pointer;touch-action:manipulation}
+html[data-design="performance"] .ux-history-more>summary::-webkit-details-marker{display:none}
+html[data-design="performance"] .ux-history-more>summary div{display:grid;gap:2px}
+html[data-design="performance"] .ux-history-more>summary small{font-size:9px;color:var(--muted)}
+html[data-design="performance"] .ux-history-more>summary>span{font-size:22px;color:var(--perf-orange);transition:transform .18s}
+html[data-design="performance"] .ux-history-more[open]>summary>span{transform:rotate(45deg)}
+html[data-design="performance"] .ux-history-more-body{display:grid;gap:7px;padding:0 8px 8px}
