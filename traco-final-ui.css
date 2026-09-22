@@ -386,3 +386,13 @@ html[data-design="performance"] #skipRest{width:100%;font-weight:900}
 html[data-design="performance"] .history-card-reported{background:var(--surface-soft)}
 html[data-design="performance"] .history-card-reported .history-main p{color:var(--muted)}
 html[data-design="performance"] .history-card-reported .history-main p::before{content:'✓ ';color:var(--perf-orange);font-weight:900}
+
+/* v362 premium interaction states */
+html[data-design="performance"] :is(button,summary,a,[role="button"]){transition:transform .14s ease,opacity .14s ease,background-color .18s ease,border-color .18s ease}
+html[data-design="performance"] :is(button,summary,a,[role="button"]):active{transform:scale(.985)}
+html[data-design="performance"] button:disabled{opacity:.42;cursor:not-allowed;transform:none!important}
+html[data-design="performance"] :is(button,summary,a,input,select):focus-visible{outline:2px solid var(--perf-orange)!important;outline-offset:2px}
+html[data-design="performance"] .perf-native-exercise-row.is-current{border-color:var(--perf-orange)!important}
+html[data-design="performance"] .perf-native-exercise-row.is-complete{opacity:.62}
+html[data-design="performance"] .perf-native-exercise-row.is-complete b{text-decoration:none}
+@media (prefers-reduced-motion:reduce){html[data-design="performance"] *,html[data-design="performance"] *::before,html[data-design="performance"] *::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
