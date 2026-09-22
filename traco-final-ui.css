@@ -396,3 +396,37 @@ html[data-design="performance"] .perf-native-exercise-row.is-current{border-colo
 html[data-design="performance"] .perf-native-exercise-row.is-complete{opacity:.62}
 html[data-design="performance"] .perf-native-exercise-row.is-complete b{text-decoration:none}
 @media (prefers-reduced-motion:reduce){html[data-design="performance"] *,html[data-design="performance"] *::before,html[data-design="performance"] *::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+
+/* v364 workout selector — light-first, no inverted active card */
+html[data-design="performance"] .perf-workouts .workout-select,
+html[data-design="performance"] .workouts-page .workout-select{
+  min-height:86px!important;padding:13px 15px!important;border:1px solid var(--line)!important;
+  border-radius:16px!important;background:var(--surface-soft)!important;color:var(--text)!important;
+  box-shadow:none!important;grid-template-columns:72px minmax(0,1fr) 34px!important;gap:10px!important;text-align:left!important
+}
+html[data-design="performance"] .perf-workouts .workout-select.active,
+html[data-design="performance"] .workouts-page .workout-select.active{
+  background:var(--surface)!important;color:var(--text)!important;border-color:rgba(255,65,56,.55)!important;
+  box-shadow:inset 4px 0 0 var(--perf-orange)!important
+}
+html[data-design="performance"] .workout-select .workout-num{
+  width:auto!important;font-size:25px!important;line-height:1!important;color:var(--perf-orange)!important;
+  background:transparent!important;border:0!important;padding:0!important
+}
+html[data-design="performance"] .workout-select>span:nth-child(2){min-width:0;display:grid;gap:3px}
+html[data-design="performance"] .workout-select>span:nth-child(2)>b{
+  color:var(--text)!important;font-size:17px!important;line-height:1.12!important;white-space:normal!important
+}
+html[data-design="performance"] .workout-select>span:nth-child(2)>small{
+  color:var(--muted)!important;font-size:11px!important;line-height:1.25!important;white-space:normal!important
+}
+html[data-design="performance"] .workout-select .arrow{color:var(--perf-orange)!important;font-size:28px!important;justify-self:end}
+html[data-design="performance"] .workout-select.active :is(b,strong,h3,p,small,span:not(.workout-num)){color:inherit!important}
+html[data-design="performance"] .workout-select.active>span:nth-child(2)>b{color:var(--text)!important}
+html[data-design="performance"] .workout-select.active>span:nth-child(2)>small{color:var(--muted)!important}
+html[data-theme="light"][data-design="performance"] .workout-select.active{background:#fff!important;color:#171717!important}
+html[data-theme="light"][data-design="performance"] .workout-select.active>span:nth-child(2)>b{color:#171717!important}
+html[data-theme="light"][data-design="performance"] .workout-select.active>span:nth-child(2)>small{color:#8b8b85!important}
+html[data-theme="dark"][data-design="performance"] .workout-select.active{background:#171717!important;color:#f5f4f0!important}
+html[data-theme="dark"][data-design="performance"] .workout-select.active>span:nth-child(2)>b{color:#f5f4f0!important}
+html[data-theme="dark"][data-design="performance"] .workout-select.active>span:nth-child(2)>small{color:#aaa9a3!important}
