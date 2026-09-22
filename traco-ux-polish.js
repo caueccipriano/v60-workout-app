@@ -61,8 +61,7 @@
   }
 
   const BODY={
-    overview:['.traco-body-intro','.body-blue','.measure-form','.measure-history','.traco-moving-card','.traco-pattern-card','.traco-plateau-card','.evo-perception','.traco-week-shape','.traco-flank-card','.traco-goal-card','.evo-milestones','.evo-monthly','.evo-volume-map','.lab-recovery-card','.lab-antiflank-card','.lab-phase-card','.lab-goals-card','.lab-records-card','.lab-wrapped-card','.lab-exp-card','.lab-timeline-card'],
-    photos:['.traco-photo-cadence','#tracoPhotoCheckin','.traco-photo-compare-card','.evo-photo-tools-card','.lab-photo-tools-card','.lab-camera-entry','#evoVaultMount'],
+    overview:['.traco-body-intro','.body-blue','.measure-form','.measure-history','.traco-moving-card','.traco-pattern-card','.traco-plateau-card','.evo-perception','.traco-week-shape','.traco-flank-card','.traco-goal-card','.evo-milestones','.evo-monthly','.evo-volume-map','.lab-recovery-card','.lab-antiflank-card','.lab-phase-card','.lab-goals-card','.lab-records-card','.lab-wrapped-card','.lab-exp-card','.lab-timeline-card']
   };
 
   function bodyShell(main){
@@ -159,8 +158,10 @@
   }
 
   function progress(){
-    const main=qs('.perf-progress');if(!main||main.querySelector('.ux-progress-30'))return;
+    const main=qs('.perf-progress');if(!main)return;
     main.classList.add('ux-progress');
+    main.querySelectorAll('.ux-progress-30').forEach((n,i)=>{if(i)n.remove()});
+    if(main.querySelector('.ux-progress-30'))return;
     const s=last30();
     const card=document.createElement('section');
     card.className='ux-progress-30';
