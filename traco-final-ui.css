@@ -371,3 +371,13 @@ html[data-design="performance"] .session-coach>summary b{font-size:12px;white-sp
 html[data-design="performance"] .session-coach>summary em{font-size:18px;font-style:normal;color:var(--perf-orange);transition:transform .18s}
 html[data-design="performance"] .session-coach[open]>summary em{transform:rotate(45deg)}
 html[data-design="performance"] .session-coach>small{display:block;padding:0 10px 10px;color:var(--muted);line-height:1.35}
+
+/* v359 rest overlay polish */
+html[data-design="performance"] .rest-overlay{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+html[data-design="performance"] .rest-inner{width:min(92vw,390px);padding:20px!important;border-radius:18px!important}
+html[data-design="performance"] .rest-inner>span{font-size:10px;letter-spacing:.14em;font-weight:900}
+html[data-design="performance"] .rest-inner>strong{font-variant-numeric:tabular-nums;line-height:.95}
+html[data-design="performance"] .rest-inner>p{margin:10px auto!important;max-width:28ch;line-height:1.35}
+html[data-design="performance"] .rest-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+html[data-design="performance"] .rest-actions button,html[data-design="performance"] #skipRest{min-height:48px;border-radius:12px}
+html[data-design="performance"] #skipRest{width:100%;font-weight:900}
