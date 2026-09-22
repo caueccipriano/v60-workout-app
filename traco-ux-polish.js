@@ -169,7 +169,11 @@
     card.innerHTML='<header><span>ÚLTIMOS 30 DIAS</span><b>resumo primeiro, detalhes depois</b></header><div><article><b>'+s.workouts+'</b><span>treinos</span></article><article><b>'+s.prs+'</b><span>PRs</span></article><article><b>'+esc(deltaText(s.waist))+'</b><span>cintura</span></article><article><b>'+s.consistency+'%</b><span>consistência</span></article></div>';
     main.querySelector('.page-head')?.insertAdjacentElement('afterend',card);
     let more=main.querySelector('.ux-progress-more');
-    if(!more){const candidates=Array.from(main.children).filter(n=>n!==card&&!n.classList.contains('page-head')&&!n.classList.contains('ux-progress-more'));if(candidates.length>3){more=document.createElement('details');more.className='ux-progress-more';more.innerHTML='<summary><div><b>análises detalhadas</b><small>volume · padrões · histórico</small></div><span>+</span></summary><div class="ux-progress-more-body"></div>';card.insertAdjacentElement('afterend',more);const body=more.querySelector('.ux-progress-more-body');candidates.slice(3).forEach(n=>move(n,body));}}
+    if(!more){
+      const secondarySelectors=['.evo-volume-map','.evo-heatmap','.evo-monthly','.evo-milestones','.evo-perception','.traco-pattern-card','.traco-plateau-card','.lab-records-card','.lab-wrapped-card','.lab-exp-card','.lab-timeline-card'];
+      const candidates=secondarySelectors.flatMap(sel=>Array.from(main.querySelectorAll(':scope > '+sel))).filter((n,i,a)=>a.indexOf(n)===i);
+      if(candidates.length){more=document.createElement('details');more.className='ux-progress-more';more.innerHTML='<summary><div><b>análises detalhadas</b><small>volume · padrões · histórico</small></div><span>+</span></summary><div class="ux-progress-more-body"></div>';card.insertAdjacentElement('afterend',more);const body=more.querySelector('.ux-progress-more-body');candidates.forEach(n=>move(n,body));}
+    }
   }
 
   function settingsGroup(key,title,subtitle,open){
