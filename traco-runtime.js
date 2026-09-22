@@ -5,9 +5,9 @@
 (function(){
   'use strict';
 
-  const VERSION='1.6.5';
-  const BUILD='premium-final-v361';
-  const BUILD_NUMBER='361';
+  const VERSION='1.6.6';
+  const BUILD='clean-final-v363';
+  const BUILD_NUMBER='363';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
