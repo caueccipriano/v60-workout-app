@@ -356,3 +356,18 @@ html[data-design="performance"] :is(.empty-card,.empty-story) p{max-width:32ch;l
 html[data-design="performance"] :is(.preview-row,.history-card,.settings-row){border-radius:var(--ui-radius-sm)}
 html[data-design="performance"] input,html[data-design="performance"] select{min-height:46px;border-radius:11px}
 html[data-design="performance"] :is(button,[role="button"],summary,a){-webkit-tap-highlight-color:rgba(255,59,48,.1)}
+
+/* v358 live-session focus */
+html[data-design="performance"] .session-page .exercise-hero{margin-bottom:8px!important}
+html[data-design="performance"] .session-page .series-label{margin:6px 0!important}
+html[data-design="performance"] .session-page .input-grid{margin:6px 0 8px!important}
+html[data-design="performance"] .session-page .session-cta{min-height:54px;margin:8px 0!important}
+html[data-design="performance"] .session-page .record-strip{margin:6px 0!important}
+html[data-design="performance"] .session-coach{border:1px solid var(--line);border-radius:11px;background:var(--surface-soft);margin:6px 0;overflow:hidden}
+html[data-design="performance"] .session-coach>summary{list-style:none;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;min-height:44px;padding:8px 10px;cursor:pointer;touch-action:manipulation}
+html[data-design="performance"] .session-coach>summary::-webkit-details-marker{display:none}
+html[data-design="performance"] .session-coach>summary span{font-size:9px;font-weight:900;letter-spacing:.1em;color:var(--perf-orange)}
+html[data-design="performance"] .session-coach>summary b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-design="performance"] .session-coach>summary em{font-size:18px;font-style:normal;color:var(--perf-orange);transition:transform .18s}
+html[data-design="performance"] .session-coach[open]>summary em{transform:rotate(45deg)}
+html[data-design="performance"] .session-coach>small{display:block;padding:0 10px 10px;color:var(--muted);line-height:1.35}
