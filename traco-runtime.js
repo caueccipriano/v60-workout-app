@@ -5,9 +5,9 @@
 (function(){
   'use strict';
 
-  const VERSION='1.6.7';
-  const BUILD='workout-ui-v364';
-  const BUILD_NUMBER='364';
+  const VERSION='1.6.8';
+  const BUILD='sequence-fix-v365';
+  const BUILD_NUMBER='365';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
