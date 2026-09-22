@@ -314,3 +314,15 @@ html[data-design="performance"] .ux-history-more>summary small{font-size:9px;col
 html[data-design="performance"] .ux-history-more>summary>span{font-size:22px;color:var(--perf-orange);transition:transform .18s}
 html[data-design="performance"] .ux-history-more[open]>summary>span{transform:rotate(45deg)}
 html[data-design="performance"] .ux-history-more-body{display:grid;gap:7px;padding:0 8px 8px}
+
+/* v355 evolution coach refinement */
+html[data-design="performance"] .traco-plus-coach{border:1px solid var(--line);border-radius:14px;background:var(--surface-soft);overflow:hidden;margin:8px 0}
+html[data-design="performance"] .traco-plus-coach>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 13px;cursor:pointer;touch-action:manipulation}
+html[data-design="performance"] .traco-plus-coach>summary::-webkit-details-marker{display:none}
+html[data-design="performance"] .traco-plus-coach>summary>div{display:grid;gap:2px;min-width:0}
+html[data-design="performance"] .traco-plus-coach>summary span{font-size:9px;font-weight:900;letter-spacing:.12em;color:var(--perf-orange)}
+html[data-design="performance"] .traco-plus-coach>summary b{font-size:15px}
+html[data-design="performance"] .traco-plus-coach>summary small{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-design="performance"] .traco-plus-coach>summary>em{font-size:22px;font-style:normal;color:var(--perf-orange);transition:transform .18s}
+html[data-design="performance"] .traco-plus-coach[open]>summary>em{transform:rotate(45deg)}
+html[data-design="performance"] .traco-plus-coach .traco-plus-card{margin:0 9px 9px!important;border-radius:11px}
