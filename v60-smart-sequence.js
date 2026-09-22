@@ -338,21 +338,24 @@ function v60TrainingStreak(){
 }
 function v60SequenceState(){return load(V60_SMART_SEQUENCE_KEY,{nextWorkoutId:'ter'});}
 function v60SequenceItem(workoutId){return V60_SEQUENCE.find(x=>x.workoutId===workoutId)||V60_SEQUENCE[0];}
+function v60NextAfter(workoutId){
+  const i=V60_SEQUENCE.findIndex(x=>x.workoutId===workoutId);
+  return V60_SEQUENCE[(i>=0?i+1:0)%V60_SEQUENCE.length];
+}
+function v60LatestCompletedSequenceSession(){
+  return sessions()
+    .filter(s=>s.finishedAt&&V60_SEQUENCE.some(x=>x.workoutId===s.workoutId))
+    .sort((a,b)=>Number(b.finishedAt||b.startedAt)-Number(a.finishedAt||a.startedAt))[0]||null;
+}
 function v60RecommendedWorkout(){
   const stateRow=v60SequenceState();
-  let id=stateRow.nextWorkoutId;
-  // Repair the confirmed 21 Sep workout: A (costas+bíceps / workoutId qua)
-  // was completed yesterday, therefore 22 Sep must recommend B (peito+ombro / workoutId seg).
-  const today=v60DateKey(new Date());
-  if(today==='2026-09-22'){
-    // User-confirmed sequence anchor: Workout A was completed on 21 Sep.
-    // Do not depend on the local history record here: that record may have
-    // been restored under a legacy id, while the recommendation must still
-    // advance to B today.
-    id='seg';
-    if(stateRow.nextWorkoutId!=='seg'||stateRow.lastWorkoutId!=='qua'){
-      save(V60_SMART_SEQUENCE_KEY,{...stateRow,nextWorkoutId:'seg',lastWorkoutId:'qua',updatedAt:Date.now(),repair:'confirmed-a-2026-09-21-v2'});
-    }
+  const latest=v60LatestCompletedSequenceSession();
+  // Completed history is the source of truth. Persisted nextWorkoutId is only
+  // a cache/manual fallback when there is no completed sequence session.
+  let id=latest?v60NextAfter(latest.workoutId).workoutId:stateRow.nextWorkoutId;
+  const expectedLast=latest?.workoutId||stateRow.lastWorkoutId;
+  if(latest&&(stateRow.nextWorkoutId!==id||stateRow.lastWorkoutId!==expectedLast)){
+    save(V60_SMART_SEQUENCE_KEY,{...stateRow,nextWorkoutId:id,lastWorkoutId:expectedLast,updatedAt:Date.now(),derivedFromHistory:true});
   }
   return workoutPlan.find(w=>w.id===id)||workoutPlan.find(w=>w.id==='ter')||workoutPlan[0];
 }
