@@ -345,10 +345,13 @@ function v60RecommendedWorkout(){
   // was completed yesterday, therefore 22 Sep must recommend B (peito+ombro / workoutId seg).
   const today=v60DateKey(new Date());
   if(today==='2026-09-22'){
-    const yesterdayA=sessions().some(s=>s.finishedAt&&s.workoutId==='qua'&&v60DateKey(s.startedAt)==='2026-09-21');
-    if(yesterdayA&&id!=='seg'){
-      id='seg';
-      save(V60_SMART_SEQUENCE_KEY,{...stateRow,nextWorkoutId:'seg',lastWorkoutId:'qua',updatedAt:Date.now(),repair:'confirmed-a-2026-09-21'});
+    // User-confirmed sequence anchor: Workout A was completed on 21 Sep.
+    // Do not depend on the local history record here: that record may have
+    // been restored under a legacy id, while the recommendation must still
+    // advance to B today.
+    id='seg';
+    if(stateRow.nextWorkoutId!=='seg'||stateRow.lastWorkoutId!=='qua'){
+      save(V60_SMART_SEQUENCE_KEY,{...stateRow,nextWorkoutId:'seg',lastWorkoutId:'qua',updatedAt:Date.now(),repair:'confirmed-a-2026-09-21-v2'});
     }
   }
   return workoutPlan.find(w=>w.id===id)||workoutPlan.find(w=>w.id==='ter')||workoutPlan[0];
