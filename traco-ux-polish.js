@@ -185,7 +185,7 @@
     if(!groups){
       groups=document.createElement('div');groups.className='ux-settings-groups';
       (main.querySelector('.traco-theme-card')||main.querySelector('.traco-about-card')||main.querySelector('.settings-intro')||main.querySelector('.page-head'))?.insertAdjacentElement('afterend',groups);
-      groups.appendChild(settingsGroup('training','treino','descanso e notificações',true));
+      groups.appendChild(settingsGroup('training','treino','descanso e notificações',false));
       groups.appendChild(settingsGroup('data','dados e backup','instalação, exportação e restauração',false));
       groups.appendChild(settingsGroup('integrations','integrações','EU, Fôlego e ecossistema',false));
       groups.appendChild(settingsGroup('privacy','privacidade e diagnóstico','suporte, versão e manutenção',false));
@@ -218,6 +218,7 @@
     }
     const target=details.querySelector('.ux-session-more-body');
     [main.querySelector('.evo-session-intelligence'),main.querySelector('.lab-session-tools'),main.querySelector('.perf-native-exercise-list'),main.querySelector('.perf-media-block')].forEach(node=>move(node,target));
+    const hasExtra=Boolean(target&&target.children.length);details.hidden=!hasExtra;
   }
 
   function finish(){
