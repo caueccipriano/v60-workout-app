@@ -233,3 +233,17 @@ html[data-design="performance"] :is(.traco-food-quicknav button,.workout-select,
 html[data-design="performance"] .perf-body .ux-body-tabs{display:none!important}
 html[data-design="performance"] .perf-body .ux-body-panels>[data-ux-panel="photos"],
 html[data-design="performance"] .perf-body .ux-body-panels>[data-ux-panel="food"]{display:none!important}
+
+/* v349 refinement — information hierarchy */
+html[data-design="performance"] .perf-progress .ux-progress-30{padding:14px!important}
+html[data-design="performance"] .perf-progress .ux-progress-30>header{margin-bottom:10px}
+html[data-design="performance"] .perf-progress .ux-progress-30>div{gap:6px}
+html[data-design="performance"] .perf-progress .ux-progress-30 article{padding:10px!important;min-height:68px}
+html[data-design="performance"] .perf-photos .traco-photos-summary{margin-bottom:8px}
+html[data-design="performance"] .perf-photos .traco-photo-page-card{padding:12px!important}
+html[data-design="performance"] .perf-food .traco-food-quicknav{gap:8px;margin-bottom:10px}
+html[data-design="performance"] .perf-food .traco-food-quicknav button{min-height:72px}
+html[data-design="performance"] .perf-body .ux-body-panel[data-ux-panel="overview"]{display:grid;gap:10px}
+html[data-design="performance"] .perf-body .ux-body-panel[data-ux-panel="overview"]>*{margin:0!important}
+html[data-design="performance"] .perf-home .evo-best-today{margin-top:8px;margin-bottom:10px}
+html[data-design="performance"] .perf-home .perf-sequence{margin-top:8px}
