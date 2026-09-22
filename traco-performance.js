@@ -129,8 +129,8 @@ renderSession=function(){
 
   $('#openExerciseGuide') && ($('#openExerciseGuide').onclick=()=>v60ShowGuide(ex));
   const weight=$('#weightInput'),reps=$('#repsInput');
-  if(weight)weight.oninput=e=>{set.weight=e.target.value;save(K.draft,s);};
-  reps.oninput=e=>{set.reps=e.target.value;save(K.draft,s);};
+  if(weight)weight.oninput=e=>{const previous=set.weight;set.weight=e.target.value;if(!save(K.draft,s)){set.weight=previous;e.target.value=previous;toast('não consegui salvar a carga');}};
+  reps.oninput=e=>{const previous=set.reps;set.reps=e.target.value;if(!save(K.draft,s)){set.reps=previous;e.target.value=previous;toast('não consegui salvar as reps');}};
   $$('[data-adjust]').forEach(btn=>btn.onclick=()=>{
     const [kind,raw]=btn.dataset.adjust.split(':'),delta=Number(raw);
     const input=kind==='weight'?weight:reps;
@@ -140,7 +140,7 @@ renderSession=function(){
     input.value=String(Math.max(0,Math.round((current+delta)/step)*step));
     input.dispatchEvent(new Event('input',{bubbles:true}));
   });
-  document.querySelectorAll('[data-native-exercise-index]').forEach(btn=>btn.onclick=()=>{const next=Number(btn.dataset.nativeExerciseIndex);if(Number.isInteger(next)&&next>=0&&next<s.exercises.length){state.currentExercise=next;save(K.draft,s);renderSession();}});
+  document.querySelectorAll('[data-native-exercise-index]').forEach(btn=>btn.onclick=()=>{const next=Number(btn.dataset.nativeExerciseIndex);if(Number.isInteger(next)&&next>=0&&next<s.exercises.length){const previous=state.currentExercise;state.currentExercise=next;if(!save(K.draft,s)){state.currentExercise=previous;toast('não consegui trocar o exercício');return;}renderSession();}});
     $('#completeSet').onclick=completeCurrentSet;
   if($('#skipExercise'))$('#skipExercise').onclick=()=>{
     // Usa a mesma fila persistente da lista de exercícios. Assim a troca por
@@ -153,8 +153,9 @@ renderSession=function(){
     const current=state.currentExercise;
     const next=s.exercises.findIndex((item,i)=>i!==current&&(item.sets||[]).some(x=>!x.done));
     if(next<0)return toast('não há outro exercício pendente');
+    const previous=state.currentExercise;
     state.currentExercise=next;
-    save(K.draft,s);
+    if(!save(K.draft,s)){state.currentExercise=previous;toast('não consegui trocar o exercício');return;}
     toast('beleza · voltamos neste depois');
     haptic();
     renderSession();
