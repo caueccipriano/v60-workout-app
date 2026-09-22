@@ -247,3 +247,15 @@ html[data-design="performance"] .perf-body .ux-body-panel[data-ux-panel="overvie
 html[data-design="performance"] .perf-body .ux-body-panel[data-ux-panel="overview"]>*{margin:0!important}
 html[data-design="performance"] .perf-home .evo-best-today{margin-top:8px;margin-bottom:10px}
 html[data-design="performance"] .perf-home .perf-sequence{margin-top:8px}
+
+/* v350 training + settings refinement */
+html[data-design="performance"] .perf-session .perf-exercise-console{padding:14px!important}
+html[data-design="performance"] .perf-session .perf-last-performance{margin:8px 0!important}
+html[data-design="performance"] .perf-session .perf-inputs{gap:8px!important}
+html[data-design="performance"] .perf-session .ux-session-more{margin-top:9px}
+html[data-design="performance"] .perf-session .ux-session-more[hidden]{display:none!important}
+html[data-design="performance"] .perf-settings .ux-settings-groups{display:grid;gap:8px}
+html[data-design="performance"] .perf-settings .ux-settings-group{margin:0!important;border-radius:13px}
+html[data-design="performance"] .perf-settings .ux-settings-group>summary{min-height:58px;padding:11px 13px}
+html[data-design="performance"] .perf-settings .ux-settings-group-body{padding:0 9px 9px}
+html[data-design="performance"] .finish-card .ux-finish-confirm{margin:10px 0;padding:12px;border-radius:12px}
