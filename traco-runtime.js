@@ -5,9 +5,9 @@
 (function(){
   'use strict';
 
-  const VERSION='1.6.2';
-  const BUILD='route-cleanup-v343';
-  const BUILD_NUMBER='343';
+  const VERSION='1.6.5';
+  const BUILD='premium-final-v361';
+  const BUILD_NUMBER='361';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
