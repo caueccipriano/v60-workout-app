@@ -339,7 +339,18 @@ function v60TrainingStreak(){
 function v60SequenceState(){return load(V60_SMART_SEQUENCE_KEY,{nextWorkoutId:'ter'});}
 function v60SequenceItem(workoutId){return V60_SEQUENCE.find(x=>x.workoutId===workoutId)||V60_SEQUENCE[0];}
 function v60RecommendedWorkout(){
-  const id=v60SequenceState().nextWorkoutId;
+  const stateRow=v60SequenceState();
+  let id=stateRow.nextWorkoutId;
+  // Repair the confirmed 21 Sep workout: A (costas+bíceps / workoutId qua)
+  // was completed yesterday, therefore 22 Sep must recommend B (peito+ombro / workoutId seg).
+  const today=v60DateKey(new Date());
+  if(today==='2026-09-22'){
+    const yesterdayA=sessions().some(s=>s.finishedAt&&s.workoutId==='qua'&&v60DateKey(s.startedAt)==='2026-09-21');
+    if(yesterdayA&&id!=='seg'){
+      id='seg';
+      save(V60_SMART_SEQUENCE_KEY,{...stateRow,nextWorkoutId:'seg',lastWorkoutId:'qua',updatedAt:Date.now(),repair:'confirmed-a-2026-09-21'});
+    }
+  }
   return workoutPlan.find(w=>w.id===id)||workoutPlan.find(w=>w.id==='ter')||workoutPlan[0];
 }
 function v60AdvanceSequence(workoutId){
