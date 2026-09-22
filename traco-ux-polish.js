@@ -56,8 +56,9 @@
       const body=more.querySelector('.ux-home-more-body');
       move(smart,body);move(heat,body);
     }
-    if(metrics&&more)more.insertAdjacentElement('afterend',metrics);
-    if(links&&metrics)metrics.insertAdjacentElement('afterend',links);
+    let secondary=main.querySelector('.ux-home-secondary');
+    if(!secondary&&(metrics||links)){secondary=document.createElement('details');secondary.className='ux-home-secondary';secondary.innerHTML='<summary><div><b>resumo & atalhos</b><small>métricas e acessos rápidos</small></div><span>+</span></summary><div class="ux-home-secondary-body"></div>';(more||sequence||attention||coach||hero)?.insertAdjacentElement('afterend',secondary);}
+    if(secondary){const body=secondary.querySelector('.ux-home-secondary-body');move(metrics,body);move(links,body);}
   }
 
   const BODY={
@@ -167,6 +168,8 @@
     card.className='ux-progress-30';
     card.innerHTML='<header><span>ÚLTIMOS 30 DIAS</span><b>resumo primeiro, detalhes depois</b></header><div><article><b>'+s.workouts+'</b><span>treinos</span></article><article><b>'+s.prs+'</b><span>PRs</span></article><article><b>'+esc(deltaText(s.waist))+'</b><span>cintura</span></article><article><b>'+s.consistency+'%</b><span>consistência</span></article></div>';
     main.querySelector('.page-head')?.insertAdjacentElement('afterend',card);
+    let more=main.querySelector('.ux-progress-more');
+    if(!more){const candidates=Array.from(main.children).filter(n=>n!==card&&!n.classList.contains('page-head')&&!n.classList.contains('ux-progress-more'));if(candidates.length>3){more=document.createElement('details');more.className='ux-progress-more';more.innerHTML='<summary><div><b>análises detalhadas</b><small>volume · padrões · histórico</small></div><span>+</span></summary><div class="ux-progress-more-body"></div>';card.insertAdjacentElement('afterend',more);const body=more.querySelector('.ux-progress-more-body');candidates.slice(3).forEach(n=>move(n,body));}}
   }
 
   function settingsGroup(key,title,subtitle,open){
