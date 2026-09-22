@@ -1,7 +1,7 @@
 {
-  "version": "2.29.1",
+  "version": "2.29.2",
   "legacyVersion": "3.7.1",
   "name": "Traço",
   "design": "gym-first-performance-local-first",
-  "build": "clean-final-v363"
+  "build": "workout-ui-v364"
 }
