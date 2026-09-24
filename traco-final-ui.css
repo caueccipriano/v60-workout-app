@@ -430,3 +430,9 @@ html[data-theme="light"][data-design="performance"] .workout-select.active>span:
 html[data-theme="dark"][data-design="performance"] .workout-select.active{background:#171717!important;color:#f5f4f0!important}
 html[data-theme="dark"][data-design="performance"] .workout-select.active>span:nth-child(2)>b{color:#f5f4f0!important}
 html[data-theme="dark"][data-design="performance"] .workout-select.active>span:nth-child(2)>small{color:#aaa9a3!important}
+
+/* exercise actions */
+html[data-design="performance"] .perf-exercise-actions{display:grid;grid-template-columns:1fr 52px;gap:7px}
+html[data-design="performance"] .perf-exercise-actions .perf-skip-exercise{margin:0!important}
+html[data-design="performance"] .perf-exercise-more{min-height:48px;border:1px solid var(--line);border-radius:12px;background:var(--surface-soft);color:var(--text);font-weight:900;letter-spacing:.08em}
+html[data-design="performance"] .traco-exercise-actions .traco-swap-choice{width:100%}
