@@ -423,6 +423,29 @@ const TRACO_SMART_SWAPS={
   'leg-press-alto':[{name:'agachamento sumô com halter',equipment:'Halter',why:'mantém trabalho de pernas com maior ênfase posterior'}],
   'puxada-neutra':[{name:'puxada aberta',equipment:'Máquina / polia alta',why:'mantém puxada vertical para dorsais'}]
 };
+function tracoGymSkipToday(){
+  const session=state.activeSession,ex=session?.exercises?.[state.currentExercise];if(!session||!ex)return;
+  if((ex.sets||[]).some(s=>s.done)&&!confirm('você já registrou séries deste exercício. pular o restante hoje?'))return;
+  const previous=(ex.sets||[]).map(s=>({...s}));
+  (ex.sets||[]).forEach(s=>{if(!s.done){s.done=true;s.skipped=true;s.weight='';s.reps='';}});
+  ex.skippedToday=true;ex.skippedAt=Date.now();
+  if(!save(K.draft,session)){ex.sets=previous;delete ex.skippedToday;delete ex.skippedAt;return toast('não consegui pular o exercício');}
+  if(typeof tracoGymSyncQueueCursor==='function')tracoGymSyncQueueCursor(session);
+  haptic();toast('pulado só hoje · sua ficha continua igual');
+  const allDone=session.exercises.every(item=>(item.sets||[]).every(s=>s.done));
+  if(allDone){renderSession();return;}
+  renderSession();
+}
+function tracoGymOpenExerciseActions(){
+  const session=state.activeSession,ex=session?.exercises?.[state.currentExercise];if(!session||!ex)return;
+  $('#tracoExerciseActions')?.remove();
+  document.body.insertAdjacentHTML('beforeend',`<div class="traco-exercise-picker-backdrop" id="tracoExerciseActions"><section class="traco-exercise-picker-sheet traco-exercise-actions" role="dialog" aria-modal="true"><header class="traco-exercise-picker-head"><div><span>EXERCÍCIO ATUAL</span><h3>${tracoGymEsc(ex.name)}</h3><small>o que você quer fazer?</small></div><button id="tracoExerciseActionsClose" type="button">×</button></header><button class="traco-swap-choice" id="tracoActionLater"><span>↪</span><div><b>fazer outro agora</b><small>mantém este exercício pendente para depois</small></div><em>abrir</em></button><button class="traco-swap-choice" id="tracoActionSwap"><span>⇄</span><div><b>trocar exercício</b><small>usar uma alternativa equivalente só neste treino</small></div><em>trocar</em></button><button class="traco-swap-choice" id="tracoActionSkip"><span>—</span><div><b>pular hoje</b><small>não altera sua ficha nem a progressão futura</small></div><em>pular</em></button></section></div>`);
+  const close=()=>$('#tracoExerciseActions')?.remove();
+  $('#tracoExerciseActionsClose').onclick=close;$('#tracoExerciseActions').onclick=e=>{if(e.target.id==='tracoExerciseActions')close();};
+  $('#tracoActionLater').onclick=()=>{close();tracoGymOpenExercisePicker();};
+  $('#tracoActionSwap').onclick=()=>{close();tracoGymOpenSmartSwap();};
+  $('#tracoActionSkip').onclick=()=>{if(!confirm('pular '+ex.name+' só no treino de hoje?'))return;close();tracoGymSkipToday();};
+}
 function tracoGymOpenSmartSwap(){
   const session=state.activeSession,ex=session?.exercises?.[state.currentExercise];if(!session||!ex)return;
   const options=TRACO_SMART_SWAPS[ex.id]||[];
