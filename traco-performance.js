@@ -113,7 +113,7 @@ renderSession=function(){
       </div>
       <div class="perf-set-track">${ex.sets.map((x,i)=>`<span class="${x.done?'done':''} ${i===si?'current':''}"><b>${i+1}</b></span>`).join('')}</div>
       <button class="perf-complete-set" id="completeSet"><span>concluir série</span><b>→</b></button>
-      <button class="perf-skip-exercise" id="skipExercise" type="button">fazer outro agora · aparelho ocupado</button>
+      <div class="perf-exercise-actions"><button class="perf-skip-exercise" id="skipExercise" type="button">fazer outro agora</button><button class="perf-exercise-more" id="exerciseMore" type="button" aria-label="mais opções do exercício">•••</button></div>
     </section>
     <section class="perf-native-exercise-list" id="perfNativeExerciseList">
       <header><div><small>TREINO EM ANDAMENTO</small><h2>lista de exercícios</h2><p>toque no exercício que você quer fazer agora</p></div></header>
@@ -160,6 +160,7 @@ renderSession=function(){
     haptic();
     renderSession();
   };
+  if($('#exerciseMore'))$('#exerciseMore').onclick=()=>{if(typeof tracoGymOpenExerciseActions==='function')tracoGymOpenExerciseActions();else if(typeof tracoGymOpenSmartSwap==='function')tracoGymOpenSmartSwap();};
   $('#cancelSession').onclick=()=>{typeof v60CloseGuide==='function'&&v60CloseGuide();cancelSession();};
   $('#sessionBack').onclick=()=>{typeof v60CloseGuide==='function'&&v60CloseGuide();if(state.currentExercise>0){state.currentExercise--;renderSession();}else{state.page='home';render();}};
   $('#finishEarly').onclick=()=>{if(confirm('encerrar o treino agora?')){typeof v60CloseGuide==='function'&&v60CloseGuide();finishSession();}};
