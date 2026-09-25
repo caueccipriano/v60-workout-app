@@ -1,0 +1,25 @@
+# Local files and secrets
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.*
+!.env.example
+.secrets/
+secrets/
+*.pem
+*.key
+*.p12
+*.p8
+*.jks
+*.keystore
+key.properties
+service-account*.json
+google-services*.json
+GoogleService-Info.plist
+
+# Optional tool output
+node_modules/
+coverage/
+dist/
+.vercel/
