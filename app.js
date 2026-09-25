@@ -1,42 +1,41 @@
 const workoutPlan = [
-  { id:'seg', day:1, name:'peito + ombros + tríceps · foco estético', short:'peito + ombro', exercises:[
+  { id:'seg', day:1, name:'peito superior + ombros + tríceps · foco V', short:'peito + ombro', exercises:[
     ['supino-inclinado','supino inclinado','Smith + banco a ~30°',4,8,10,90,'🏋️'],
-    ['desenvolvimento','desenvolvimento na máquina','Máquina de ombros',3,8,12,90,'⬆️'],
     ['elevacao-lateral','elevação lateral','Halteres',4,12,20,60,'🪽'],
+    ['desenvolvimento','desenvolvimento na máquina','Máquina de ombros',2,8,12,90,'⬆️'],
     ['crucifixo-baixo-alto','crossover baixo → alto','Crossover',3,10,15,60,'↗️'],
     ['triceps-pushdown','tríceps pushdown','Polia alta + barra/corda',3,10,15,60,'💪'],
-    ['triceps-overhead','tríceps acima da cabeça','Polia alta + corda',3,10,15,60,'🔝'] ]},
-  { id:'ter', day:2, name:'pernas completas', short:'pernas', exercises:[
-    ['leg-press','leg press 45°','Leg press 45°',4,8,12,90,'🦵'],
+    ['triceps-overhead','tríceps acima da cabeça','Polia alta + corda',2,10,15,60,'🔝'] ]},
+  { id:'ter', day:2, name:'pernas completas · volume eficiente', short:'pernas', exercises:[
+    ['leg-press','leg press 45°','Leg press 45°',3,8,12,90,'🦵'],
     ['agachamento-smith','agachamento no Smith','Smith',3,8,12,90,'🏋️'],
-    ['extensora','cadeira extensora','Máquina extensora',3,10,15,60,'🦵'],
-    ['flexora','flexora sentada','Máquina flexora',4,10,15,60,'🦿'],
-    ['abdutora','abdutora','Máquina abdutora',3,15,20,60,'↔️'],
-    ['panturrilha','panturrilha no leg press','Leg press',4,12,20,60,'🦶'] ]},
-  { id:'qua', day:3, name:'costas + bíceps · foco largura', short:'costas + bíceps', exercises:[
+    ['extensora','cadeira extensora','Máquina extensora',2,10,15,60,'🦵'],
+    ['flexora','flexora sentada','Máquina flexora',3,10,15,60,'🦿'],
+    ['abdutora','abdutora','Máquina abdutora',2,15,20,60,'↔️'],
+    ['panturrilha','panturrilha no leg press','Leg press',3,12,20,60,'🦶'] ]},
+  { id:'qua', day:3, name:'costas + bíceps · largura e espessura', short:'costas + bíceps', exercises:[
     ['puxada-aberta','puxada alta aberta','Máquina de puxada',4,8,12,90,'🔻'],
-    ['remada-baixa','remada baixa','Polia baixa / crossover',2,8,12,90,'🚣'],
+    ['remada-baixa','remada baixa','Polia baixa / crossover',3,8,12,90,'🚣'],
     ['pullover','pullover braços estendidos','Polia alta',3,10,15,60,'⬇️'],
     ['crucifixo-inverso','voador inverso na máquina','Peck deck / voador inverso',3,12,15,60,'🪽'],
     ['rosca-polia','rosca bíceps na polia','Polia baixa',3,10,15,60,'💪'],
-    ['rosca-martelo','rosca martelo','Halteres',3,10,12,60,'🔨'],
+    ['rosca-martelo','rosca martelo','Halteres',2,10,12,60,'🔨'],
     ['crunch','crunch ajoelhado','Polia alta + corda',3,10,15,60,'◼️'] ]},
-  { id:'qui', day:4, name:'peitão + ombros + braços · foco inferior', short:'peito + braços', exercises:[
+  { id:'qui', day:4, name:'peito + ombros + braços · estética', short:'peito + braços', exercises:[
     ['supino-reto','supino reto','Smith + banco reto',3,8,12,90,'🏋️'],
-    ['crucifixo-reto','crossover alto → baixo','Crossover',3,12,15,60,'↘️'],
+    ['crucifixo-reto','crossover alto → baixo','Crossover',2,12,15,60,'↘️'],
     ['elevacao-lateral-2','elevação lateral','Halteres',4,12,20,60,'🪽'],
-    ['face-pull','face pull','Polia alta + corda',3,12,15,60,'🎯'],
+    ['face-pull','face pull','Polia alta + corda',2,12,15,60,'🎯'],
     ['triceps-overhead-2','tríceps acima da cabeça','Polia alta + corda',3,10,15,60,'🔝'],
     ['rosca-unilateral','rosca bíceps unilateral','Polia baixa',3,10,15,60,'💪'] ]},
   { id:'sex', day:5, name:'posterior + dorsal + ombros · foco V', short:'posterior + dorsal', exercises:[
     ['rdl','stiff / RDL','Smith',3,8,12,90,'↘️'],
-    ['flexora-2','flexora sentada','Máquina flexora',4,10,15,60,'🦿'],
+    ['flexora-2','flexora sentada','Máquina flexora',3,10,15,60,'🦿'],
     ['leg-press-alto','leg press — pés mais altos','Leg press 45°',3,10,12,90,'🦵'],
     ['puxada-neutra','puxada neutra / fechada','Máquina de puxada',4,8,12,90,'🔻'],
-    ['pullover','pullover braços estendidos','Polia alta',3,10,15,60,'⬇️'],
+    ['remada-apoiada','remada articulada com apoio no peito','Máquina de remada / banco inclinado',3,8,12,90,'🚣'],
     ['elevacao-lateral-3','elevação lateral','Halteres',3,12,20,60,'🪽'],
-    ['abdutora-2','abdutora','Máquina abdutora',2,15,20,60,'↔️'],
-    ['crunch-2','crunch na polia','Polia alta',3,10,15,60,'◼️'] ]}
+    ['abdutora-2','abdutora','Máquina abdutora',2,15,20,60,'↔️'] ]}
 ].map(w=>({...w, exercises:w.exercises.map(e=>({id:e[0],name:e[1],equipment:e[2],sets:e[3],min:e[4],max:e[5],rest:e[6],icon:e[7]}))}));
 
 const K={sessions:'v60_sessions', body:'v60_body', settings:'v60_settings', draft:'v60_draft', readiness:'traco_readiness'};
