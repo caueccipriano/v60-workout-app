@@ -421,7 +421,10 @@ const TRACO_SMART_SWAPS={
   'face-pull':[{name:'voador inverso na máquina',equipment:'Peck deck',why:'mantém deltoide posterior e parte alta das costas'}],
   'rdl':[{name:'stiff com halteres',equipment:'Halteres',why:'mantém dobradiça de quadril e posterior'}],
   'leg-press-alto':[{name:'agachamento sumô com halter',equipment:'Halter',why:'mantém trabalho de pernas com maior ênfase posterior'}],
-  'puxada-neutra':[{name:'puxada aberta',equipment:'Máquina / polia alta',why:'mantém puxada vertical para dorsais'}]
+  'puxada-neutra':[{name:'puxada aberta',equipment:'Máquina / polia alta',why:'mantém puxada vertical para dorsais'}],
+  'remada-apoiada':[{name:'remada baixa na polia',equipment:'Polia baixa / crossover',why:'mantém puxada horizontal e espessura das costas'}],
+  'core-reverse-ter':[{name:'reverse crunch no banco',equipment:'Banco / colchonete',why:'mantém flexão da pelve com controle abdominal'}],
+  'core-pallof-qui':[{name:'Pallof press com elástico',equipment:'Faixa elástica',why:'mantém trabalho anti-rotação sem depender da polia'}]
 };
 function tracoGymSkipToday(){
   const session=state.activeSession,ex=session?.exercises?.[state.currentExercise];if(!session||!ex)return;
@@ -523,9 +526,9 @@ function tracoGymDecorateSession(){
   const ex=session.exercises[state.currentExercise];
   const busy=$('#skipExercise');
   if(busy){
-    busy.textContent='trocar exercício · aparelho ocupado';
-    busy.setAttribute('aria-label','escolher outro exercício sem perder o progresso');
-    busy.onclick=()=>tracoGymOpenSmartSwap();
+    busy.textContent='alterar / pular exercício';
+    busy.setAttribute('aria-label','alterar, fazer outro agora ou pular este exercício');
+    busy.onclick=()=>tracoGymOpenExerciseActions();
   }
   const media=main.querySelector('.perf-media-block');
   if(media){
