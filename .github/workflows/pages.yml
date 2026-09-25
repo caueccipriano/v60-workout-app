@@ -178,7 +178,7 @@ jobs:
             if(!app.includes(required)) throw new Error(`Missing data safety guard: ${required}`);
           }
           if(!smart.includes('const finished=committed&&activeId&&sessions().some')) throw new Error('Sequence may advance after canceled finish');
-          if(!smart.includes('if(!finished)return')) throw new Error('Sequence completion guard missing');
+          if(!smart.includes('if(!finished)return false')) throw new Error('Sequence completion guard missing');
           if(!css.includes('.traco-undo-bar')||!css.includes('desfazer')===false) {
             if(!css.includes('.traco-undo-bar')) throw new Error('Undo snackbar style missing');
           }
