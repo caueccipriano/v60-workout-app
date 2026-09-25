@@ -405,7 +405,7 @@ function tracoGymCloseExercisePicker(){
 }
 const TRACO_SMART_SWAPS={
   'supino-inclinado':[{name:'supino inclinado com halteres',equipment:'Halteres + banco',why:'mesmo padrão de empurrar com foco no peitoral superior'}],
-  'desenvolvimento':[{name:'desenvolvimento com halteres',equipment:'Halteres',why:'mantém o padrão vertical para ombros'}],
+  'desenvolvimento':[{name:'desenvolvimento unilateral na polia',equipment:'Polia baixa / crossover',why:'mantém o padrão vertical para ombros sem depender de máquina específica'}],
   'crucifixo-baixo-alto':[{name:'crucifixo inclinado com halteres',equipment:'Halteres + banco',why:'mantém adução do peito com ênfase superior'}],
   'triceps-pushdown':[{name:'tríceps testa com halteres',equipment:'Halteres',why:'mantém foco no tríceps sem depender da polia'}],
   'leg-press':[{name:'agachamento goblet',equipment:'Halter',why:'mantém dominante de joelho e quadríceps'}],
@@ -418,11 +418,11 @@ const TRACO_SMART_SWAPS={
   'rosca-polia':[{name:'rosca direta com halteres',equipment:'Halteres',why:'mantém flexão de cotovelo para bíceps'}],
   'supino-reto':[{name:'supino reto com halteres',equipment:'Halteres + banco',why:'mesmo padrão de empurrar horizontal'}],
   'crucifixo-reto':[{name:'crucifixo reto com halteres',equipment:'Halteres + banco',why:'mantém adução horizontal do peito'}],
-  'face-pull':[{name:'voador inverso na máquina',equipment:'Peck deck',why:'mantém deltoide posterior e parte alta das costas'}],
+  'face-pull':[{name:'crucifixo inverso com halteres',equipment:'Halteres + banco',why:'mantém deltoide posterior e parte alta das costas'}],
   'rdl':[{name:'stiff com halteres',equipment:'Halteres',why:'mantém dobradiça de quadril e posterior'}],
   'leg-press-alto':[{name:'agachamento sumô com halter',equipment:'Halter',why:'mantém trabalho de pernas com maior ênfase posterior'}],
   'puxada-neutra':[{name:'puxada aberta',equipment:'Máquina / polia alta',why:'mantém puxada vertical para dorsais'}],
-  'remada-apoiada':[{name:'remada baixa na polia',equipment:'Polia baixa / crossover',why:'mantém puxada horizontal e espessura das costas'}],
+  'remada-unilateral':[{name:'remada baixa na polia',equipment:'Polia baixa / crossover',why:'mantém puxada horizontal e espessura das costas'}],
   'core-reverse-ter':[{name:'reverse crunch no banco',equipment:'Banco / colchonete',why:'mantém flexão da pelve com controle abdominal'}],
   'core-pallof-qui':[{name:'Pallof press com elástico',equipment:'Faixa elástica',why:'mantém trabalho anti-rotação sem depender da polia'}]
 };
