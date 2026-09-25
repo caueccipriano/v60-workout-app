@@ -1,34 +1,23 @@
-const V60_CORE_ADDED_IDS=['core-crunch-seg','core-pallof-ter','core-leg-raise-ter','core-woodchop-qui','core-dead-bug-qui'];
+const V60_CORE_ADDED_IDS=['core-reverse-ter','core-pallof-qui'];
 
 function v60CoreExercise(id,name,equipment,sets,min,max,rest,icon='◼️'){
   return {id,name,equipment,sets,min,max,rest,icon,core:true};
 }
 function v60InstallAestheticCorePlan(){
-  const seg=workoutPlan.find(w=>w.id==='seg');
   const ter=workoutPlan.find(w=>w.id==='ter');
   const qua=workoutPlan.find(w=>w.id==='qua');
   const qui=workoutPlan.find(w=>w.id==='qui');
-  const sex=workoutPlan.find(w=>w.id==='sex');
 
-  if(seg&&!seg.exercises.some(e=>e.id==='core-crunch-seg')){
-    seg.exercises.push(v60CoreExercise('core-crunch-seg','crunch na polia','Polia alta + corda',2,10,15,45,'◼️'));
+  if(ter&&!ter.exercises.some(e=>e.id==='core-reverse-ter')){
+    ter.exercises.push({...v60CoreExercise('core-reverse-ter','reverse crunch no chão','Solo / colchonete',3,10,15,45,'◼️'),usesLoad:false});
   }
-  if(ter&&!ter.exercises.some(e=>e.id==='core-pallof-ter')){
-    ter.exercises.push(v60CoreExercise('core-pallof-ter','Pallof press','Polia / crossover',2,10,12,45,'↔️'));
-  }
-  if(ter&&!ter.exercises.some(e=>e.id==='core-leg-raise-ter')){
-    ter.exercises.push({...v60CoreExercise('core-leg-raise-ter','reverse crunch no chão','Solo / colchonete',2,12,15,45,'◼️'),usesLoad:false});
-  }
+
   const wed=qua?.exercises.find(e=>e.id==='crunch');
-  if(wed)Object.assign(wed,{name:'crunch ajoelhado na polia',equipment:'Polia alta + corda',sets:2,min:10,max:15,rest:45,icon:'◼️',core:true});
-  if(qui&&!qui.exercises.some(e=>e.id==='core-woodchop-qui')){
-    qui.exercises.push(v60CoreExercise('core-woodchop-qui','Pallof press','Polia / crossover',2,10,12,45,'↔️'));
+  if(wed)Object.assign(wed,{name:'crunch ajoelhado na polia',equipment:'Polia alta + corda',sets:3,min:10,max:15,rest:60,icon:'◼️',core:true});
+
+  if(qui&&!qui.exercises.some(e=>e.id==='core-pallof-qui')){
+    qui.exercises.push(v60CoreExercise('core-pallof-qui','Pallof press','Polia / crossover',2,10,12,45,'↔️'));
   }
-  if(qui&&!qui.exercises.some(e=>e.id==='core-dead-bug-qui')){
-    qui.exercises.push({...v60CoreExercise('core-dead-bug-qui','reverse crunch no chão','Solo / colchonete',2,12,15,45,'◼️'),usesLoad:false});
-  }
-  const fri=sex?.exercises.find(e=>e.id==='crunch-2');
-  if(fri)Object.assign(fri,{name:'crunch ajoelhado na polia',equipment:'Polia alta + corda',sets:2,min:10,max:15,rest:45,icon:'◼️',core:true});
 }
 
 function v60CoreSceneReverseCrunch(){
@@ -96,12 +85,9 @@ if(typeof v60V4Scene==='function'){
   const v60CoreBaseScene=v60V4Scene;
   v60V4Scene=function(ex){
     const id=String(ex?.id||'');
-    if(id==='core-crunch-seg')return v60CoreBaseScene({...ex,id:'crunch-2'});
     if(id==='crunch')return v60CoreBaseScene({...ex,id:'crunch-2'});
-    if(id==='core-pallof-ter')return v60CoreScenePallof();
-    if(id==='core-leg-raise-ter')return v60CoreSceneReverseCrunch();
-    if(id==='core-woodchop-qui')return v60CoreScenePallof();
-    if(id==='core-dead-bug-qui')return v60CoreSceneReverseCrunch();
+    if(id==='core-reverse-ter')return v60CoreSceneReverseCrunch();
+    if(id==='core-pallof-qui')return v60CoreScenePallof();
     return v60CoreBaseScene(ex);
   };
 }
@@ -147,7 +133,7 @@ const v60CoreBaseRenderWorkouts=renderWorkouts;
 renderWorkouts=function(){
   v60CoreBaseRenderWorkouts();
   const main=document.querySelector('.workouts-page');
-  if(main&&!main.querySelector('.v60-core-program-note'))main.insertAdjacentHTML('beforeend','<section class="v60-core-program-note"><b>7 estímulos de core em 5 dias</b><span>foco cintura: crunch na polia + reverse crunch no chão + Pallof press · simples, sem flexão lateral pesada</span></section>');
+  if(main&&!main.querySelector('.v60-core-program-note'))main.insertAdjacentHTML('beforeend','<section class="v60-core-program-note"><b>core 3x/semana · 8 séries</b><span>reverse crunch + crunch na polia + Pallof press · resistência suficiente sem inflar o treino</span></section>');
 };
 
 if(state.activeSession)v60SyncCoreSession();
