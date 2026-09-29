@@ -39,3 +39,21 @@ test('rejects invalid dates and absurdly long imported phases', () => {
   assert.deepEqual(summarize({start:'2026-02-30',weeks:8},[]),[]);
   assert.deepEqual(summarize({start:'2026-09-01',weeks:100},[]),[]);
 });
+
+test('an out-of-phase duplicate must not hide an in-phase session', () => {
+  const weeks=summarize({start:'2026-09-01',weeks:1},
+    [record('2026-08-30','shared'),record('2026-09-02','shared')],
+    new Date('2026-09-03T12:00:00'));
+  assert.equal(weeks[0].completed,1);
+});
+
+test('intentional bodyweight exercises do not report missing kg', () => {
+  const bodyweight=record('2026-09-02','bodyweight',{exercises:[
+    {usesLoad:false,sets:[{done:true,weight:'',reps:15}]}
+  ]});
+  const weeks=summarize({start:'2026-09-01',weeks:1},
+    [bodyweight],new Date('2026-09-03T12:00:00'));
+  assert.equal(weeks[0].completed,1);
+  assert.equal(weeks[0].volumeKg,0);
+  assert.equal(weeks[0].partial,false);
+});
