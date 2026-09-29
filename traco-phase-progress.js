@@ -14,7 +14,7 @@
     return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
   }
   function utcDayFromKey(key) {
-    const match = /^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(String(key || ''));
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(key || ''));
     if (!match) return null;
     const day = Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
     return new Date(day).toISOString().slice(0, 10) === key ? day : null;
