@@ -39,17 +39,17 @@
     for (const entry of Array.isArray(history) ? history : []) {
       const stamp = Number(entry && entry.startedAt);
       if (!entry || !entry.finishedAt || !Number.isFinite(stamp) || stamp <= 0) continue;
-      // Imported backups can contain duplicate IDs. Count each session once.
-      if (entry.id != null) {
-        const id = String(entry.id);
-        if (seen.has(id)) continue;
-        seen.add(id);
-      }
       const local = new Date(stamp);
       if (!Number.isFinite(local.getTime())) continue;
       const sessionDay = utcDayFromDate(local);
       const index = Math.floor((sessionDay - start) / (7 * DAY_MS));
       if (index < 0 || index >= limit || sessionDay > today) continue;
+      // Ignore invalid/out-of-phase entries BEFORE reserving a duplicate ID.
+      if (entry.id != null) {
+        const id = String(entry.id);
+        if (seen.has(id)) continue;
+        seen.add(id);
+      }
       const week = weeks[index];
       week.completed++;
       if (entry.excludeFromVolume) {
@@ -57,6 +57,8 @@
         continue;
       }
       for (const exercise of Array.isArray(entry.exercises) ? entry.exercises : []) {
+        // Bodyweight reps are intentional, not missing external kg values.
+        if (exercise.usesLoad === false) continue;
         for (const set of Array.isArray(exercise.sets) ? exercise.sets : []) {
           if (!set.done || set.skipped) continue;
           const load = Number(set.weight);
