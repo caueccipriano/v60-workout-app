@@ -37,6 +37,7 @@ jobs:
           node --check traco-gym-ux.js
           node --check traco-coach.js
           node --check traco-body-coach.js
+          node --check traco-phase-progress.js
           node --check traco-lab.js
           node --check traco-evolution.js
           node --check traco-rest-background.js

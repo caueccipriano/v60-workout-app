@@ -40,3 +40,13 @@ html[data-theme="light"] .lab-home-card article,html[data-theme="light"] .lab-mu
 
 /* Shape Lab 2.0 */
 .lab-shape-focus{padding:18px;border:1px solid var(--line);border-radius:16px;margin:12px 0;background:var(--surface-soft)}.lab-shape-focus>span{font-size:10px;font-weight:900;letter-spacing:.14em;color:var(--perf-orange,#ff4138)}.lab-shape-focus h3{font-size:24px;line-height:1.05;margin:8px 0}.lab-shape-focus p{margin:0;color:var(--muted);line-height:1.45}.lab-shape-more{border:1px solid var(--line);border-radius:16px;margin:12px 0;background:var(--surface-soft);overflow:hidden}.lab-shape-more>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px;cursor:pointer}.lab-shape-more>summary::-webkit-details-marker{display:none}.lab-shape-more>summary div{display:flex;flex-direction:column;gap:3px}.lab-shape-more>summary b{font-size:16px}.lab-shape-more>summary small{color:var(--muted)}.lab-shape-more>summary>span{font-size:24px;transition:transform .2s}.lab-shape-more[open]>summary>span{transform:rotate(45deg)}.lab-shape-more-body{padding:0 10px 10px}.lab-shape-more-body>section{margin-top:10px}
+
+/* Read-only training-block breakdown: no changes to the chosen phase. */
+.lab-phase-weeks{display:grid;gap:7px;margin:14px 0}
+.lab-phase-weeks>b{font-size:8px;letter-spacing:.12em;color:var(--traco-action)}
+.lab-phase-week{display:grid;grid-template-columns:1fr auto;gap:3px 10px;padding:10px;border:1px solid #34343a;border-radius:11px;background:#1b1b1e}
+.lab-phase-week span{font-size:10px;font-weight:800}.lab-phase-week strong{font-size:10px;text-align:right}
+.lab-phase-week small{grid-column:1/-1;font-size:9px;color:#a7a9ad}
+.lab-phase-week.current{border-color:var(--traco-action)}.lab-phase-week.future{opacity:.55}
+html[data-theme="light"] .lab-phase-week{background:#FCFBF8;border-color:#DAD7D0}
+html[data-theme="light"] .lab-phase-week.current{border-color:var(--traco-action)}

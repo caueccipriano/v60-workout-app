@@ -279,7 +279,16 @@
     const p=phase();
     if(!p)return '<section class="lab-phase-card"><span>FASE DO PROJETO</span><h3>escolha o foco atual</h3><div>'+Object.keys(phasePresets).map(k=>'<button data-phase="'+k+'"><b>'+phasePresets[k].name+'</b><small>'+phasePresets[k].desc+'</small></button>').join('')+'</div></section>';
     const elapsed=Math.floor((Date.now()-p.startedAt)/86400000),total=p.weeks*7,pct=Math.min(100,Math.round(elapsed/total*100));
-    return '<section class="lab-phase-card active"><span>FASE DO PROJETO</span><h3>'+esc(p.name)+'</h3><p>'+esc(p.desc)+'</p><div class="lab-phase-track"><i style="width:'+pct+'%"></i></div><small>dia '+Math.min(total,elapsed+1)+' de '+total+'</small><button id="labChangePhase">trocar fase</button></section>';
+    const weeks=window.TracoPhaseProgress?.summarize(p,sessions(),new Date())||[];
+    const weekMarkup=weeks.length
+      ? '<div class="lab-phase-weeks"><b>SEU BLOCO · SEMANAS</b>'+
+        weeks.map(w=>'<div class="lab-phase-week '+w.status+'"><span>semana '+w.week+'</span><strong>'+w.completed+' treino'+(w.completed===1?'':'s')+'</strong><small>'+(
+          w.status==='future'?'a seguir':
+          w.partial?'volume parcial · cargas incompletas':
+          w.volumeKg>0?Math.round(w.volumeKg)+' kg registrados':'sem cargas registradas'
+        )+'</small></div>').join('')+'</div>'
+      : '';
+    return '<section class="lab-phase-card active"><span>FASE DO PROJETO</span><h3>'+esc(p.name)+'</h3><p>'+esc(p.desc)+'</p><div class="lab-phase-track"><i style="width:'+pct+'%"></i></div><small>dia '+Math.min(total,elapsed+1)+' de '+total+'</small>'+weekMarkup+'<button id="labChangePhase">trocar fase</button></section>';
   }
   function goals(){return read(GOALS_KEY,[])}
   function addGoal(type,target){
