@@ -1,0 +1,37 @@
+name: Traço release asset QA
+on:
+  pull_request:
+    paths:
+      - index.html
+      - app.js
+      - version.json
+      - sw.js
+      - .github/workflows/release-asset-qa.yml
+  workflow_dispatch:
+jobs:
+  aligned:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate JavaScript
+        run: node --check app.js && node --check traco-phase-progress.js
+      - name: Verify every local asset and service worker use release suffix
+        run: |
+          node <<'NODE'
+          const fs=require('node:fs');
+          const version=JSON.parse(fs.readFileSync('version.json','utf8'));
+          const suffix=String(version.build).match(/-v(\d+)$/)?.[1];
+          if(!suffix)throw new Error('Missing release build version');
+          const index=fs.readFileSync('index.html','utf8');
+          const app=fs.readFileSync('app.js','utf8');
+          const sw=fs.readFileSync('sw.js','utf8');
+          const refs=[...index.matchAll(/(?:src|href)="\.\/[^"]+\.(?:js|css)\?v=(\d+)"/g)].map(x=>x[1]);
+          if(refs.length<35)throw new Error('Missing local script/style assets');
+          if(refs.some(v=>v!==suffix))throw new Error('Mixed cache-busting suffixes detected');
+          if(!app.includes("navigator.serviceWorker.register('./sw.js?v="+suffix+"')"))throw new Error('SW registration version mismatch');
+          if(!sw.includes("'./traco-phase-progress.js'"))throw new Error('Phase code is not offline-cached');
+          console.log('Release version v'+suffix+' consistent across '+refs.length+' assets, SW and offline precache');
+          NODE
