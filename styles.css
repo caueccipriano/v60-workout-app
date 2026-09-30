@@ -95,3 +95,5 @@ svg{display:block;width:1.25em;height:1.25em}
 
 /* v327 rest controls */
 .rest-inner p b{color:#fff}.rest-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}.rest-actions button{margin:0;background:#fff;color:#111;border:0;min-height:48px;padding:10px 16px;font-weight:800}.rest-inner>#skipRest{margin-top:12px;min-height:48px;width:100%}
+
+.settings-backup-note{display:block;padding:7px 14px 12px;font-size:11px;line-height:1.65;opacity:.78}
