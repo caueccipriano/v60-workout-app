@@ -9,6 +9,9 @@ on:
       - traco-backup-guard.js
       - traco-runtime.js
       - traco-brand.js
+      - traco-muscle-focus.js
+      - traco-muscle-focus.css
+      - test/traco-muscle-focus.test.cjs
       - test/traco-backup-guard.test.cjs
       - .github/workflows/release-asset-qa.yml
   workflow_dispatch:
@@ -21,9 +24,9 @@ jobs:
         with:
           node-version: '22'
       - name: Validate JavaScript
-        run: node --check app.js && node --check traco-phase-progress.js && node --check traco-backup-guard.js && node --check traco-runtime.js && node --check traco-brand.js
+        run: node --check app.js && node --check traco-phase-progress.js && node --check traco-backup-guard.js && node --check traco-runtime.js && node --check traco-brand.js && node --check traco-muscle-focus.js
       - name: Verify backup import safety
-        run: node --test test/traco-backup-guard.test.cjs
+        run: node --test test/traco-backup-guard.test.cjs test/traco-muscle-focus.test.cjs
       - name: Verify every local asset and service worker use release suffix
         run: |
           node <<'NODE'
@@ -44,5 +47,7 @@ jobs:
           if(brand.includes('importData=function')) throw new Error('Unsafe branded importer override reintroduced');
           if(!sw.includes("'./traco-backup-guard.js'")) throw new Error('Backup guard must be available offline');
           if(!sw.includes("'./traco-phase-progress.js'"))throw new Error('Phase code is not offline-cached');
+          if(!sw.includes("'./traco-muscle-focus.js'"))throw new Error('Muscle focus JS is not offline-cached');
+          if(!sw.includes("'./traco-muscle-focus.css'"))throw new Error('Muscle focus CSS is not offline-cached');
           console.log('Release version v'+suffix+' consistent across '+refs.length+' assets, SW and offline precache');
           NODE

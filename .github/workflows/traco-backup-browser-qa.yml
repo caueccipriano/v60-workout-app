@@ -6,6 +6,11 @@ on:
       - traco-backup-guard.js
       - test/traco-backup-guard.test.cjs
       - test/traco-backup-browser.spec.cjs
+      - test/traco-pwa-offline.spec.cjs
+      - traco-muscle-focus.js
+      - traco-gym-ux.js
+      - traco-muscle-focus.css
+      - sw.js
       - index.html
       - .github/workflows/traco-backup-browser-qa.yml
   workflow_dispatch:
@@ -35,3 +40,5 @@ jobs:
           python -m http.server 4173 --bind 127.0.0.1 >/tmp/traco-browser.log 2>&1 &
       - name: Synthetic import, validation and rollback
         run: npx playwright test test/traco-backup-browser.spec.cjs --browser=${{ matrix.browser }} --reporter=line --workers=1
+      - name: Offline muscle focus and session preservation
+        run: npx playwright test test/traco-pwa-offline.spec.cjs --browser=${{ matrix.browser }} --reporter=line --workers=1

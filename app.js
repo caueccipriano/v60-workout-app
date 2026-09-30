@@ -151,9 +151,15 @@ function renderHome(){
 
 function renderWorkouts(){
   const selected=workoutPlan.find(w=>w.id===(state.selectedWorkout||todayWorkout().id));
+  const muscleFocus=window.TracoMuscleFocus?.forWorkout?.(selected.id)||[];
+  const recentMuscleSessions=window.TracoMuscleFocus?.recentSessions?.(sessions(),selected.id,new Date())||0;
   shell(`<div class="page-head"><div><span class="page-kicker">semana</span><h2>seus treinos</h2></div><span class="page-count">5x</span></div>
     <div class="workout-stack">${workoutPlan.map((w,i)=>`<button class="workout-select ${w.id===selected.id?'active':''}" data-workout="${w.id}"><span class="workout-num">0${i+1}</span><span><b>${w.short}</b><small>${w.exercises.length} exercícios · ~60 min</small></span><span class="arrow">→</span></button>`).join('')}</div>
-    <section class="selected-block"><div class="selected-blue"><span>selecionado</span><h3>${selected.name}</h3><p>${selected.exercises.length} exercícios · ~60 min</p></div><details class="workout-exercise-preview"><summary><div><b>ver exercícios</b><small>${selected.exercises.length} movimentos · séries e equipamentos</small></div><span>+</span></summary><div class="exercise-preview">${selected.exercises.map(ex=>`<div class="preview-row"><span>${ex.icon}</span><div><b>${ex.name}</b><small>${ex.sets} × ${ex.min}-${ex.max} · ${ex.equipment}</small></div></div>`).join('')}</div></details><button class="cta-lime" id="startSelected">começar treino</button></section>`,{classes:'workouts-page'});
+    <section class="selected-block"><div class="selected-blue"><span>selecionado</span><h3>${selected.name}</h3><p>${selected.exercises.length} exercícios · ~60 min</p></div><div class="traco-muscle-focus" aria-label="Foco muscular planejado">
+      <span class="traco-muscle-focus-label">✦ foco deste treino</span>
+      <div class="traco-muscle-groups">${muscleFocus.map(group=>`<span class="traco-muscle-group">${group}</span>`).join('')}</div>
+      <small class="traco-muscle-recent">${recentMuscleSessions} ${recentMuscleSessions===1?'sessão registrada':'sessões registradas'} deste treino nos últimos 14 dias · referência do plano, não medição muscular</small>
+    </div><details class="workout-exercise-preview"><summary><div><b>ver exercícios</b><small>${selected.exercises.length} movimentos · séries e equipamentos</small></div><span>+</span></summary><div class="exercise-preview">${selected.exercises.map(ex=>`<div class="preview-row"><span>${ex.icon}</span><div><b>${ex.name}</b><small>${ex.sets} × ${ex.min}-${ex.max} · ${ex.equipment}</small></div></div>`).join('')}</div></details><button class="cta-lime" id="startSelected">começar treino</button></section>`,{classes:'workouts-page'});
   $$('[data-workout]').forEach(el=>el.onclick=()=>{state.selectedWorkout=el.dataset.workout;renderWorkouts()});$('#startSelected').onclick=()=>startSession(selected.id);
 }
 
@@ -679,5 +685,5 @@ function importData(e){
 
 function render(){if(state.page!=='session')clearInterval(state.sessionClock);switch(state.page){case'home':renderHome();break;case'workouts':renderWorkouts();break;case'history':renderHistory();break;case'progress':renderProgress();break;case'photos':if(window.TracoCoach?.renderPhotosPage)window.TracoCoach.renderPhotosPage();else{app.innerHTML='<main class="perf-page perf-photos"><section class="empty-card"><b>fotos indisponíveis</b><p>não consegui carregar o check-in de fotos agora.</p><button id="photosRetry">tentar novamente</button></section></main>';document.querySelector('#photosRetry')?.addEventListener('click',()=>render())}break;case'body':renderBody();break;case'food':if(window.TracoMenuPlanner?.renderFood)window.TracoMenuPlanner.renderFood();else{app.innerHTML='<main class="perf-page perf-food"><section class="empty-card"><b>cardápios indisponíveis</b><p>não consegui carregar esta área agora.</p><button id="foodRetry">tentar novamente</button></section></main>';document.querySelector('#foodRetry')?.addEventListener('click',()=>render())}break;case'settings':renderSettings();break;case'session':renderSession();break;case'finish':renderFinish();break;default:state.page='home';renderHome();}}
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();state.installPrompt=e});
-if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=370').catch(()=>{}));
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=371').catch(()=>{}));
 render();
