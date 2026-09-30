@@ -5,9 +5,9 @@
 (function(){
   'use strict';
 
-  const VERSION='1.6.9';
-  const BUILD='sequence-anchor-v366';
-  const BUILD_NUMBER='366';
+  const VERSION='1.7.0';
+  const BUILD='safe-backup-import-v370';
+  const BUILD_NUMBER='370';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);

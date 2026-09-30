@@ -633,14 +633,51 @@ function renderSettings(){
   shell(`<div class="page-head settings-head"><div><span class="page-kicker">ajustes</span><h2>config</h2></div><button class="profile-btn" aria-label="perfil">${iconSvg('user')}</button></div>
     <section class="settings-intro"><b>deixa do seu jeito.</b><span>o treino fica em primeiro plano; o resto mora aqui.</span></section>
     <section class="form-card light compact-card"><h3>descanso</h3><label>tempo padrão<div class="unit-input"><input id="restDefault" type="number" min="30" max="180" step="15" value="${st.defaultRest||60}"><span>s</span></div></label></section>
-    <section class="form-card light compact-card"><h3>app</h3><button class="settings-row" id="installBtn">instalar no celular <span>→</span></button><button class="settings-row" id="exportData">exportar backup <span>→</span></button><label class="settings-row">importar backup <span>→</span><input id="importData" type="file" accept="application/json" hidden></label>${draft?'<button class="settings-row danger" id="clearDraft">apagar treino em andamento <span>×</span></button>':''}</section>`,{classes:'settings-page'});
+    <section class="form-card light compact-card"><h3>app</h3><button class="settings-row" id="installBtn">instalar no celular <span>→</span></button><button class="settings-row" id="exportData">exportar treinos e medidas <span>→</span></button><small class="settings-backup-note">Este JSON inclui treinos, medidas e ajustes — fotos e dados de outros módulos podem exigir exportação separada. Guarde uma cópia antes de importar.</small><label class="settings-row">importar backup <span>→</span><input id="importData" type="file" accept="application/json" hidden></label>${draft?'<button class="settings-row danger" id="clearDraft">apagar treino em andamento <span>×</span></button>':''}</section>`,{classes:'settings-page'});
   $('#restDefault').onchange=e=>save(K.settings,{...st,defaultRest:Number(e.target.value)});$('#installBtn').onclick=installApp;$('#exportData').onclick=exportData;$('#importData').onchange=importData;if($('#clearDraft'))$('#clearDraft').onclick=()=>{localStorage.removeItem(K.draft);toast('rascunho apagado');renderSettings()};
 }
 function installApp(){if(state.installPrompt){state.installPrompt.prompt();state.installPrompt.userChoice.finally(()=>state.installPrompt=null)}else{alert('no iPhone: Safari → Compartilhar → Adicionar à Tela de Início.')}}
 function exportData(){const data={sessions:sessions(),body:body(),settings:settings(),exportedAt:new Date().toISOString()};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='traco-backup.json';a.click();URL.revokeObjectURL(a.href)}
-function importData(e){const f=e.target.files?.[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(d.sessions)save(K.sessions,d.sessions);if(d.body)save(K.body,d.body);if(d.settings)save(K.settings,d.settings);toast('backup importado');render()}catch{alert('arquivo inválido')}};r.readAsText(f)}
+function importData(e){
+ const input=e.target;
+ const file=input.files?.[0];
+ if(!file)return;
+ if(file.size>8*1024*1024){alert('Backup maior que 8 MB. Seus dados atuais não foram alterados.');return;}
+ if(load(K.draft,null)){
+  alert('Há um treino em andamento. Termine ou resolva o rascunho antes de substituir os dados.');
+  return;
+ }
+ const r=new FileReader();
+ r.onerror=()=>{input.value='';alert('Não foi possível ler o arquivo. Nenhum dado foi substituído.');};
+ r.onload=()=>{
+  // Clearing before FileReader starts can invalidate the selected file on
+  // some Safari/WebKit engines. Keep it until the read fully finishes.
+  input.value='';
+  let d;
+  try{
+   if(!window.TracoBackupGuard)throw Error('Validador de backup indisponível. Reabra o app online.');
+   d=window.TracoBackupGuard.parse(String(r.result||''));
+  }catch(error){alert(error?.message||'Arquivo de backup inválido. Nada foi importado.');return;}
+  const sections=Object.keys(d).filter(k=>k!=='storage').join(', ');
+  const full=d.storage?'Arquivo completo do Traço, incluindo dados locais adicionais.':'Backup de treinos, medidas e ajustes.';
+  if(!confirm('IMPORTAR BACKUP?\n'+full+'\nSeções encontradas: '+(sections||'dados locais')+
+     '\nOs dados dessas seções serão substituídos neste aparelho.'+
+     '\nExporte antes uma cópia dos seus dados atuais.'+
+     '\nContinuar somente se você já tem essa cópia.'))return;
+  const result=window.TracoBackupGuard.commit(localStorage,K,d);
+  if(!result.ok){
+   alert(result.restored
+     ?'Não foi possível importar. Os dados anteriores foram preservados.'
+     :'Falha de armazenamento. Alguns dados podem não ter sido restaurados; recupere sua cópia exportada.');
+   return;
+  }
+  toast('treinos, medidas e ajustes importados');
+  render();
+ };
+ r.readAsText(file);
+}
 
 function render(){if(state.page!=='session')clearInterval(state.sessionClock);switch(state.page){case'home':renderHome();break;case'workouts':renderWorkouts();break;case'history':renderHistory();break;case'progress':renderProgress();break;case'photos':if(window.TracoCoach?.renderPhotosPage)window.TracoCoach.renderPhotosPage();else{app.innerHTML='<main class="perf-page perf-photos"><section class="empty-card"><b>fotos indisponíveis</b><p>não consegui carregar o check-in de fotos agora.</p><button id="photosRetry">tentar novamente</button></section></main>';document.querySelector('#photosRetry')?.addEventListener('click',()=>render())}break;case'body':renderBody();break;case'food':if(window.TracoMenuPlanner?.renderFood)window.TracoMenuPlanner.renderFood();else{app.innerHTML='<main class="perf-page perf-food"><section class="empty-card"><b>cardápios indisponíveis</b><p>não consegui carregar esta área agora.</p><button id="foodRetry">tentar novamente</button></section></main>';document.querySelector('#foodRetry')?.addEventListener('click',()=>render())}break;case'settings':renderSettings();break;case'session':renderSession();break;case'finish':renderFinish();break;default:state.page='home';renderHome();}}
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();state.installPrompt=e});
-if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=369').catch(()=>{}));
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=370').catch(()=>{}));
 render();

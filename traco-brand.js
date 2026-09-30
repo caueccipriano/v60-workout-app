@@ -45,37 +45,17 @@ exportData=function(){
   };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
+  const url=URL.createObjectURL(blob);
+  a.href=url;
   a.download='traco-backup.json';
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(a.href);
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),10000);
 };
 
-importData=function(e){
-  const file=e.target.files?.[0];
-  if(!file)return;
-  const reader=new FileReader();
-  reader.onload=()=>{
-    try{
-      const data=JSON.parse(reader.result);
-      if(data.storage&&typeof data.storage==='object'){
-        Object.entries(data.storage).forEach(([key,value])=>{
-          if((key.startsWith('v60_')||key.startsWith('traco_'))&&typeof value==='string')localStorage.setItem(key,value);
-        });
-      }else{
-        if(data.sessions)save(K.sessions,data.sessions);
-        if(data.body)save(K.body,data.body);
-        if(data.settings)save(K.settings,data.settings);
-      }
-      tracoApplyTheme(tracoTheme());
-      toast('backup do Traço importado');
-      render();
-    }catch{
-      alert('arquivo de backup inválido');
-    }
-  };
-  reader.readAsText(file);
-};
+// Import is owned by app.js and validated by TracoBackupGuard. Do not
+// override it here: doing so bypasses file validation and best-effort rollback.
 
 const tracoBaseRenderHome=renderHome;
 renderHome=function(){
