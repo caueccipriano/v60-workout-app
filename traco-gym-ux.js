@@ -583,6 +583,18 @@ function tracoGymFlashSavedSet(){
 // core write succeeds; failed writes must never look completed.
 
 /* WORKOUT LIBRARY */
+// Use finished local history only. A missing session is not a workout.
+function tracoGymLastWorkout(workoutId){
+  const finished=sessions()
+    .filter(session=>session?.workoutId===workoutId &&
+      Number.isFinite(Number(session.startedAt)) &&
+      Number.isFinite(Number(session.finishedAt)) &&
+      Number(session.finishedAt)>=Number(session.startedAt) &&
+      Number(session.finishedAt)>0)
+    .sort((a,b)=>Number(b.finishedAt)-Number(a.finishedAt));
+  if(!finished.length)return 'ainda não feito';
+  return 'feito '+fmtDate(new Date(Number(finished[0].startedAt)));
+}
 const tracoGymBaseWorkouts=renderWorkouts;
 renderWorkouts=function(){
   tracoGymBaseWorkouts();
