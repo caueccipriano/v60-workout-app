@@ -7,14 +7,20 @@ if(!buildSuffix)throw new Error('Traço version metadata missing asset suffix');
 
 test.use({ serviceWorkers:'allow' });
 
-test('planned muscle focus survives offline PWA reload with existing sessions', async ({page,context}) => {
+test('planned muscle focus survives offline PWA reload with existing sessions', async ({context}) => {
+  // The SW may reload the first document on controllerchange. Install it on
+  // a disposable page, then start the assertions on a *fresh controlled* tab.
+  const installer=await context.newPage();
+  await installer.goto('http://127.0.0.1:4173/', {waitUntil:'load'});
+  await installer.evaluate(async () => { await navigator.serviceWorker.ready; });
+  await installer.waitForFunction(() => !!navigator.serviceWorker.controller, null, {timeout:20000});
+  await installer.close();
+  const page=await context.newPage();
   const errors=[];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('http://127.0.0.1:4173/', {waitUntil:'load'});
   await page.waitForFunction(expected => window.TracoRuntime?.build === expected,buildSuffix);
-  await page.evaluate(async () => { await navigator.serviceWorker.ready; });
-  // Ensure this page is controlled before deliberately disconnecting.
-  await page.waitForFunction(() => !!navigator.serviceWorker.controller, null, {timeout:20000});
+  await page.waitForTimeout(250); // Allow gym and smart-workout enhancement layers to settle.
   await page.evaluate(() => {
     const at=Date.now()-3600000;
     localStorage.setItem('v60_sessions',JSON.stringify([{
@@ -30,6 +36,7 @@ test('planned muscle focus survives offline PWA reload with existing sessions', 
   await context.setOffline(true);
   await page.reload({waitUntil:'load'});
   await page.waitForFunction(expected => window.TracoRuntime?.build === expected,buildSuffix);
+  await page.waitForTimeout(250);
   await page.evaluate(() => {
     state.page='workouts';
     state.selectedWorkout='seg';
