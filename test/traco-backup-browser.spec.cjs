@@ -1,11 +1,16 @@
 const {test,expect}=require('@playwright/test');
+const fs=require('node:fs');
+const path=require('node:path');
+const build=JSON.parse(fs.readFileSync(path.join(__dirname,'../version.json'),'utf8')).build;
+const expectedBuild=String(build).match(/-v(\d+)$/)?.[1];
+if(!expectedBuild)throw new Error('Invalid Traço version.json build suffix');
 // Import QA does not test offline SW installation. Disable the automatic
 // controllerchange reload so a fresh first visit cannot interrupt FileReader.
 test.use({serviceWorkers:'block'});
 const url='http://127.0.0.1:4173/';
 async function settings(page){
  await page.goto(url,{waitUntil:'load'});
- await page.waitForFunction(()=>window.TracoRuntime?.build==='370');
+ await page.waitForFunction(expected=>window.TracoRuntime?.build===expected,expectedBuild);
  await page.waitForTimeout(120); // Allow the runtime's initial 25ms boot.
  await page.evaluate(()=>{state.page='settings';render();});
  await expect(page.locator('#importData')).toHaveCount(1);
