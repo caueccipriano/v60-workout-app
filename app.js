@@ -639,8 +639,8 @@ function renderSettings(){
 function installApp(){if(state.installPrompt){state.installPrompt.prompt();state.installPrompt.userChoice.finally(()=>state.installPrompt=null)}else{alert('no iPhone: Safari → Compartilhar → Adicionar à Tela de Início.')}}
 function exportData(){const data={sessions:sessions(),body:body(),settings:settings(),exportedAt:new Date().toISOString()};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='traco-backup.json';a.click();URL.revokeObjectURL(a.href)}
 function importData(e){
- const file=e.target.files?.[0];
- e.target.value='';
+ const input=e.target;
+ const file=input.files?.[0];
  if(!file)return;
  if(file.size>4*1024*1024){alert('Backup maior que 4 MB. Seus dados atuais não foram alterados.');return;}
  if(load(K.draft,null)){
@@ -648,8 +648,11 @@ function importData(e){
   return;
  }
  const r=new FileReader();
- r.onerror=()=>alert('Não foi possível ler o arquivo. Nenhum dado foi substituído.');
+ r.onerror=()=>{input.value='';alert('Não foi possível ler o arquivo. Nenhum dado foi substituído.');};
  r.onload=()=>{
+  // Clearing before FileReader starts can invalidate the selected file on
+  // some Safari/WebKit engines. Keep it until the read fully finishes.
+  input.value='';
   let d;
   try{
    if(!window.TracoBackupGuard)throw Error('Validador de backup indisponível. Reabra o app online.');
