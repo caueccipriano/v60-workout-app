@@ -8,6 +8,7 @@ on:
       - test/traco-backup-browser.spec.cjs
       - test/traco-pwa-offline.spec.cjs
       - traco-muscle-focus.js
+      - traco-gym-ux.js
       - traco-muscle-focus.css
       - sw.js
       - index.html
