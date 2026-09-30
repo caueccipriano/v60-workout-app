@@ -2,7 +2,8 @@ const {test,expect}=require('@playwright/test');
 const url='http://127.0.0.1:4173/';
 async function settings(page){
  await page.goto(url,{waitUntil:'load'});
- await page.evaluate(()=>renderSettings());
+ await page.waitForFunction(()=>window.TracoRuntime?.build==='370');
+ await page.evaluate(()=>{state.page='settings';render();});
  await expect(page.locator('#importData')).toHaveCount(1);
 }
 const fixture=(obj)=>({name:'synthetic-traço.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(obj))});
