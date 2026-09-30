@@ -53,3 +53,16 @@ test('a storage quota failure rolls back the previous section',async({page})=>{
  expect(await page.evaluate(()=>localStorage.getItem('v60_sessions'))).toBe('[{"id":"existing"}]');
  expect(await page.evaluate(()=>localStorage.getItem('v60_body'))).toBe('[{"id":"existing-body"}]');
 });
+
+test("branded full backup restores optional module keys instead of silently dropping them",async({page})=>{
+ await settings(page);
+ page.on("dialog",async dialog=>dialog.accept());
+ const stored={v60_sessions:'[{"id":"branded"}]',v60_body:"[]",
+   v60_settings:'{"defaultRest":60}',traco_theme:"dark",
+   traco_photo_checkin_v1:'[{"id":"fictional-photo"}]'};
+ await page.locator("#importData").setInputFiles(fixture({
+  brand:"Traço",sessions:[{id:"branded"}],body:[],settings:{defaultRest:60},storage:stored
+ }));
+ await expect.poll(()=>page.evaluate(()=>localStorage.getItem("traco_photo_checkin_v1"))).toBe(stored.traco_photo_checkin_v1);
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem("v60_sessions"))[0].id)).toBe("branded");
+});
