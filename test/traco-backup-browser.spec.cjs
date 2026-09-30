@@ -1,8 +1,12 @@
 const {test,expect}=require('@playwright/test');
+// Import QA does not test offline SW installation. Disable the automatic
+// controllerchange reload so a fresh first visit cannot interrupt FileReader.
+test.use({serviceWorkers:'block'});
 const url='http://127.0.0.1:4173/';
 async function settings(page){
  await page.goto(url,{waitUntil:'load'});
  await page.waitForFunction(()=>window.TracoRuntime?.build==='370');
+ await page.waitForTimeout(120); // Allow the runtime's initial 25ms boot.
  await page.evaluate(()=>{state.page='settings';render();});
  await expect(page.locator('#importData')).toHaveCount(1);
 }
