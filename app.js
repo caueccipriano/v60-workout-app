@@ -642,7 +642,7 @@ function importData(e){
  const input=e.target;
  const file=input.files?.[0];
  if(!file)return;
- if(file.size>4*1024*1024){alert('Backup maior que 4 MB. Seus dados atuais não foram alterados.');return;}
+ if(file.size>8*1024*1024){alert('Backup maior que 8 MB. Seus dados atuais não foram alterados.');return;}
  if(load(K.draft,null)){
   alert('Há um treino em andamento. Termine ou resolva o rascunho antes de substituir os dados.');
   return;
@@ -658,8 +658,9 @@ function importData(e){
    if(!window.TracoBackupGuard)throw Error('Validador de backup indisponível. Reabra o app online.');
    d=window.TracoBackupGuard.parse(String(r.result||''));
   }catch(error){alert(error?.message||'Arquivo de backup inválido. Nada foi importado.');return;}
-  const sections=Object.keys(d).join(', ');
-  if(!confirm('IMPORTAR BACKUP?\nSeções encontradas: '+sections+
+  const sections=Object.keys(d).filter(k=>k!=='storage').join(', ');
+  const full=d.storage?'Arquivo completo do Traço, incluindo dados locais adicionais.':'Backup de treinos, medidas e ajustes.';
+  if(!confirm('IMPORTAR BACKUP?\n'+full+'\nSeções encontradas: '+(sections||'dados locais')+
      '\nOs dados dessas seções serão substituídos neste aparelho.'+
      '\nExporte antes uma cópia dos seus dados atuais.'+
      '\nContinuar somente se você já tem essa cópia.'))return;
