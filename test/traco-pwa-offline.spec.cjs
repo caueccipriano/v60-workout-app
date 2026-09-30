@@ -28,9 +28,10 @@ test('planned muscle focus survives offline PWA reload with existing sessions', 
       finishedAt:at+1800000,exercises:[],prs:[],
     }]));
     state.page='workouts';
-    state.selectedWorkout='seg';
-    renderWorkouts();
+    render();
   });
+  // A real selection sets the smart-sequence manual-selection flag.
+  await page.locator('.workout-select[data-workout="seg"]').click();
   await expect(page.locator('.traco-muscle-focus')).toContainText('peito');
   await expect(page.locator('.traco-muscle-recent')).toContainText('1 sessão registrada');
   await context.setOffline(true);
@@ -39,9 +40,10 @@ test('planned muscle focus survives offline PWA reload with existing sessions', 
   await page.waitForTimeout(250);
   await page.evaluate(() => {
     state.page='workouts';
-    state.selectedWorkout='seg';
-    renderWorkouts();
+    render();
   });
+  // A real selection sets the smart-sequence manual-selection flag.
+  await page.locator('.workout-select[data-workout="seg"]').click();
   await expect(page.locator('.traco-muscle-focus')).toContainText('peito');
   await expect(page.locator('.traco-muscle-recent')).toContainText('1 sessão registrada');
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('v60_sessions'))[0].id))
