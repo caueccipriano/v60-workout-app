@@ -1,0 +1,8 @@
+/* Traço: compact and accessible planned muscle focus; no extra navigation. */
+.traco-muscle-focus{border:1px solid var(--line,#e6e6e1);border-radius:18px;padding:15px 16px;margin:14px 0;background:var(--surface-soft,#f4f4ef);color:var(--text,#111)}
+.traco-muscle-focus-label{display:block;letter-spacing:.085em;font-size:10px;font-weight:900;text-transform:uppercase;margin-bottom:11px}
+.traco-muscle-groups{display:flex;flex-wrap:wrap;gap:7px}
+.traco-muscle-group{display:inline-flex;align-items:center;border:1px solid currentColor;border-radius:100px;padding:6px 10px;font-size:12px;font-weight:700}
+.traco-muscle-recent{display:block;font-size:11px;line-height:1.45;color:var(--muted,#777);margin-top:11px}
+:root[data-theme=dark] .traco-muscle-focus{background:#212121;border-color:#474747}
+:root[data-theme=dark] .traco-muscle-group{color:#c4d82e}
