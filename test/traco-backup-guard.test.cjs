@@ -35,3 +35,35 @@ test("a storage failure rolls back earlier writes and never reports success",()=
  assert.equal(store.map.get("v60_sessions"),'[{"id":"old"}]');
  assert.equal(store.map.get("v60_body"),'[{"id":"oldBody"}]');
 });
+
+test("restores branded Traço full snapshots without dropping optional module data",()=>{
+ const sessions=[{id:"branded",finishedAt:1234}];
+ const source={brand:"Traço",sessions,body:[],settings:{defaultRest:60},
+  storage:{v60_sessions:JSON.stringify(sessions),v60_body:"[]",v60_settings:'{"defaultRest":60}',
+    traco_theme:"dark",traco_photo_checkin_v1:'[{"id":"fictional-photo"}]'}};
+ const parsed=guard.parse(JSON.stringify(source));
+ const store=memory();
+ assert.deepEqual(guard.commit(store,keys,parsed),{ok:true,restored:true});
+ assert.equal(store.map.get("traco_theme"),"dark");
+ assert.equal(store.map.get("traco_photo_checkin_v1"),source.storage.traco_photo_checkin_v1);
+ assert.deepEqual(JSON.parse(store.map.get("v60_sessions")),sessions);
+});
+test("rejects branded snapshots with corrupt core data or contradictory sections",()=>{
+ for(const source of [
+  {brand:"Traço",storage:{v60_sessions:"not-json"}},
+  {brand:"Traço",storage:{v60_sessions:'"not-an-array"'}},
+  {brand:"Traço",sessions:[{id:"A"}],storage:{v60_sessions:'[{"id":"B"}]'}},
+  {brand:"Traço",storage:{unsupported_key:"secret"}}
+ ])assert.throws(()=>guard.parse(JSON.stringify(source)));
+});
+test("full snapshot rollback restores ancillary keys on a quota error",()=>{
+ const store=memory("traco_photo_checkin_v1");
+ store.map.set("v60_sessions",'[{"id":"old"}]');
+ store.map.set("traco_theme","light");
+ const d=guard.parse(JSON.stringify({brand:"Traço",storage:{
+  v60_sessions:'[{"id":"new"}]',traco_theme:"dark",
+  traco_photo_checkin_v1:"[]" }}));
+ assert.deepEqual(guard.commit(store,keys,d),{ok:false,restored:true});
+ assert.equal(store.map.get("v60_sessions"),'[{"id":"old"}]');
+ assert.equal(store.map.get("traco_theme"),"light");
+});
