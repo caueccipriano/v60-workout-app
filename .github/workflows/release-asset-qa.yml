@@ -41,7 +41,7 @@ jobs:
           const runtime=fs.readFileSync('traco-runtime.js','utf8');
           if(!runtime.includes("const BUILD='"+version.build+"'"))throw new Error('Runtime/build manifest mismatch triggers forced reload');
           const brand=fs.readFileSync('traco-brand.js','utf8');
-          if(/importData\\s*=\\s*function\\s*\\(/.test(brand)) throw new Error('Unsafe branded importer override reintroduced');
+          if(brand.includes('importData=function')) throw new Error('Unsafe branded importer override reintroduced');
           if(!sw.includes("'./traco-backup-guard.js'")) throw new Error('Backup guard must be available offline');
           if(!sw.includes("'./traco-phase-progress.js'"))throw new Error('Phase code is not offline-cached');
           console.log('Release version v'+suffix+' consistent across '+refs.length+' assets, SW and offline precache');
