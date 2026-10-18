@@ -222,7 +222,7 @@
       const max=Number(ex.max)||12,min=Number(ex.min)||8;
       const lastLoad=usesLoad?weights[weights.length-1]:null;
       const summary=(usesLoad?String(lastLoad).replace('.',',')+' kg · ':'')+refs.join('/')+' reps';
-      const heavy=done.some(row=>row.rir==='heavy'||Number(row.rir)===0);
+      const heavy=done.some(row=>row.rir==='heavy'||(row.rir!==''&&row.rir!=null&&Number(row.rir)===0));
       const allTop=complete&&refs.every(r=>r>=max)&&(!usesLoad||weights.every(w=>w===lastLoad))&&!heavy;
       const below=refs.some(r=>r<min);
       const kind=allTop?'increase':below?'recover':'reps';
