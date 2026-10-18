@@ -227,7 +227,7 @@
       const weights=done.map(row=>Number(row.weight));
       if(usesLoad&&!weights.every(w=>Number.isFinite(w)&&w>0))continue;
       const refs=done.map(row=>Number(row.reps));
-      const complete=all.length>0&&all.every(row=>row?.done&&!row.skipped&&!row.reported)&&done.length>=Math.min(2,Number(ex.sets?.length||ex.sets)||1);
+      const complete=all.length>0&&all.every(row=>row?.done&&!row.skipped&&!row.reported)&&done.length>=Math.max(1,Number(ex.sets?.length||ex.sets)||1);
       const max=Number(ex.max)||12,min=Number(ex.min)||8;
       const lastLoad=usesLoad?weights[weights.length-1]:null;
       const summary=(usesLoad?String(lastLoad).replace('.',',')+' kg · ':'')+refs.join('/')+' reps';
