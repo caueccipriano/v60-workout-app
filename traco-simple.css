@@ -58,9 +58,9 @@ html[data-design="performance"] .perf-home.traco-simple-home{
   display:flex;flex-direction:column;gap:0;
 }
 html[data-design="performance"] .perf-home.traco-simple-home > .perf-topbar{order:0}
-html[data-design="performance"] .perf-home.traco-simple-home > .simple-home{order:1}
-html[data-design="performance"] .perf-home.traco-simple-home > .perf-resume{order:2}
-html[data-design="performance"] .perf-home.traco-simple-home > .perf-workout-hero{order:3}
+html[data-design="performance"] .perf-home.traco-simple-home > .simple-home{order:3}
+html[data-design="performance"] .perf-home.traco-simple-home > .perf-resume{order:1}
+html[data-design="performance"] .perf-home.traco-simple-home > .perf-workout-hero{order:2}
 html[data-design="performance"] .perf-home.traco-simple-home .perf-resume{
   margin:5px 0 15px;border-radius:17px;background:#1B2620;border:1px solid #49614E;
 }
@@ -82,7 +82,7 @@ html[data-design="performance"] .perf-home.traco-simple-home .perf-start-cta :is
 .simple-home h1{font-size:clamp(36px,10vw,53px);line-height:.99;letter-spacing:-.07em;font-weight:800;color:#F5F6F0;margin:4px 0 6px}
 .simple-home p{color:#B2BAB3;font-size:13px;line-height:1.5;margin:0}
 .simple-home .simple-lead{padding:9px 0 4px}
-.simple-home .simple-lead p{max-width:29ch}
+.simple-home .simple-lead p{max-width:39ch}
 .simple-program{
   display:grid;gap:11px;
   background:#171D19;border:1px solid #343F37;
@@ -169,3 +169,35 @@ html[data-theme="light"][data-design="performance"] .simple-progress{color:#F2F5
  .simple-sheet-panel{padding-left:17px;padding-right:17px}
 }
 @media(prefers-reduced-motion:reduce){.simple-program-meter i{transition:none}}
+
+/* v2.32 — training must be usable without scrolling on an iPhone */
+html[data-design="performance"] .perf-home.traco-simple-home.simple-has-draft > .perf-workout-hero{display:none!important}
+html[data-design="performance"] .perf-home.traco-simple-home > .perf-workout-hero{min-height:215px!important;margin:6px 0 18px!important}
+html[data-design="performance"] .perf-home.traco-simple-home .simple-home{margin:0;gap:11px}
+html[data-design="performance"] .perf-home.traco-simple-home .simple-lead{padding:0;margin:0}
+html[data-design="performance"] .perf-home.traco-simple-home .simple-lead h1{font-size:clamp(25px,7vw,33px);margin:0 0 4px}
+html[data-design="performance"] .perf-home.traco-simple-home .simple-lead p{font-size:12px}
+html[data-design="performance"] .perf-home.traco-simple-home .simple-home-actions{margin:0 0 8px}
+html[data-design="performance"] .perf-home.traco-simple-home .simple-workout-caption{margin-top:4px}
+html[data-design="performance"] .perf-session.traco-simple-session .simple-previous-load{
+  display:grid;grid-template-columns:1fr auto;gap:3px 8px;align-items:center;
+  width:100%;padding:12px 13px;margin:0 0 10px;
+  text-align:left;background:#202B22;color:#F4F7EF;
+  border:1px solid #536A53;border-radius:13px;
+  box-shadow:none;cursor:pointer;
+}
+html[data-design="performance"] .simple-previous-load span{
+  grid-column:1/-1;color:#C9E8AC;font-size:9px;letter-spacing:.1em;font-weight:800;
+}
+html[data-design="performance"] .simple-previous-load b{font-size:14px;font-weight:800}
+html[data-design="performance"] .simple-previous-load small{font-size:11px;font-weight:700;color:#C8E65B}
+html[data-design="performance"] .perf-session.traco-simple-session .perf-session-progress{margin-bottom:8px}
+html[data-design="performance"] .perf-session.traco-simple-session .perf-exercise-console{padding-top:14px!important}
+html[data-design="performance"] :is(.simple-previous-load,.simple-quiet-button,.simple-home-actions button,.simple-links button):focus-visible{
+ outline:2px solid #C8E65B;outline-offset:2px;
+}
+html[data-design="performance"] :is(.perf-workout-hero,.simple-program,.perf-resume){box-shadow:none}
+@media(max-width:375px){
+ html[data-design="performance"] .perf-home.traco-simple-home > .perf-workout-hero{min-height:197px!important}
+ html[data-design="performance"] .perf-home.traco-simple-home .simple-lead h1{font-size:25px}
+}
