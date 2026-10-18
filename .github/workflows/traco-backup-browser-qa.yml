@@ -6,6 +6,9 @@ on:
       - traco-backup-guard.js
       - test/traco-backup-guard.test.cjs
       - test/traco-backup-browser.spec.cjs
+      - traco-simple.js
+      - traco-simple.css
+      - test/traco-simple-browser.spec.cjs
       - index.html
       - .github/workflows/traco-backup-browser-qa.yml
   workflow_dispatch:
@@ -34,4 +37,4 @@ jobs:
         run: |
           python -m http.server 4173 --bind 127.0.0.1 >/tmp/traco-browser.log 2>&1 &
       - name: Synthetic import, validation and rollback
-        run: npx playwright test test/traco-backup-browser.spec.cjs --browser=${{ matrix.browser }} --reporter=line --workers=1
+        run: npx playwright test test/traco-backup-browser.spec.cjs test/traco-simple-browser.spec.cjs --browser=${{ matrix.browser }} --reporter=line --workers=1
