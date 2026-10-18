@@ -1,7 +1,7 @@
 {
-  "version": "2.31.0",
+  "version": "2.32.0",
   "legacyVersion": "3.7.1",
   "name": "Traço",
-  "design": "simple-gym-vshape-local-first",
-  "build": "simple-vshape-v371"
+  "design": "simple-gym-vshape-fast-start",
+  "build": "fast-gym-v372"
 }

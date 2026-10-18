@@ -1,41 +1,39 @@
+// Traço V-Shape — plano autoral; divisão A–E flexível, não atrelada ao dia da semana.
+// Identificadores legados preservados para histórico e progressão.
+const TRACO_VSHAPE_PLAN_VERSION='vshape-2026-10';
 const workoutPlan = [
-  { id:'seg', day:1, name:'peito superior + ombros + tríceps · foco V', short:'peito + ombro', exercises:[
-    ['supino-inclinado','supino inclinado','Smith + banco a ~30°',4,8,10,90,'🏋️'],
-    ['elevacao-lateral','elevação lateral','Halteres',4,12,20,60,'🪽'],
-    ['desenvolvimento','desenvolvimento com halteres','Halteres + banco regulável',2,8,12,90,'⬆️'],
-    ['crucifixo-baixo-alto','crossover baixo → alto','Crossover',3,10,15,60,'↗️'],
-    ['triceps-pushdown','tríceps pushdown','Polia alta + barra/corda',3,10,15,60,'💪'],
-    ['triceps-overhead','tríceps acima da cabeça','Polia alta + corda',2,10,15,60,'🔝'] ]},
-  { id:'ter', day:2, name:'pernas completas · volume eficiente', short:'pernas', exercises:[
-    ['leg-press','leg press 45°','Leg press 45°',3,8,12,90,'🦵'],
-    ['agachamento-smith','agachamento no Smith','Smith',3,8,12,90,'🏋️'],
-    ['extensora','cadeira extensora','Máquina extensora',2,10,15,60,'🦵'],
-    ['flexora','flexora sentada','Máquina flexora',3,10,15,60,'🦿'],
-    ['abdutora','abdutora','Máquina abdutora',2,15,20,60,'↔️'],
-    ['panturrilha','panturrilha no leg press','Leg press',3,12,20,60,'🦶'] ]},
-  { id:'qua', day:3, name:'costas + bíceps · largura e espessura', short:'costas + bíceps', exercises:[
-    ['puxada-aberta','puxada alta aberta','Máquina de puxada',4,8,12,90,'🔻'],
-    ['remada-baixa','remada baixa','Polia baixa / crossover',3,8,12,90,'🚣'],
-    ['pullover','pullover braços estendidos','Polia alta',3,10,15,60,'⬇️'],
-    ['crucifixo-inverso','crucifixo inverso no crossover','Duas polias do crossover',3,12,15,60,'🪽'],
-    ['rosca-polia','rosca bíceps na polia','Polia baixa',3,10,15,60,'💪'],
-    ['rosca-martelo','rosca martelo','Halteres',2,10,12,60,'🔨'],
-    ['crunch','crunch ajoelhado','Polia alta + corda',3,10,15,60,'◼️'] ]},
-  { id:'qui', day:4, name:'peito + ombros + braços · estética', short:'peito + braços', exercises:[
-    ['supino-reto','supino reto','Smith + banco reto',3,8,12,90,'🏋️'],
-    ['crucifixo-reto','crossover alto → baixo','Crossover',2,12,15,60,'↘️'],
-    ['elevacao-lateral-2','elevação lateral','Halteres',4,12,20,60,'🪽'],
-    ['face-pull','face pull','Polia alta + corda',2,12,15,60,'🎯'],
-    ['triceps-overhead-2','tríceps acima da cabeça','Polia alta + corda',3,10,15,60,'🔝'],
-    ['rosca-unilateral','rosca bíceps unilateral','Polia baixa',3,10,15,60,'💪'] ]},
-  { id:'sex', day:5, name:'posterior + dorsal + ombros · foco V', short:'posterior + dorsal', exercises:[
-    ['rdl','stiff / RDL','Smith',3,8,12,90,'↘️'],
-    ['flexora-2','flexora sentada','Máquina flexora',3,10,15,60,'🦿'],
-    ['leg-press-alto','leg press — pés mais altos','Leg press 45°',3,10,12,90,'🦵'],
-    ['puxada-neutra','puxada neutra / fechada','Máquina de puxada',4,8,12,90,'🔻'],
-    ['remada-unilateral','remada unilateral com halter','Halter + banco regulável',3,8,12,90,'🚣'],
-    ['elevacao-lateral-3','elevação lateral','Halteres',3,12,20,60,'🪽'],
-    ['abdutora-2','abdutora','Máquina abdutora',2,15,20,60,'↔️'] ]}
+  { id:'qua', day:3, name:'A · costas (largura) + deltoide posterior + bíceps', short:'costas · largura', exercises:[
+    ['puxada-aberta','puxada alta aberta','Puxador alto',3,8,12,90,'↓'],
+    ['remada-baixa','remada baixa','Polia baixa',3,8,12,90,'↔'],
+    ['pullover','pullover na polia','Polia alta',2,10,15,60,'↓'],
+    ['crucifixo-inverso','crucifixo inverso','Crossover / máquina',3,12,20,60,'↗'],
+    ['rosca-martelo','rosca martelo','Halteres',2,10,12,60,'↗'],
+    ['crunch','crunch ajoelhado na polia','Polia alta + corda',2,10,15,45,'◼'] ]},
+  { id:'seg', day:1, name:'B · peitoral superior + ombros + tríceps', short:'peito superior · ombros', exercises:[
+    ['supino-inclinado','supino inclinado','Smith + banco 30°',3,8,12,90,'↗'],
+    ['elevacao-lateral','elevação lateral','Halteres',3,12,20,60,'↗'],
+    ['desenvolvimento','desenvolvimento sentado','Halteres + banco',2,8,12,90,'↑'],
+    ['crucifixo-baixo-alto','crossover baixo → alto','Crossover',2,10,15,60,'↗'],
+    ['triceps-pushdown','tríceps na polia','Polia alta + corda',2,10,15,60,'↓'] ]},
+  { id:'ter', day:2, name:'C · quadríceps + posterior + panturrilha + core', short:'pernas · base', exercises:[
+    ['agachamento-smith','agachamento no Smith','Smith',3,8,12,90,'↓'],
+    ['leg-press','leg press 45°','Leg press',3,10,12,90,'↗'],
+    ['flexora','flexora sentada','Máquina flexora',3,10,15,60,'↘'],
+    ['extensora','cadeira extensora','Máquina extensora',2,12,15,60,'↑'],
+    ['panturrilha','panturrilha no leg press','Leg press',3,12,20,45,'↑'] ]},
+  { id:'qui', day:4, name:'D · costas (espessura) + ombro lateral + bíceps', short:'costas · espessura', exercises:[
+    ['remada-unilateral','remada unilateral','Halter + banco',3,8,12,90,'↔'],
+    ['puxada-neutra','puxada alta neutra','Máquina de puxada',3,8,12,90,'↓'],
+    ['elevacao-lateral-2','elevação lateral','Halteres',3,12,20,60,'↗'],
+    ['face-pull','face pull','Polia alta + corda',2,12,20,60,'↗'],
+    ['rosca-unilateral','rosca unilateral','Polia baixa',2,10,15,60,'↗'] ]},
+  { id:'sex', day:5, name:'E · posterior de coxa + ombros + complemento', short:'posterior · ombros', exercises:[
+    ['rdl','stiff / RDL','Smith / halteres',3,8,12,90,'↘'],
+    ['flexora-2','flexora sentada','Máquina flexora',3,10,15,60,'↘'],
+    ['supino-reto','supino reto','Smith + banco',2,8,12,90,'↑'],
+    ['elevacao-lateral-3','elevação lateral','Halteres',3,12,20,60,'↗'],
+    ['triceps-overhead-2','tríceps acima da cabeça','Polia alta + corda',2,10,15,60,'↑'],
+    ['abdutora-2','cadeira abdutora','Máquina abdutora',2,15,20,60,'↔'] ]}
 ].map(w=>({...w, exercises:w.exercises.map(e=>({id:e[0],name:e[1],equipment:e[2],sets:e[3],min:e[4],max:e[5],rest:e[6],icon:e[7]}))}));
 
 const K={sessions:'v60_sessions', body:'v60_body', settings:'v60_settings', draft:'v60_draft', readiness:'traco_readiness'};
@@ -158,6 +156,10 @@ function renderWorkouts(){
 }
 
 function hydrateDraft(raw){
+  // The saved exercise list is an immutable snapshot of the workout start.
+  // Even if the 12-week phase or published plan changes, resuming must not
+  // replace exercises, sets, cargas or repetitions.
+  if(raw&&Array.isArray(raw.exercises)&&raw.exercises.length)return raw;
   const w=workoutPlan.find(x=>x.id===raw.workoutId);if(!raw.exercises||!w)return raw;
   const existing=new Map(raw.exercises.map(ex=>[ex.id,ex]));
   raw.wName=w.name;
@@ -179,7 +181,7 @@ function startSession(workoutId){
     state.activeSession=hydrateDraft(draft);
   }else{
     if(draft&&!draft.finishedAt&&!confirm('tem outro treino em andamento. começar este e substituir o rascunho?'))return null;
-    const next={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),workoutId,wName:w.name,startedAt:Date.now(),exercises:w.exercises.map(ex=>({...ex,sets:Array.from({length:ex.sets},(_,i)=>({n:i+1,weight:'',reps:'',done:false}))}))};
+    const next={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),planVersion:TRACO_VSHAPE_PLAN_VERSION,workoutId,wName:w.name,startedAt:Date.now(),exercises:w.exercises.map(ex=>({...ex,sets:Array.from({length:ex.sets},(_,i)=>({n:i+1,weight:'',reps:'',done:false}))}))};
     // Never replace an existing recoverable draft in memory/UI unless the new
     // workout was persisted successfully.
     if(!save(K.draft,next)){toast('não consegui iniciar · seu treino anterior foi preservado');return null;}
@@ -679,5 +681,5 @@ function importData(e){
 
 function render(){if(state.page!=='session')clearInterval(state.sessionClock);switch(state.page){case'home':renderHome();break;case'workouts':renderWorkouts();break;case'history':renderHistory();break;case'progress':renderProgress();break;case'photos':if(window.TracoCoach?.renderPhotosPage)window.TracoCoach.renderPhotosPage();else{app.innerHTML='<main class="perf-page perf-photos"><section class="empty-card"><b>fotos indisponíveis</b><p>não consegui carregar o check-in de fotos agora.</p><button id="photosRetry">tentar novamente</button></section></main>';document.querySelector('#photosRetry')?.addEventListener('click',()=>render())}break;case'body':renderBody();break;case'food':if(window.TracoMenuPlanner?.renderFood)window.TracoMenuPlanner.renderFood();else{app.innerHTML='<main class="perf-page perf-food"><section class="empty-card"><b>cardápios indisponíveis</b><p>não consegui carregar esta área agora.</p><button id="foodRetry">tentar novamente</button></section></main>';document.querySelector('#foodRetry')?.addEventListener('click',()=>render())}break;case'settings':renderSettings();break;case'session':renderSession();break;case'finish':renderFinish();break;default:state.page='home';renderHome();}}
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();state.installPrompt=e});
-if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=371').catch(()=>{}));
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=372').catch(()=>{}));
 render();

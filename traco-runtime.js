@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.7.0';
-  const BUILD='simple-vshape-v371';
-  const BUILD_NUMBER='371';
+  const BUILD='fast-gym-v372';
+  const BUILD_NUMBER='372';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);

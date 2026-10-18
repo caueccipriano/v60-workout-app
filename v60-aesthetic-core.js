@@ -9,11 +9,11 @@ function v60InstallAestheticCorePlan(){
   const qui=workoutPlan.find(w=>w.id==='qui');
 
   if(ter&&!ter.exercises.some(e=>e.id==='core-reverse-ter')){
-    ter.exercises.push({...v60CoreExercise('core-reverse-ter','reverse crunch no chão','Solo / colchonete',3,10,15,45,'◼️'),usesLoad:false});
+    ter.exercises.push({...v60CoreExercise('core-reverse-ter','reverse crunch no chão','Solo / colchonete',2,10,15,45,'◼️'),usesLoad:false});
   }
 
   const wed=qua?.exercises.find(e=>e.id==='crunch');
-  if(wed)Object.assign(wed,{name:'crunch ajoelhado na polia',equipment:'Polia alta + corda',sets:3,min:10,max:15,rest:60,icon:'◼️',core:true});
+  if(wed)Object.assign(wed,{name:'crunch ajoelhado na polia',equipment:'Polia alta + corda',sets:2,min:10,max:15,rest:45,icon:'◼️',core:true});
 
   if(qui&&!qui.exercises.some(e=>e.id==='core-pallof-qui')){
     qui.exercises.push(v60CoreExercise('core-pallof-qui','Pallof press','Polia / crossover',2,10,12,45,'↔️'));
@@ -94,6 +94,11 @@ if(typeof v60V4Scene==='function'){
 
 function v60SyncCoreSession(){
   const s=state.activeSession;if(!s)return;
+  // Existing drafts from before V-Shape must remain unchanged.
+  if(s.planVersion!==TRACO_VSHAPE_PLAN_VERSION)return;
+  // New sessions already include all core work at creation. Reapplying today's
+  // plan on resume would overwrite a session created in another phase.
+  if(Array.isArray(s.exercises)&&s.exercises.length)return;
   const plan=workoutPlan.find(w=>w.id===s.workoutId);if(!plan)return;
   const existing=new Map((s.exercises||[]).map(e=>[e.id,e]));
   s.exercises=plan.exercises.map(p=>{
