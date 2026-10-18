@@ -96,6 +96,9 @@ function v60SyncCoreSession(){
   const s=state.activeSession;if(!s)return;
   // Existing drafts from before V-Shape must remain unchanged.
   if(s.planVersion!==TRACO_VSHAPE_PLAN_VERSION)return;
+  // New sessions already include all core work at creation. Reapplying today's
+  // plan on resume would overwrite a session created in another phase.
+  if(Array.isArray(s.exercises)&&s.exercises.length)return;
   const plan=workoutPlan.find(w=>w.id===s.workoutId);if(!plan)return;
   const existing=new Map((s.exercises||[]).map(e=>[e.id,e]));
   s.exercises=plan.exercises.map(p=>{
