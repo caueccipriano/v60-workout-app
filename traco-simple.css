@@ -353,3 +353,55 @@ html[data-design="performance"][data-theme="light"] .simple-next-goal>span{color
 html[data-design="performance"][data-theme="light"] .simple-next-goal>b{color:#243526!important}
 html[data-design="performance"][data-theme="light"] .simple-next-goal>small,
 html[data-design="performance"][data-theme="light"] .simple-next-goal>p{color:#566751!important}
+
+
+/* v2.34 · calm, explainable weekly strength signals */
+html[data-design="performance"] .simple-weekly{
+  display:grid;gap:12px;
+  border:1px solid #39473B;
+  border-radius:18px;padding:15px;
+  background:#121914;color:#EEF3E9;
+}
+html[data-design="performance"] .simple-weekly>header{
+  display:grid;gap:5px;
+}
+html[data-design="performance"] .simple-weekly h4{
+  margin:2px 0 0;color:#F2F5EE;font-size:20px;letter-spacing:-.045em;
+}
+html[data-design="performance"] .simple-weekly>header>small{
+  color:#AFC2AC;font-size:10px;letter-spacing:.01em;
+}
+html[data-design="performance"] .simple-muscles{display:grid;gap:8px}
+html[data-design="performance"] .simple-muscle-card{
+  background:#1B251D;border:1px solid #364638;
+  border-radius:13px;padding:12px;
+}
+html[data-design="performance"] .simple-muscle-heading{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;
+}
+html[data-design="performance"] .simple-muscle-heading b{color:#F0F5EA;font-size:14px}
+html[data-design="performance"] .simple-muscle-heading span{
+  color:#C7DEA3;font-size:10px;font-weight:750;
+}
+html[data-design="performance"] .simple-muscle-card p{
+  color:#D5DDCF;font-size:11px;line-height:1.5;margin:7px 0 5px;
+}
+html[data-design="performance"] .simple-muscle-card>small{
+  color:#ADBBAA;font-size:10px;line-height:1.5;
+}
+html[data-design="performance"] .simple-weekly>p{
+  margin:0;color:#A9B7A8;font-size:10px;line-height:1.5;
+}
+html[data-design="performance"][data-theme="light"] .simple-weekly{
+  background:#E5EDE1;border-color:#C2D1BF;color:#1D301D;
+}
+html[data-design="performance"][data-theme="light"] .simple-weekly h4{color:#233323}
+html[data-design="performance"][data-theme="light"] .simple-weekly>header>small,
+html[data-design="performance"][data-theme="light"] .simple-weekly>p{color:#526351}
+html[data-design="performance"][data-theme="light"] .simple-muscle-card{
+  background:#F5F8F2;border-color:#CCD9C7;
+}
+html[data-design="performance"][data-theme="light"] .simple-muscle-heading b{color:#1E321F}
+html[data-design="performance"][data-theme="light"] .simple-muscle-heading span{color:#50733D}
+html[data-design="performance"][data-theme="light"] .simple-muscle-card p{color:#4B5F4A}
+html[data-design="performance"][data-theme="light"] .simple-muscle-card>small{color:#657362}
