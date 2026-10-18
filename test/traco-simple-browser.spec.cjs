@@ -142,7 +142,7 @@ test('three-tab navigation reaches all core routes with one coherent brand and b
   await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
   await page.locator('.simple-progress [data-simple-go="settings"]').click();
   await expect(page.locator('.perf-settings')).toBeVisible();
-  await expect(page.locator('.traco-about-card small')).toContainText('2.32.1');
+  await expect(page.locator('.traco-about-card small')).toContainText('2.32.2');
   await expect(page.locator('.traco-theme-copy small')).toContainText('verde-lima');
   await page.locator('[data-traco-theme="light"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','light');
@@ -163,4 +163,37 @@ test('three-tab navigation reaches all core routes with one coherent brand and b
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
   const dark=await page.evaluate(()=>getComputedStyle(document.body).backgroundColor);
   expect(dark).toBe('rgb(9, 11, 11)');
+});
+
+
+test('visible A–E prescriptions match plan, core dose and phase targets',async({page})=>{
+  await ready(page);
+  await expect(page.locator('.perf-hero-copy small')).toContainText('45–60 min');
+  await page.locator('.simple-bottom-nav [data-nav="workouts"]').click();
+  await expect(page.locator('.perf-workouts .workout-select')).toHaveCount(5);
+  await expect(page.locator('.v60-core-program-note')).toContainText('core em A, C e D · 6 séries por ciclo');
+  const plan=await page.evaluate(()=>workoutPlan.map(w=>({
+    id:w.id,name:w.name,exercises:w.exercises.map(ex=>({id:ex.id,name:ex.name,sets:ex.sets,min:ex.min,max:ex.max,rest:ex.rest}))
+  })));
+  expect(plan.map(w=>w.exercises.length)).toEqual([6,5,6,6,6]);
+  expect(plan.map(w=>w.exercises.reduce((n,e)=>n+e.sets,0))).toEqual([15,12,16,15,15]);
+  for(const w of plan){
+    await page.locator('.workout-select[data-workout="'+w.id+'"]').click();
+    await expect(page.locator('.selected-blue h3')).toContainText(w.name);
+    await expect(page.locator('.selected-block .selected-blue p')).toContainText('45–60 min');
+    const cards=page.locator('.selected-block .exercise-preview .preview-row');
+    await expect(cards).toHaveCount(w.exercises.length);
+    for(let i=0;i<w.exercises.length;i++){
+      const exercise=w.exercises[i];
+      const card=cards.nth(i);
+      await expect(card).toContainText(exercise.name);
+      await expect(card).toContainText(exercise.sets+' × '+exercise.min+'-'+exercise.max);
+    }
+  }
+  await page.locator('.simple-bottom-nav [data-nav="home"]').click();
+  await page.locator('.simple-home [data-simple-action="program"]').click();
+  await expect(page.locator('#simpleProgramSheet .simple-split > div')).toHaveCount(5);
+  await expect(page.locator('#simpleProgramSheet')).toContainText('45–60 min');
+  await expect(page.locator('#simpleProgramSheet')).toContainText('Cardio é opcional e separado');
+  await page.locator('#simpleProgramSheet [data-simple-close]').first().click();
 });
