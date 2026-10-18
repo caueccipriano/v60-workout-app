@@ -240,9 +240,9 @@ test('gym displays a short next goal without changing planned sets or completed 
     localStorage.setItem('v60_sessions',JSON.stringify([past]));
     return {serialized:JSON.stringify([past]),id:ex.id};
   });
-  await page.evaluate(()=>{
-    state.page='workouts';state.selectedWorkout=workoutPlan[0].id;render();
-  });
+  await page.locator('.simple-bottom-nav [data-nav="workouts"]').click();
+  await page.locator('.workout-select[data-workout="qua"]').click();
+  await expect(page.locator('.selected-blue h3')).toContainText('A ·');
   await page.locator('#startSelected').click();
   await expect(page.locator('.perf-session .simple-next-goal')).toBeVisible();
   await expect(page.locator('.simple-next-goal')).toContainText('Pode considerar subir a carga');
