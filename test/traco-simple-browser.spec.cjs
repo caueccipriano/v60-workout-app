@@ -3,7 +3,7 @@ test.use({serviceWorkers:'block',viewport:{width:390,height:844}});
 const url='http://127.0.0.1:4173/';
 async function ready(page){
   await page.goto(url,{waitUntil:'load'});
-  await page.waitForFunction(()=>window.TracoSimple?.version==='1.4.0');
+  await page.waitForFunction(()=>window.TracoSimple?.version==='1.5.0');
   await expect(page.locator('.perf-home .simple-home')).toBeVisible();
 }
 test('one-tap navigation and V-Shape program stay local and preserve data',async({page})=>{
@@ -142,7 +142,7 @@ test('three-tab navigation reaches all core routes with one coherent brand and b
   await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
   await page.locator('.simple-progress [data-simple-go="settings"]').click();
   await expect(page.locator('.perf-settings')).toBeVisible();
-  await expect(page.locator('.traco-about-card small')).toContainText('2.33.0');
+  await expect(page.locator('.traco-about-card small')).toContainText('2.34.0');
   await expect(page.locator('.traco-theme-copy small')).toContainText('verde-lima');
   await page.locator('[data-traco-theme="light"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','light');
@@ -253,4 +253,77 @@ test('gym displays a short next goal without changing planned sets or completed 
   expect(sets.length).toBe(3);
   expect(sets.every(x=>!x.done)).toBe(true);
   expect(await page.locator('.simple-next-goal button').count()).toBe(0);
+});
+
+
+test('weekly V-Shape signals compare only trustworthy same-variation working sets',async({page})=>{
+  await ready(page);
+  const result=await page.evaluate(()=>{
+    const start=new Date(2026,9,18,18);
+    const day=n=>new Date(2026,9,n,12).getTime();
+    const get=id=>workoutPlan.flatMap(w=>w.exercises).find(ex=>ex.id===id);
+    const make=(id,weight,reps,dayNumber,options={})=>{
+      const ex=get(id);
+      return {id:id+'-'+dayNumber+'-'+(options.tag||''),
+        startedAt:day(dayNumber),finishedAt:day(dayNumber)+3600000,
+        manualConfirmed:Boolean(options.manual),excludeFromVolume:Boolean(options.exclude),
+        exercises:[{...ex,name:options.name||ex.name,equipment:options.equipment||ex.equipment,
+          sets:[{n:1,weight,reps,done:true,skipped:false,reported:Boolean(options.reported)}]}]};
+    };
+    const entries=[
+      make('puxada-aberta',30,10,8),
+      make('puxada-aberta',30,12,15),
+      make('elevacao-lateral',8,12,8),
+      make('elevacao-lateral',8,12,14),
+      make('supino-inclinado',40,10,8),
+      make('supino-inclinado',40,8,16),
+      make('puxada-aberta',200,20,15,{manual:true,tag:'manual'}),
+      make('elevacao-lateral',30,20,14,{equipment:'variação diferente',tag:'swap',exclude:true})
+    ];
+    const before=JSON.stringify(entries);
+    const value=TracoSimple.weeklyVshapeSummary(entries,start);
+    const after=JSON.stringify(entries);
+    const noHistory=TracoSimple.weeklyVshapeSummary([],start);
+    const changedVariant=TracoSimple.weeklyVshapeSummary([
+      make('puxada-aberta',30,10,8),make('puxada-aberta',32,12,15,{name:'puxada com outra pegada'})
+    ],start);
+    return {value,unmodified:before===after,noHistory,changedVariant};
+  });
+  const groups=result.value.groups;
+  expect(groups.map(g=>g.name)).toEqual(['Dorsais','Ombros','Peito']);
+  expect(groups.map(g=>g.sets)).toEqual([1,1,1]);
+  expect(groups.map(g=>g.previousSets)).toEqual([1,1,1]);
+  expect(groups[0]).toMatchObject({compared:1,improved:1,status:'Sinal de progresso'});
+  expect(groups[1]).toMatchObject({compared:1,steady:1,status:'Referência estável'});
+  expect(groups[2]).toMatchObject({compared:1,below:1,status:'Abaixo da referência'});
+  expect(result.changedVariant.groups[0]).toMatchObject({compared:0,status:'Sem exercício comparável'});
+  expect(result.noHistory.groups.every(g=>g.sets===0&&g.status==='Sem registro nesta semana')).toBe(true);
+  expect(result.unmodified).toBe(true);
+  expect(result.value.currentLabel).toContain('12');
+});
+test('Evolução shows three compact weekly regions without touching user history',async({page})=>{
+  await ready(page);
+  const before=await page.evaluate(()=>{
+    const ex=workoutPlan[0].exercises.find(row=>row.id==='puxada-aberta');
+    const monday=new Date();monday.setHours(12,0,0,0);monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
+    const lastWeek=new Date(monday);lastWeek.setDate(lastWeek.getDate()-7);
+    const session=(id,date,reps)=>({id,workoutId:'qua',startedAt:date.getTime(),finishedAt:date.getTime()+1000,
+      exercises:[{...ex,sets:[{n:1,weight:30,reps,done:true,skipped:false}]}]});
+    const added=[session('weekly-previous',lastWeek,10),session('weekly-current',monday,12)];
+    const data=JSON.stringify(added);
+    localStorage.setItem('v60_sessions',data);
+    return data;
+  });
+  await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
+  await expect(page.locator('.simple-weekly')).toBeVisible();
+  await expect(page.locator('.simple-weekly .simple-muscle-card')).toHaveCount(3);
+  await expect(page.locator('[data-muscle="dorsais"]')).toContainText('Sinal de progresso');
+  await expect(page.locator('[data-muscle="ombros"]')).toContainText('Sem registro nesta semana');
+  await expect(page.locator('.simple-weekly')).toContainText('Uma semana isolada não define tendência.');
+  expect(await page.evaluate(()=>localStorage.getItem('v60_sessions'))).toBe(before);
+  expect(await page.locator('#app').evaluate(el=>el.scrollWidth<=window.innerWidth+8)).toBe(true);
+  await page.reload({waitUntil:'load'});
+  await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
+  await expect(page.locator('[data-muscle="dorsais"]')).toContainText('Sinal de progresso');
+  expect(await page.evaluate(()=>localStorage.getItem('v60_sessions'))).toBe(before);
 });

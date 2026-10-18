@@ -1,7 +1,7 @@
 {
-  "version": "2.33.0",
+  "version": "2.34.0",
   "legacyVersion": "3.7.1",
   "name": "Traço",
-  "design": "simple-vshape-guided-overload",
-  "build": "progression-guide-v375"
+  "design": "simple-vshape-weekly-summary",
+  "build": "weekly-vshape-v376"
 }
