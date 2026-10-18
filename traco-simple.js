@@ -6,7 +6,7 @@
 (function(){
   'use strict';
   const KEY='traco_vshape_90_v1';
-  const VERSION='1.2.0';
+  const VERSION='1.3.0';
   const phases=[
     {label:'Base',range:'Semanas 1–4',detail:'Aprenda os movimentos, registre suas cargas e mantenha cerca de 2–3 repetições em reserva. Priorize constância e amplitude confortável.'},
     {label:'Progressão',range:'Semanas 5–8',detail:'Tente evoluir repetições ou carga aos poucos, sem sacrificar a técnica. Em geral, termine com 1–2 repetições em reserva.'},
@@ -150,7 +150,7 @@
     panel.className='simple-progress';
     panel.innerHTML='<header class="simple-progress-intro"><span class="simple-kicker">SEU CAMINHO</span><h3>Evolução de verdade.</h3><p>O que você registrou, sem números inventados. Acompanhe força, medidas e regularidade.</p></header>'+
       '<div class="simple-stat-grid">'+stat('Treinos · últimos 28 dias',count)+stat('Programa V-Shape',p.started?(p.done?'12/12':p.week+'/12'):'Não iniciado')+stat('Último peso',weight)+stat('Última cintura',waist)+'</div>'+
-      '<div class="simple-links"><button data-simple-go="history"><span>Histórico e cargas</span><span>→</span></button><button data-simple-go="body"><span>Medidas do corpo</span><span>→</span></button><button data-simple-go="photos"><span>Fotos de evolução</span><span>→</span></button><button data-simple-go="settings"><span>Ajustes e backups</span><span>→</span></button><button data-simple-action="details"><span>Ver análises avançadas</span><span>→</span></button></div>'+
+      '<div class="simple-links"><button data-simple-go="history"><span>Histórico e cargas</span><span>→</span></button><button data-simple-go="body"><span>Medidas do corpo</span><span>→</span></button><button data-simple-go="photos"><span>Fotos de evolução</span><span>→</span></button><button data-simple-go="food"><span>Cardápios e alimentação</span><span>→</span></button><button data-simple-go="settings"><span>Ajustes e backups</span><span>→</span></button><button data-simple-action="details"><span>Ver análises avançadas</span><span>→</span></button></div>'+
       '<p class="simple-progress-foot">Sem sincronização automática entre aparelhos: seu histórico continua salvo neste dispositivo. Exporte o backup em Ajustes.</p>';
     const head=main.querySelector('.page-head');
     if(head)head.insertAdjacentElement('afterend',panel);else main.prepend(panel);
@@ -236,6 +236,16 @@
     document.addEventListener('keydown',onKey);
     modal.querySelector('[data-simple-close]')?.focus();
   }
+  function settingsCoherence(){
+    const main=q('.perf-settings');
+    if(!main)return;
+    const about=main.querySelector('.traco-about-card small');
+    if(about)about.textContent='treino · evolução · constância · versão 2.32.0';
+    const theme=main.querySelector('.traco-theme-copy small');
+    if(theme)theme.textContent='visual claro ou escuro · mesma identidade verde-lima';
+    const card=main.querySelector('.traco-about-card b');
+    if(card)card.textContent='Traço';
+  }
   function newNav(){
     const opts=[['home','home','Hoje'],['workouts','play','Treinar'],['progress','chart','Evolução']];
     return '<nav class="bottom-nav perf-bottom-nav simple-bottom-nav" aria-label="Navegação principal">'+opts.map(item=>{
@@ -257,6 +267,7 @@
     if(state.page==='home')home();
     else if(state.page==='progress')progress();
     else if(state.page==='session')session();
+    else if(state.page==='settings')settingsCoherence();
   }
   function schedule(){
     if(queued)return;queued=true;
