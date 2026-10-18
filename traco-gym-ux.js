@@ -583,6 +583,12 @@ function tracoGymFlashSavedSet(){
 // core write succeeds; failed writes must never look completed.
 
 /* WORKOUT LIBRARY */
+function tracoGymLastWorkout(workoutId){
+  const last=sessions().filter(row=>row?.finishedAt&&row.workoutId===workoutId)
+    .sort((a,b)=>Number(b.finishedAt)-Number(a.finishedAt))[0];
+  if(!last)return 'sem registro recente';
+  return 'feito '+new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'2-digit'}).format(new Date(last.finishedAt));
+}
 const tracoGymBaseWorkouts=renderWorkouts;
 renderWorkouts=function(){
   tracoGymBaseWorkouts();
