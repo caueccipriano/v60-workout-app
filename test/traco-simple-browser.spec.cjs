@@ -16,6 +16,7 @@ test('one-tap navigation and V-Shape program stay local and preserve data',async
   await expect(page.locator('.simple-program')).toContainText('Semana 1 de 12');
   await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('traco_vshape_90_v1'))?.start)).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
+  console.log('Traço progress route:',await page.evaluate(()=>({page:state.page,main:document.querySelector('#app .main-card')?.className,hasProgress:!!document.querySelector('.progress-page'),hasSimple:!!document.querySelector('.simple-progress')})));
   await expect(page.locator('.simple-progress')).toBeVisible();
   await expect(page.locator('.simple-progress')).toContainText('Programa V-Shape');
   expect(await page.locator('#app').evaluate(el=>el.scrollWidth<=window.innerWidth+8)).toBeTruthy();
