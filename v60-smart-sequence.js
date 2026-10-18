@@ -9,11 +9,11 @@ const V60_REPORTED_TODAY_0920_KEY='v60_reported_history_20260920_v1';
 // A→E follows recovery better than weekday locking.
 // Confirmed current anchor: back (A) → chest (B) → legs (C next).
 const V60_SEQUENCE=[
-  {letter:'A',workoutId:'qua',label:'costas + bíceps'},
-  {letter:'B',workoutId:'seg',label:'peito + ombro'},
-  {letter:'C',workoutId:'ter',label:'pernas'},
-  {letter:'D',workoutId:'qui',label:'peito + braços'},
-  {letter:'E',workoutId:'sex',label:'posterior + costas'}
+  {letter:'A',workoutId:'qua',label:'costas · largura'},
+  {letter:'B',workoutId:'seg',label:'peito superior · ombros'},
+  {letter:'C',workoutId:'ter',label:'pernas · core'},
+  {letter:'D',workoutId:'qui',label:'costas · espessura'},
+  {letter:'E',workoutId:'sex',label:'posterior · ombros'}
 ];
 
 function v60DateKey(value){
