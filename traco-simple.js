@@ -6,7 +6,7 @@
 (function(){
   'use strict';
   const KEY='traco_vshape_90_v1';
-  const VERSION='1.0.0';
+  const VERSION='1.1.0';
   const phases=[
     {label:'Base',range:'Semanas 1–4',detail:'Aprenda os movimentos, registre suas cargas e mantenha cerca de 2–3 repetições em reserva. Priorize constância e amplitude confortável.'},
     {label:'Progressão',range:'Semanas 5–8',detail:'Tente evoluir repetições ou carga aos poucos, sem sacrificar a técnica. Em geral, termine com 1–2 repetições em reserva.'},
@@ -80,7 +80,7 @@
       return '<section class="simple-program"><div class="simple-program-top"><strong>Seu V-Shape</strong><span>12 semanas</span></div><p>Uma jornada em três fases, usando seus treinos A–E. Comece quando quiser; seus registros atuais continuam intactos.</p><div class="simple-program-foot"><small>Sem contagem iniciada</small><button class="simple-quiet-button" data-simple-action="program">ver programa →</button></div></section>';
     }
     const ph=phases[p.phase];
-    return '<section class="simple-program"><div class="simple-program-top"><strong>'+esc(p.done?'12 semanas completas':'Semana '+p.week+' de 12')+'</strong><span>'+esc(ph.label)+'</span></div><p>'+esc(p.done?'Você completou o período planejado. Continue treinando e compare sua evolução.':ph.detail)+'</p><div class="simple-program-meter" aria-label="'+p.pct+'% do período"><i style="width:'+p.pct+'%"></i></div><div class="simple-program-foot"><small>'+programWorkoutCount()+' sessões registradas no período</small><button class="simple-quiet-button" data-simple-action="program">ver fases →</button></div></section>';
+    return '<section class="simple-program"><div class="simple-program-top"><strong>'+esc(p.done?'12 semanas completas':'Semana '+p.week+' de 12')+'</strong><span>'+esc(ph.label)+'</span></div><p>'+esc(p.done?'O período de 12 semanas terminou. Confira os treinos registrados antes de iniciar outro ciclo.':ph.detail)+'</p><div class="simple-program-meter" aria-label="'+p.pct+'% do período"><i style="width:'+p.pct+'%"></i></div><div class="simple-program-foot"><small>'+programWorkoutCount()+' sessões registradas no período</small><button class="simple-quiet-button" data-simple-action="program">ver fases →</button></div></section>';
   }
   function home(){
     const main=q('.perf-home');
@@ -90,14 +90,16 @@
     const profile=typeof v60Profile==='function'?v60Profile():null;
     const first=String(profile?.name||'').trim().split(/\s+/)[0];
     const name=first?' '+esc(first.toLowerCase()):'';
+    const hasDraft=Boolean(main.querySelector('.perf-resume'));
+    main.classList.toggle('simple-has-draft',hasDraft);
     const p=document.createElement('div');
     p.className='simple-home';
-    p.innerHTML='<header class="simple-lead"><span class="simple-kicker">SEU TREINO, SEM DISTRAÇÕES</span><h1>Vai de V.</h1><p>'+esc('Olá'+(name?', '+first.toLowerCase():''))+'! Um treino de cada vez. O importante é conseguir repetir amanhã.</p></header>'+
+    p.innerHTML='<header class="simple-lead"><span class="simple-kicker">SEU TREINO, SEM DISTRAÇÕES</span><h1>Seu ritmo.</h1><p>'+esc('Olá'+(name?', '+first.toLowerCase():''))+'! Sua evolução acontece treino após treino.</p></header>'+
       phaseCard()+
-      '<div class="simple-workout-caption">SEU PRÓXIMO TREINO'+(w?' · '+esc(w.short):'')+'</div>'+
+      '<div class="simple-workout-caption">ATALHOS'+(w?' · '+esc(w.short):'')+'</div>'+
       '<div class="simple-home-actions"><button data-simple-go="workouts">Ver ficha completa<span>Treinos A–E</span></button><button data-simple-go="body">Registrar medidas<span>Cintura e peso</span></button></div>';
     const hero=main.querySelector('.perf-workout-hero');
-    if(hero)hero.insertAdjacentElement('beforebegin',p);
+    if(hero)hero.insertAdjacentElement('afterend',p);
     else (main.querySelector('.perf-topbar')||main).insertAdjacentElement('afterend',p);
     main.querySelectorAll('[data-simple-go]').forEach(btn=>btn.addEventListener('click',()=>go(btn.dataset.simpleGo)));
     main.querySelectorAll('[data-simple-action="program"]').forEach(btn=>btn.addEventListener('click',openProgram));
@@ -131,6 +133,39 @@
       panel.querySelector('[data-simple-action="details"] span')?.replaceChildren(document.createTextNode(open?'Ocultar análises avançadas':'Ver análises avançadas'));
     });
   }
+  function lastSetSuggestion(ex){
+    if(!ex||typeof lastExercisePerf!=='function')return null;
+    try{
+      const key=typeof tracoExerciseProgressionKey==='function'?tracoExerciseProgressionKey(ex):ex.id;
+      const previous=lastExercisePerf(key);
+      const sets=Array.isArray(previous?.sets)?previous.sets.slice().reverse():[];
+      return sets.find(row=>row?.done&&!row.skipped&&Number(row.reps)>0&&Number.isFinite(Number(row.weight))&&Number(row.weight)>0)||null;
+    }catch{return null;}
+  }
+  function suggestLastLoad(box,ex){
+    const set=ex?.sets?.[typeof currentSetIndex==='function'?currentSetIndex(ex):0];
+    const old=lastSetSuggestion(ex);
+    if(!set||!old||box.querySelector('.simple-previous-load'))return;
+    if(String(set.weight??'').trim()&&String(set.reps??'').trim())return;
+    if(!box.querySelector('#weightInput')||!box.querySelector('#repsInput'))return;
+    const control=document.createElement('button');
+    control.type='button';
+    control.className='simple-previous-load';
+    control.innerHTML='<span>ÚLTIMA CARGA</span><b>'+esc(String(old.weight).replace('.',','))+' kg × '+esc(old.reps)+' reps</b><small>Usar referência ↗</small>';
+    const inputs=box.querySelector('.perf-inputs');
+    if(!inputs)return;
+    inputs.insertAdjacentElement('beforebegin',control);
+    control.addEventListener('click',()=>{
+      const weight=box.querySelector('#weightInput'),reps=box.querySelector('#repsInput');
+      if(!weight||!reps)return;
+      if(!weight.value){weight.value=String(old.weight);weight.dispatchEvent(new Event('input',{bubbles:true}));}
+      if(!reps.value){reps.value=String(old.reps);reps.dispatchEvent(new Event('input',{bubbles:true}));}
+      if(String(weight.value)&&String(reps.value)){
+        control.remove();
+        try{haptic();toast('referência aplicada · confira antes de concluir');}catch{}
+      }
+    });
+  }
   function session(){
     const main=q('.perf-session');
     if(!main)return;
@@ -147,6 +182,7 @@
     hint.textContent='Meta: '+plan+advice+'. Priorize a execução.';
     const inputs=box.querySelector('.perf-inputs');
     if(inputs)inputs.insertAdjacentElement('beforebegin',hint);else box.prepend(hint);
+    suggestLastLoad(box,ex);
   }
   function openProgram(){
     q('#simpleProgramSheet')?.remove();
