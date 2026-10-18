@@ -136,7 +136,7 @@
       const cta=hero.querySelector('.perf-start-cta b');
       if(cta)cta.textContent='Iniciar treino';
       const duration=hero.querySelector('.perf-hero-copy small');
-      if(duration)duration.textContent=(w?.exercises?.length||0)+' exercícios · duração variável';
+      if(duration)duration.textContent=(w?.exercises?.length||0)+' exercícios · 45–60 min';
     }
   }
   function progress(){
@@ -221,7 +221,7 @@
       '<p class="simple-sheet-note">Plano autoral de acompanhamento; não reproduz o curso pago de Renato Cariani. Mantém sua ficha de cinco treinos, priorizando dorsal, deltoides e evolução gradual.</p>'+
       '<ol class="simple-phase-list">'+phases.map(ph=>'<li><b>'+esc(ph.range+' · '+ph.label)+'</b><p>'+esc(ph.detail)+'</p></li>').join('')+'</ol>'+
       '<section class="simple-split"><span class="simple-kicker">A FICHA QUE VOCÊ VAI FAZER</span>'+workoutPlan.map((w,i)=>'<div><b>'+String.fromCharCode(65+i)+' · '+esc(w.short)+'</b><small>'+w.exercises.map(ex=>esc(ex.name)+' ('+ex.sets+'×'+ex.min+'–'+ex.max+')').join(' · ')+'</small></div>').join('')+'</section>'+
-      '<p class="simple-sheet-note">Progrida quando atingir o topo das repetições com boa técnica. Em dias corridos, não é necessário bater recordes. Descanse e ajuste cargas conforme seu nível.</p>'+
+      '<p class="simple-sheet-note">A sessão de musculação pode levar aproximadamente 45–60 min, conforme descanso e lotação. Cardio é opcional e separado. Progrida ao atingir o topo das repetições com boa técnica; preserve recuperação e ajuste cargas conforme seu nível.</p>'+
       '<div class="simple-sheet-actions">'+(!p.started?'<button type="button" class="simple-primary" data-simple-start>Começar meu programa hoje</button>':p.done?'<button type="button" data-simple-restart>Iniciar um novo ciclo</button>':'<button type="button" data-simple-restart>Recomeçar ciclo do zero</button>')+'<button type="button" data-simple-close>Voltar ao app</button></div></div>';
     const close=()=>{modal.remove();document.removeEventListener('keydown',onKey);};
     const onKey=e=>{if(e.key==='Escape')close();};
