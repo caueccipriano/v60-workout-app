@@ -6,7 +6,7 @@
 (function(){
   'use strict';
   const KEY='traco_vshape_90_v1';
-  const VERSION='1.4.0';
+  const VERSION='1.5.0';
   const phases=[
     {label:'Base',range:'Semanas 1–4',detail:'Aprenda os movimentos, registre suas cargas e mantenha cerca de 2–3 repetições em reserva. Priorize constância e amplitude confortável.'},
     {label:'Progressão',range:'Semanas 5–8',detail:'Tente evoluir repetições ou carga aos poucos, sem sacrificar a técnica. Em geral, termine com 1–2 repetições em reserva.'},
@@ -101,6 +101,95 @@
       }).length;
     }catch{return 0;}
   }
+  // Weekly training signals, not predictions of muscle growth. Uses genuine,
+  // completed sets and comparable exercise variations on local Mon–Sun weeks.
+  const MUSCLE_GROUPS=[
+    {id:'dorsais',name:'Dorsais',ids:['puxada-aberta','remada-baixa','pullover','remada-unilateral','puxada-neutra']},
+    {id:'ombros',name:'Ombros',ids:['crucifixo-inverso','elevacao-lateral','desenvolvimento','elevacao-lateral-2','face-pull','elevacao-lateral-3']},
+    {id:'peito',name:'Peito',ids:['supino-inclinado','crucifixo-baixo-alto','supino-reto']}
+  ];
+  const MUSCLE_IDS=new Map(MUSCLE_GROUPS.flatMap(group=>group.ids.map(id=>[id,group.id])));
+  const normVariation=x=>String(x??'').trim().toLocaleLowerCase('pt-BR').replace(/\s+/g,' ');
+  const fmtDateWeek=d=>new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'short'}).format(d).replace('.','');
+  function weeklyVshapeSummary(history,reference=new Date()){
+    const now=new Date(reference);
+    if(!Number.isFinite(now.getTime()))return null;
+    const monday=new Date(now);monday.setHours(0,0,0,0);
+    monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
+    const prev=new Date(monday);prev.setDate(prev.getDate()-7);
+    const next=new Date(monday);next.setDate(next.getDate()+7);
+    const make=()=>Object.fromEntries(MUSCLE_GROUPS.map(g=>[g.id,{sets:0,best:new Map()}]));
+    const prevData=make(),currData=make(),seen=new Set();
+    for(const session of Array.isArray(history)?history:[]){
+      if(!session?.finishedAt||session.excludeFromVolume||session.manualConfirmed)continue;
+      const started=Number(session.startedAt),finished=Number(session.finishedAt);
+      if(!Number.isFinite(started)||!Number.isFinite(finished)||started<=0||finished<started||finished>now.getTime())continue;
+      if(session.id!=null){const uid=String(session.id);if(seen.has(uid))continue;seen.add(uid);}
+      const period=started>=monday.getTime()&&started<next.getTime()?currData:started>=prev.getTime()&&started<monday.getTime()?prevData:null;
+      if(!period)continue;
+      for(const ex of Array.isArray(session.exercises)?session.exercises:[]){
+        const group=MUSCLE_IDS.get(ex?.id);
+        if(!group)continue;
+        const row=period[group],key=[ex.id,normVariation(ex.name),normVariation(ex.equipment)].join('|');
+        for(const set of Array.isArray(ex.sets)?ex.sets:[]){
+          if(!set?.done||set.skipped||set.reported||set.repsKnown===false)continue;
+          const reps=Number(set.reps),weight=Number(set.weight);
+          if(!Number.isFinite(reps)||reps<=0||!Number.isFinite(weight)||weight<=0)continue;
+          row.sets++;
+          // 4–20 repetitions: conservative estimated strength *indicator*
+          // to compare the same variation, never an absolute strength claim.
+          if(reps<4||reps>20)continue;
+          const score=weight*(1+reps/30);
+          row.best.set(key,Math.max(row.best.get(key)||0,score));
+        }
+      }
+    }
+    const groups=MUSCLE_GROUPS.map(g=>{
+      const current=currData[g.id],before=prevData[g.id];
+      let improved=0,steady=0,below=0;
+      for(const [key,score] of current.best){
+        const previous=before.best.get(key);
+        if(!previous||!score)continue;
+        const change=score/previous-1;
+        if(change>0.02)improved++;
+        else if(change< -0.02)below++;
+        else steady++;
+      }
+      const compared=improved+steady+below;
+      const status=!current.sets?'Sem registro nesta semana':
+        !before.sets?'Primeira referência':
+        !compared?'Sem exercício comparável':
+        improved>0?'Sinal de progresso':
+        below>0&&!steady?'Abaixo da referência':'Referência estável';
+      const message=!current.sets?'Registre suas séries para acompanhar esta região.':
+        !before.sets?'Já há dados desta semana. A comparação começa na próxima.':
+        !compared?'As variações registradas foram diferentes nas duas semanas.':
+        improved>0?improved+' exercício'+(improved>1?'s':'')+' acima da referência · '+compared+' comparado'+(compared>1?'s':''):
+        below>0&&!steady?'O registro comparável ficou abaixo; recuperação e técnica importam.':
+        steady+' exercício'+(steady>1?'s':'')+' na mesma faixa da semana passada.';
+      return {id:g.id,name:g.name,sets:current.sets,previousSets:before.sets,compared,improved,steady,below,status,message};
+    });
+    const end=new Date(next);end.setDate(end.getDate()-1);
+    const prevEnd=new Date(monday);prevEnd.setDate(prevEnd.getDate()-1);
+    return {currentLabel:fmtDateWeek(monday)+'–'+fmtDateWeek(end),
+      previousLabel:fmtDateWeek(prev)+'–'+fmtDateWeek(prevEnd),groups};
+  }
+  function weeklySummaryMarkup(){
+    const summary=weeklyVshapeSummary(sessions());
+    if(!summary)return '';
+    const cards=summary.groups.map(g=>
+      '<article class="simple-muscle-card" data-muscle="'+esc(g.id)+'">'+
+        '<div class="simple-muscle-heading"><b>'+esc(g.name)+'</b><span>'+esc(g.status)+'</span></div>'+
+        '<p>'+esc(g.message)+'</p>'+
+        '<small>'+g.sets+' séries nesta semana · '+g.previousSets+' na anterior</small>'+
+      '</article>').join('');
+    return '<section class="simple-weekly" aria-label="Resumo semanal do V-Shape">'+
+      '<header><div><span class="simple-kicker">CHECK-IN SEMANAL</span><h4>Seu V, semana a semana.</h4></div>'+
+      '<small>'+esc(summary.currentLabel)+' vs '+esc(summary.previousLabel)+'</small></header>'+
+      '<div class="simple-muscles">'+cards+'</div>'+
+      '<p>Compara a melhor série de cada exercício na mesma variação. Usa uma estimativa baseada em carga e repetições; não mede crescimento muscular. Uma semana isolada não define tendência.</p>'+
+    '</section>';
+  }
   function stat(label,value){return '<article class="simple-stat"><b>'+esc(value)+'</b><span>'+esc(label)+'</span></article>';}
   function phaseCard(){
     const p=programStatus();
@@ -150,6 +239,7 @@
     panel.className='simple-progress';
     panel.innerHTML='<header class="simple-progress-intro"><span class="simple-kicker">SEU CAMINHO</span><h3>Evolução de verdade.</h3><p>O que você registrou, sem números inventados. Acompanhe força, medidas e regularidade.</p></header>'+
       '<div class="simple-stat-grid">'+stat('Treinos · últimos 28 dias',count)+stat('Programa V-Shape',p.started?(p.done?'12/12':p.week+'/12'):'Não iniciado')+stat('Último peso',weight)+stat('Última cintura',waist)+'</div>'+
+      weeklySummaryMarkup()+
       '<div class="simple-links"><button data-simple-go="history"><span>Histórico e cargas</span><span>→</span></button><button data-simple-go="body"><span>Medidas do corpo</span><span>→</span></button><button data-simple-go="photos"><span>Fotos de evolução</span><span>→</span></button><button data-simple-go="food"><span>Cardápios e alimentação</span><span>→</span></button><button data-simple-go="settings"><span>Ajustes e backups</span><span>→</span></button><button data-simple-action="details"><span>Ver análises avançadas</span><span>→</span></button></div>'+
       '<p class="simple-progress-foot">Sem sincronização automática entre aparelhos: seu histórico continua salvo neste dispositivo. Exporte o backup em Ajustes.</p>';
     const head=main.querySelector('.page-head');
@@ -343,7 +433,7 @@
   if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:false});
   window.addEventListener('pageshow',schedule);
   applyVShapePhase();
-  window.TracoSimple={version:VERSION,programStatus,getProgram,openProgram,applyVShapePhase,nextGoal};
+  window.TracoSimple={version:VERSION,programStatus,getProgram,openProgram,applyVShapePhase,nextGoal,weeklyVshapeSummary};
   document.documentElement.dataset.tracoSimple=VERSION;
   // The existing shell was rendered before this last layer was loaded.
   // Redraw once when a running program changes its next-session prescription.
