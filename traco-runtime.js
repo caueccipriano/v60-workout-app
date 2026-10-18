@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.7.0';
-  const BUILD='coherent-ui-v373';
-  const BUILD_NUMBER='373';
+  const BUILD='workout-coherence-v374';
+  const BUILD_NUMBER='374';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);

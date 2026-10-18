@@ -68,7 +68,7 @@ renderHome=function(){
     <button class="perf-workout-hero" id="startToday" aria-label="começar treino ${item.letter}">
       <div class="perf-hero-grid"></div>
       <div class="perf-hero-top"><span>PRÓXIMO TREINO</span><b>TRC-${item.letter}</b></div>
-      <div class="perf-hero-copy"><strong>Treino <em>${item.letter}</em></strong><p>${tracoPerfEsc(w.short)}</p><small>${w.exercises.length} exercícios <i>•</i> ~ 60 min</small></div>
+      <div class="perf-hero-copy"><strong>Treino <em>${item.letter}</em></strong><p>${tracoPerfEsc(w.short)}</p><small>${w.exercises.length} exercícios <i>•</i> 45–60 min</small></div>
       <div class="perf-start-cta"><span>${iconSvg('play')}</span><b>Começar</b><i>→</i></div>
     </button>
     ${tracoPerfSequence()}

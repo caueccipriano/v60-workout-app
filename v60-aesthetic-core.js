@@ -138,7 +138,11 @@ const v60CoreBaseRenderWorkouts=renderWorkouts;
 renderWorkouts=function(){
   v60CoreBaseRenderWorkouts();
   const main=document.querySelector('.workouts-page');
-  if(main&&!main.querySelector('.v60-core-program-note'))main.insertAdjacentHTML('beforeend','<section class="v60-core-program-note"><b>core 3x/semana · 8 séries</b><span>reverse crunch + crunch na polia + Pallof press · resistência suficiente sem inflar o treino</span></section>');
+  if(main&&!main.querySelector('.v60-core-program-note')){
+    const coreIds=new Set(['crunch','core-reverse-ter','core-pallof-qui']);
+    const count=workoutPlan.flatMap(w=>w.exercises).filter(ex=>coreIds.has(ex.id)).reduce((sum,ex)=>sum+(Number(ex.sets)||0),0);
+    main.insertAdjacentHTML('beforeend',`<section class="v60-core-program-note"><b>core em A, C e D · ${count} séries por ciclo</b><span>crunch na polia + reverse crunch + Pallof press · reforço do abdômen sem prometer perda de gordura localizada</span></section>`);
+  }
 };
 
 if(state.activeSession)v60SyncCoreSession();

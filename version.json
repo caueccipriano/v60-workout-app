@@ -1,7 +1,7 @@
 {
-  "version": "2.32.1",
+  "version": "2.32.2",
   "legacyVersion": "3.7.1",
   "name": "Traço",
-  "design": "simple-vshape-unified",
-  "build": "coherent-ui-v373"
+  "design": "simple-vshape-workout-coherent",
+  "build": "workout-coherence-v374"
 }
