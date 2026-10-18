@@ -110,7 +110,7 @@
     }
   }
   function progress(){
-    const main=q('.perf-progress');
+    const main=q('.perf-progress')||q('.progress-page');
     if(!main||main.querySelector('.simple-progress'))return;
     main.classList.add('traco-simple-progress');
     const m=latestMeasurements(),p=programStatus(),count=monthSessions();
@@ -198,6 +198,10 @@
     requestAnimationFrame(apply);
   }
   try{if(typeof nav==='function')nav=newNav;}catch(error){console.warn('Traço navigation upgrade deferred',error);}
+  if(typeof renderProgress==='function'){
+    const previousProgress=renderProgress;
+    renderProgress=function(){const result=previousProgress();progress();return result;};
+  }
   const app=q('#app');
   if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:false});
   window.addEventListener('pageshow',schedule);
