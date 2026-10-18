@@ -6,7 +6,7 @@
 (function(){
   'use strict';
   const KEY='traco_vshape_90_v1';
-  const VERSION='1.1.0';
+  const VERSION='1.2.0';
   const phases=[
     {label:'Base',range:'Semanas 1–4',detail:'Aprenda os movimentos, registre suas cargas e mantenha cerca de 2–3 repetições em reserva. Priorize constância e amplitude confortável.'},
     {label:'Progressão',range:'Semanas 5–8',detail:'Tente evoluir repetições ou carga aos poucos, sem sacrificar a técnica. Em geral, termine com 1–2 repetições em reserva.'},
@@ -31,6 +31,34 @@
     const week=Math.min(12,Math.floor(elapsed/7)+1);
     return {started:true,start:p.start,week,phase:Math.min(2,Math.floor((week-1)/4)),pct:Math.min(100,Math.round(elapsed/84*100)),done};
   }
+
+  // Base prescription is captured after the aesthetic-core installer has added
+  // its two core exercises. Weekly adjustments affect only *future* sessions.
+  const VSHAPE_PROGRESSIVE_IDS=new Set(['puxada-aberta','elevacao-lateral','remada-unilateral','elevacao-lateral-3']);
+  const VSHAPE_COMPOUND_IDS=new Set(['puxada-aberta','remada-baixa','supino-inclinado','agachamento-smith','leg-press','remada-unilateral','puxada-neutra','rdl','supino-reto']);
+  const basePrescription=new Map((typeof workoutPlan==='undefined'?[]:workoutPlan)
+    .flatMap(w=>w.exercises.map(ex=>[ex.id,{sets:ex.sets,min:ex.min,max:ex.max,rest:ex.rest}])));
+  function applyVShapePhase(){
+    const p=programStatus();
+    for(const workout of workoutPlan){
+      for(const ex of workout.exercises){
+        const base=basePrescription.get(ex.id);
+        if(!base)continue;
+        // Months 2 and 3 add one working set to the V-shape priority lift,
+        // rather than increasing all exercise volumes at once.
+        const intense=p.started&&!p.done&&p.phase>=1;
+        ex.sets=base.sets+(intense&&VSHAPE_PROGRESSIVE_IDS.has(ex.id)?1:0);
+        ex.min=base.min;
+        ex.max=base.max;
+        ex.rest=base.rest;
+        if(p.started&&!p.done&&p.phase===2&&VSHAPE_COMPOUND_IDS.has(ex.id)){
+          ex.min=Math.max(6,base.min-2);
+          ex.max=Math.max(ex.min+2,base.max-2);
+        }
+      }
+    }
+  }
+
   function setProgram(){
     try{
       localStorage.setItem(KEY,JSON.stringify({start:isoLocal(),createdAt:Date.now(),schema:1}));
@@ -192,16 +220,17 @@
     modal.innerHTML='<div class="simple-sheet-panel"><header class="simple-sheet-head"><div><span class="simple-kicker">TRAÇO · V-SHAPE</span><h2>12 semanas.<br>Um treino de cada vez.</h2></div><button type="button" data-simple-close aria-label="Fechar">×</button></header>'+
       '<p class="simple-sheet-note">Plano autoral de acompanhamento; não reproduz o curso pago de Renato Cariani. Mantém sua ficha de cinco treinos, priorizando dorsal, deltoides e evolução gradual.</p>'+
       '<ol class="simple-phase-list">'+phases.map(ph=>'<li><b>'+esc(ph.range+' · '+ph.label)+'</b><p>'+esc(ph.detail)+'</p></li>').join('')+'</ol>'+
+      '<section class="simple-split"><span class="simple-kicker">A FICHA QUE VOCÊ VAI FAZER</span>'+workoutPlan.map((w,i)=>'<div><b>'+String.fromCharCode(65+i)+' · '+esc(w.short)+'</b><small>'+w.exercises.map(ex=>esc(ex.name)+' ('+ex.sets+'×'+ex.min+'–'+ex.max+')').join(' · ')+'</small></div>').join('')+'</section>'+
       '<p class="simple-sheet-note">Progrida quando atingir o topo das repetições com boa técnica. Em dias corridos, não é necessário bater recordes. Descanse e ajuste cargas conforme seu nível.</p>'+
       '<div class="simple-sheet-actions">'+(!p.started?'<button type="button" class="simple-primary" data-simple-start>Começar meu programa hoje</button>':p.done?'<button type="button" data-simple-restart>Iniciar um novo ciclo</button>':'<button type="button" data-simple-restart>Recomeçar ciclo do zero</button>')+'<button type="button" data-simple-close>Voltar ao app</button></div></div>';
     const close=()=>{modal.remove();document.removeEventListener('keydown',onKey);};
     const onKey=e=>{if(e.key==='Escape')close();};
     modal.addEventListener('click',e=>{if(e.target===modal)close();});
     modal.querySelectorAll('[data-simple-close]').forEach(btn=>btn.addEventListener('click',close));
-    modal.querySelector('[data-simple-start]')?.addEventListener('click',()=>{if(setProgram()){close();render();}});
+    modal.querySelector('[data-simple-start]')?.addEventListener('click',()=>{if(setProgram()){applyVShapePhase();close();render();}});
     modal.querySelector('[data-simple-restart]')?.addEventListener('click',()=>{
       if(!confirm('Recomeçar a contagem de 12 semanas? Seus treinos, fotos e medidas não serão apagados.'))return;
-      if(setProgram()){close();render();}
+      if(setProgram()){applyVShapePhase();close();render();}
     });
     document.body.appendChild(modal);
     document.addEventListener('keydown',onKey);
@@ -241,7 +270,11 @@
   const app=q('#app');
   if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:false});
   window.addEventListener('pageshow',schedule);
-  window.TracoSimple={version:VERSION,programStatus,getProgram,openProgram};
+  applyVShapePhase();
+  window.TracoSimple={version:VERSION,programStatus,getProgram,openProgram,applyVShapePhase};
   document.documentElement.dataset.tracoSimple=VERSION;
+  // The existing shell was rendered before this last layer was loaded.
+  // Redraw once when a running program changes its next-session prescription.
+  if(programStatus().started&&typeof render==='function')render();
   schedule();
 })();
