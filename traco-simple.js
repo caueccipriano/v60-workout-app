@@ -240,7 +240,7 @@
     const main=q('.perf-settings');
     if(!main)return;
     const about=main.querySelector('.traco-about-card small');
-    if(about)about.textContent='treino · evolução · constância · versão 2.32.0';
+    if(about)about.textContent='treino · evolução · constância · versão 2.32.1';
     const theme=main.querySelector('.traco-theme-copy small');
     if(theme)theme.textContent='visual claro ou escuro · mesma identidade verde-lima';
     const card=main.querySelector('.traco-about-card b');
