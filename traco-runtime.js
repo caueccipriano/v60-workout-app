@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.7.0';
-  const BUILD='progression-guide-v375';
-  const BUILD_NUMBER='375';
+  const BUILD='weekly-vshape-v376';
+  const BUILD_NUMBER='376';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
