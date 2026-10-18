@@ -322,3 +322,34 @@ html[data-design="performance"][data-theme="light"] .simple-previous-load span{c
 html[data-design="performance"][data-theme="light"] .simple-previous-load small{color:#4B7137}
 /* All overlays work above the safe area on iOS and allow their content to scroll. */
 html[data-design="performance"] .simple-sheet-panel{overscroll-behavior:contain}
+
+
+/* v2.33 · one compact, explanation-first progressive-overload cue */
+html[data-design="performance"] .perf-session.traco-simple-session .simple-next-goal{
+  display:grid;gap:4px;
+  margin:0 0 12px;padding:12px 13px;
+  border:1px solid #415941;border-radius:13px;
+  background:#1C2820;color:#EFF4EB;
+}
+html[data-design="performance"] .simple-next-goal>span{
+  color:#B8D695;font-size:10px;letter-spacing:.085em;font-weight:800;
+}
+html[data-design="performance"] .simple-next-goal>b{
+  display:block;color:#F5F7F2;font-size:14px;line-height:1.25;font-weight:800;
+}
+html[data-design="performance"] .simple-next-goal>small{
+  color:#C7D3C2;font-size:11px;line-height:1.45;
+}
+html[data-design="performance"] .simple-next-goal>p{
+  margin:2px 0 0;color:#C1CABD;font-size:11px;line-height:1.5;
+}
+html[data-design="performance"] .simple-next-goal[data-goal="increase"]{
+  border-color:#64824A;background:#243426;
+}
+html[data-design="performance"][data-theme="light"] .simple-next-goal{
+  color:#172419!important;background:#E5EEDF!important;border-color:#B8CCAD!important;
+}
+html[data-design="performance"][data-theme="light"] .simple-next-goal>span{color:#507841!important}
+html[data-design="performance"][data-theme="light"] .simple-next-goal>b{color:#243526!important}
+html[data-design="performance"][data-theme="light"] .simple-next-goal>small,
+html[data-design="performance"][data-theme="light"] .simple-next-goal>p{color:#566751!important}
