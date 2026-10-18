@@ -1,0 +1,171 @@
+/* Traço Simple 1.0 — a focused gym-first interface. All legacy data stays intact. */
+html[data-design="performance"] {
+  --traco-action:#C8E65B;
+  --traco-action-pressed:#B7D548;
+  --perf-orange:#C8E65B;
+  --lime:#C8E65B;
+  --simple-ink:#090B0B;
+  --simple-surface:#171A19;
+  --simple-line:#303632;
+  --simple-muted:#B2B8B2;
+  accent-color:#C8E65B;
+}
+html[data-design="performance"][data-theme="dark"] {
+  --bg-app:#090B0B;
+  --surface:#090B0B;
+  --surface-soft:#171A19;
+  --text:#F2F4EE;
+  --muted:#B2B8B2;
+  --line:#303632;
+}
+html[data-design="performance"] body {
+  background:#090B0B;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+html[data-design="performance"] .perf-topbar {margin-bottom:12px}
+html[data-design="performance"] .perf-topbar .perf-level {display:none}
+html[data-design="performance"] .perf-wordmark strong {font-weight:850;letter-spacing:-.055em}
+html[data-design="performance"] .bottom-nav.simple-bottom-nav {
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:4px;max-width:520px;
+  border:1px solid #343A35;
+  background:#171A19;
+  border-radius:18px;
+  padding:6px;
+}
+html[data-design="performance"] .simple-bottom-nav .nav-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-width:0;gap:3px;min-height:51px;padding:7px 2px;
+  border-radius:12px;color:#B9BFB9;background:transparent;
+  font-size:10px;font-weight:650;letter-spacing:0;
+}
+html[data-design="performance"] .simple-bottom-nav .nav-btn .ico,
+html[data-design="performance"] .simple-bottom-nav .nav-btn svg{
+  color:inherit;width:20px;height:20px;
+}
+html[data-design="performance"] .simple-bottom-nav .nav-btn.active{
+  color:#09100B;background:#C8E65B;
+}
+html[data-design="performance"] .simple-bottom-nav .nav-btn.active .ico{color:#09100B}
+html[data-design="performance"] .perf-home.traco-simple-home,
+html[data-design="performance"] .perf-progress.traco-simple-progress {
+  padding-bottom:calc(98px + env(safe-area-inset-bottom));
+}
+html[data-design="performance"] .perf-home.traco-simple-home > :not(.perf-topbar):not(.perf-resume):not(.simple-home):not(.perf-workout-hero){
+  display:none!important;
+}
+html[data-design="performance"] .perf-home.traco-simple-home{
+  display:flex;flex-direction:column;gap:0;
+}
+html[data-design="performance"] .perf-home.traco-simple-home > .perf-topbar{order:0}
+html[data-design="performance"] .perf-home.traco-simple-home > .simple-home{order:1}
+html[data-design="performance"] .perf-home.traco-simple-home > .perf-resume{order:2}
+html[data-design="performance"] .perf-home.traco-simple-home > .perf-workout-hero{order:3}
+html[data-design="performance"] .perf-home.traco-simple-home .perf-resume{
+  margin:5px 0 15px;border-radius:17px;background:#1B2620;border:1px solid #49614E;
+}
+html[data-design="performance"] .perf-home.traco-simple-home .perf-workout-hero{
+  min-height:220px;margin:8px 0 12px!important;
+  border-radius:22px!important;
+  border:1px solid #394339!important;
+  background:linear-gradient(135deg,#1D2D23,#101512)!important;
+  box-shadow:none!important;overflow:hidden;
+}
+html[data-design="performance"] .perf-home.traco-simple-home .perf-workout-hero .perf-hero-grid{opacity:.12}
+html[data-design="performance"] .perf-home.traco-simple-home .perf-hero-top b{color:#C8E65B!important}
+html[data-design="performance"] .perf-home.traco-simple-home .perf-start-cta{
+  color:#07100B!important;background:#C8E65B!important;border-radius:12px;
+}
+html[data-design="performance"] .perf-home.traco-simple-home .perf-start-cta :is(b,i,svg){color:#07100B!important}
+.simple-home{display:grid;gap:16px;margin:0 0 5px}
+.simple-kicker{font-size:10px;font-weight:750;letter-spacing:.14em;text-transform:uppercase;color:#C8E65B}
+.simple-home h1{font-size:clamp(36px,10vw,53px);line-height:.99;letter-spacing:-.07em;font-weight:800;color:#F5F6F0;margin:4px 0 6px}
+.simple-home p{color:#B2BAB3;font-size:13px;line-height:1.5;margin:0}
+.simple-home .simple-lead{padding:9px 0 4px}
+.simple-home .simple-lead p{max-width:29ch}
+.simple-program{
+  display:grid;gap:11px;
+  background:#171D19;border:1px solid #343F37;
+  border-radius:19px;padding:17px;
+}
+.simple-program-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.simple-program-top strong{color:#F1F5EE;font-size:17px;letter-spacing:-.025em}
+.simple-program-top span{font-size:11px;color:#C8E65B;font-weight:750;white-space:nowrap}
+.simple-program p{font-size:12px;line-height:1.5;color:#BCC4BA}
+.simple-program-meter{height:6px;overflow:hidden;border-radius:99px;background:#333D34}
+.simple-program-meter i{display:block;height:100%;min-width:0;max-width:100%;border-radius:inherit;background:#C8E65B}
+.simple-program-foot{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.simple-program-foot small{font-size:11px;color:#BEC6BD}
+.simple-quiet-button{
+  border:1px solid #596959;background:#202A23;color:#F1F5EE;
+  min-height:39px;padding:7px 13px;border-radius:12px;font:700 12px inherit;
+  cursor:pointer;
+}
+.simple-home-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:3px 0}
+.simple-home-actions button{
+  min-width:0;min-height:55px;text-align:left;padding:12px;
+  color:#EBF0E7;background:#181D1A;border:1px solid #323B34;border-radius:14px;
+  font-weight:700;font-size:12px;
+}
+.simple-home-actions button span{display:block;color:#BAC5B9;font-weight:400;font-size:10px;margin-top:4px}
+.simple-workout-caption{font-size:10px;text-transform:uppercase;color:#C7D1C4;font-weight:750;letter-spacing:.1em;margin:4px 0 0}
+html[data-design="performance"] .perf-progress.traco-simple-progress:not(.traco-detail-view) > :not(.page-head):not(.simple-progress){display:none!important}
+html[data-design="performance"] .perf-progress.traco-simple-progress .page-head{margin-bottom:17px}
+.simple-progress{display:grid;gap:13px;color:#F3F5EF}
+.simple-progress-intro h3{font-size:25px;letter-spacing:-.055em;line-height:1.05;margin:3px 0 5px}
+.simple-progress-intro p{color:#B2B9B0;font-size:12px;line-height:1.45}
+.simple-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.simple-stat{background:#181E19;border:1px solid #374138;padding:16px;border-radius:16px;min-height:107px}
+.simple-stat b{display:block;font-size:25px;letter-spacing:-.04em;color:#F5F5EE;margin-bottom:5px}
+.simple-stat span{font-size:11px;color:#B9C0B7}
+.simple-links{display:grid;gap:8px}
+.simple-links button{display:flex;align-items:center;justify-content:space-between;text-align:left;gap:12px;min-height:54px;padding:0 16px;border-radius:14px;background:#1B211D;border:1px solid #364037;color:#F3F5F0;font-size:13px;font-weight:700}
+.simple-links button span:last-child{color:#C8E65B}
+.simple-progress-foot{font-size:11px;color:#B2BAAF;line-height:1.5}
+html[data-design="performance"] .perf-session.traco-simple-session .perf-session-bar{position:sticky;top:0;z-index:18;background:#090B0B;padding-top:env(safe-area-inset-top);padding-bottom:12px}
+html[data-design="performance"] .perf-session.traco-simple-session .perf-exercise-console{
+  border-radius:19px!important;background:#161B17!important;
+  border:1px solid #333C35!important;box-shadow:none!important
+}
+html[data-design="performance"] .perf-session.traco-simple-session .perf-complete-set{background:#C8E65B!important;color:#09110B!important;border-radius:13px!important;min-height:57px;font-size:15px}
+html[data-design="performance"] .perf-session.traco-simple-session .perf-complete-set *{color:#09110B!important}
+html[data-design="performance"] .perf-session.traco-simple-session .perf-value-panel{border-radius:13px}
+html[data-design="performance"] .perf-session.traco-simple-session .perf-value-panel input{font-size:27px!important;min-width:0}
+html[data-design="performance"] .perf-session.traco-simple-session .simple-target{padding:9px 12px;border-radius:10px;background:#253026;color:#D6E5CD;font-size:11px;line-height:1.4;margin:6px 0 12px}
+html[data-design="performance"] .perf-session.traco-simple-session .perf-exercise-actions{gap:9px}
+html[data-design="performance"] .perf-session.traco-simple-session .perf-skip-exercise{font-size:12px}
+html[data-design="performance"] .perf-session.traco-simple-session :is(.lab-session-tools,.evo-session-intelligence,.perf-exercise-more){display:none!important}
+html[data-design="performance"] .perf-session.traco-simple-session .ux-session-more{margin-top:14px}
+html[data-design="performance"] .perf-session.traco-simple-session .perf-session-footer{font-size:11px}
+html[data-design="performance"] .perf-workouts .workout-stack .workout-select{border-radius:13px;min-height:68px}
+html[data-design="performance"] .perf-workouts .selected-block{border-radius:18px}
+.simple-sheet{
+ position:fixed;inset:0;z-index:10000;display:flex;align-items:flex-end;
+ background:rgba(0,0,0,.75);padding:0;
+}
+.simple-sheet-panel{
+ width:100%;max-width:560px;margin:0 auto;
+ max-height:92dvh;overflow-y:auto;
+ padding:22px 22px calc(25px + env(safe-area-inset-bottom));
+ border-radius:25px 25px 0 0;background:#1A201B;border:1px solid #445147;color:#F2F5EE;
+}
+.simple-sheet-head{display:flex;justify-content:space-between;gap:14px;align-items:center}
+.simple-sheet-head h2{font-size:25px;line-height:1.05;letter-spacing:-.05em;margin:5px 0}
+.simple-sheet-head button{min-width:40px;min-height:40px;border:1px solid #5B6B5D;border-radius:13px;background:#242E26;color:#EFF6EB;font-size:23px}
+.simple-phase-list{padding:0;margin:17px 0;display:grid;gap:11px;list-style:none}
+.simple-phase-list li{padding:14px;background:#222C25;border:1px solid #415044;border-radius:13px}
+.simple-phase-list li b{display:block;font-size:13px;color:#F3F6F0;margin-bottom:5px}
+.simple-phase-list li p{font-size:12px;line-height:1.55;color:#C0CDC0;margin:0}
+.simple-sheet-actions{display:grid;gap:8px;margin-top:18px}
+.simple-sheet-actions button{min-height:49px;border-radius:12px;border:1px solid #5B6B5D;background:#263129;color:#F1F5EF;font-weight:700}
+.simple-sheet-actions .simple-primary{background:#C8E65B;color:#09120B;border-color:#C8E65B}
+.simple-sheet-note{font-size:11px;color:#B7C3B6;line-height:1.5}
+html[data-theme="light"][data-design="performance"] .simple-home,
+html[data-theme="light"][data-design="performance"] .simple-progress{color:#F2F5EE}
+@media(max-width:370px){
+ .simple-home h1{font-size:36px}
+ .simple-program{padding:14px}
+ .simple-stat{padding:13px}
+ .simple-sheet-panel{padding-left:17px;padding-right:17px}
+}
+@media(prefers-reduced-motion:reduce){.simple-program-meter i{transition:none}}

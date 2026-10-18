@@ -45,6 +45,7 @@ jobs:
           node --check traco-ux-polish.js
           node --check traco-menu-planner.js
           node --check traco-final-ui.js
+          node --check traco-simple.js
           node --check eu-bridge.js
       - name: Validate Traço branding
         run: |
