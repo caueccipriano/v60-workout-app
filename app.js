@@ -156,9 +156,10 @@ function renderWorkouts(){
 }
 
 function hydrateDraft(raw){
-  // Old drafts retain the exact routine they were started with.
-  // Never upgrade an in-progress session to a new program by hydration.
-  if(raw&&raw.planVersion!==TRACO_VSHAPE_PLAN_VERSION)return raw;
+  // The saved exercise list is an immutable snapshot of the workout start.
+  // Even if the 12-week phase or published plan changes, resuming must not
+  // replace exercises, sets, cargas or repetitions.
+  if(raw&&Array.isArray(raw.exercises)&&raw.exercises.length)return raw;
   const w=workoutPlan.find(x=>x.id===raw.workoutId);if(!raw.exercises||!w)return raw;
   const existing=new Map(raw.exercises.map(ex=>[ex.id,ex]));
   raw.wName=w.name;
