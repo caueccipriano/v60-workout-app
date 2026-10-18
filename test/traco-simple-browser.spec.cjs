@@ -210,7 +210,8 @@ test('double-progression advice respects reps, real set completion and exercise 
       exercises:[{...ex,name:opts.name||ex.name,equipment:opts.equipment||ex.equipment,
         sets:reps.map((r,i)=>({n:i+1,weight:24,reps:r,done:opts.incomplete&&i===2?false:true,skipped:false,rir:opts.rir||''}))}]
     });
-    const before=JSON.stringify(sample([max,max,max]));
+    const unchangedFixture=sample([max,max,max]);
+    const before=JSON.stringify(unchangedFixture);
     const increase=TracoSimple.nextGoal(ex,[sample([max,max,max])]);
     const reps=TracoSimple.nextGoal(ex,[sample([max,max-1,max-2])]);
     const recover=TracoSimple.nextGoal(ex,[sample([min-1,min,min])]);
@@ -219,7 +220,7 @@ test('double-progression advice respects reps, real set completion and exercise 
     const reported=TracoSimple.nextGoal(ex,[sample([max,max,max],{excluded:true})]);
     const heavy=TracoSimple.nextGoal(ex,[sample([max,max,max],{rir:'heavy'})]);
     const noHistory=TracoSimple.nextGoal(ex,[]);
-    const after=JSON.stringify(sample([max,max,max]));
+    const after=JSON.stringify(unchangedFixture);
     return {increase:increase?.kind,reps:reps?.kind,recover:recover?.kind,
       partial:partial?.kind,variant,reported,heavy:heavy?.kind,noHistory,
       unchanged:before===after};
