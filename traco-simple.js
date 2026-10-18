@@ -6,7 +6,7 @@
 (function(){
   'use strict';
   const KEY='traco_vshape_90_v1';
-  const VERSION='1.3.0';
+  const VERSION='1.4.0';
   const phases=[
     {label:'Base',range:'Semanas 1–4',detail:'Aprenda os movimentos, registre suas cargas e mantenha cerca de 2–3 repetições em reserva. Priorize constância e amplitude confortável.'},
     {label:'Progressão',range:'Semanas 5–8',detail:'Tente evoluir repetições ou carga aos poucos, sem sacrificar a técnica. Em geral, termine com 1–2 repetições em reserva.'},
@@ -162,13 +162,22 @@
     });
   }
   function lastSetSuggestion(ex){
-    if(!ex||typeof lastExercisePerf!=='function')return null;
+    if(!ex)return null;
     try{
       const key=typeof tracoExerciseProgressionKey==='function'?tracoExerciseProgressionKey(ex):ex.id;
-      const previous=lastExercisePerf(key);
-      const sets=Array.isArray(previous?.sets)?previous.sets.slice().reverse():[];
-      return sets.find(row=>row?.done&&!row.skipped&&Number(row.reps)>0&&Number.isFinite(Number(row.weight))&&Number(row.weight)>0)||null;
-    }catch{return null;}
+      const norm=x=>String(x||'').trim().toLocaleLowerCase('pt-BR');
+      const ordered=sessions().filter(s=>s?.finishedAt&&!s.excludeFromVolume)
+        .sort((a,b)=>Number(b.finishedAt||b.startedAt)-Number(a.finishedAt||a.startedAt));
+      for(const row of ordered){
+        const previous=(row.exercises||[]).find(item=>
+          (typeof tracoExerciseProgressionKey==='function'?tracoExerciseProgressionKey(item):item.id)===key&&
+          norm(item.name)===norm(ex.name)&&norm(item.equipment)===norm(ex.equipment));
+        const set=(previous?.sets||[]).slice().reverse().find(item=>item?.done&&!item.skipped&&!item.reported&&
+          Number(item.reps)>0&&Number.isFinite(Number(item.weight))&&Number(item.weight)>0);
+        if(set)return set;
+      }
+    }catch{}
+    return null;
   }
   function suggestLastLoad(box,ex){
     const set=ex?.sets?.[typeof currentSetIndex==='function'?currentSetIndex(ex):0];
@@ -194,6 +203,57 @@
       }
     });
   }
+  // Read-only double progression inspired by minimal open-source gym loggers.
+  // A previous performance is comparable only if it was really recorded for
+  // this exercise and variation. Never changes loads or a live workout.
+  function nextGoal(ex,history){
+    if(!ex||!Array.isArray(history))return null;
+    const key=typeof tracoExerciseProgressionKey==='function'?tracoExerciseProgressionKey(ex):ex.id;
+    const label=x=>String(x||'').trim().toLocaleLowerCase('pt-BR');
+    const matches=history.filter(s=>s&&s.finishedAt&&!s.excludeFromVolume&&s.id!==state?.activeSession?.id)
+      .sort((a,b)=>Number(b.finishedAt||b.startedAt)-Number(a.finishedAt||a.startedAt));
+    for(const past of matches){
+      const previous=(past.exercises||[]).find(row=>{
+        if((typeof tracoExerciseProgressionKey==='function'?tracoExerciseProgressionKey(row):row.id)!==key)return false;
+        // A Smart Swap retains the exercise ID, so name/equipment must match.
+        if(label(row.name)!==label(ex.name)||label(row.equipment)!==label(ex.equipment))return false;
+        return true;
+      });
+      if(!previous)continue;
+      const all=Array.isArray(previous.sets)?previous.sets:[];
+      const done=all.filter(row=>row&&row.done&&!row.skipped&&!row.reported&&row.repsKnown!==false&&Number.isFinite(Number(row.reps))&&Number(row.reps)>0);
+      if(!done.length)continue;
+      const usesLoad=typeof tracoExerciseUsesLoad==='function'?tracoExerciseUsesLoad(ex):ex.usesLoad!==false;
+      const weights=done.map(row=>Number(row.weight));
+      if(usesLoad&&!weights.every(w=>Number.isFinite(w)&&w>0))continue;
+      const refs=done.map(row=>Number(row.reps));
+      const complete=all.length>0&&all.every(row=>row?.done&&!row.skipped&&!row.reported)&&done.length>=Math.max(1,Number(ex.sets?.length||ex.sets)||1);
+      const max=Number(ex.max)||12,min=Number(ex.min)||8;
+      const lastLoad=usesLoad?weights[weights.length-1]:null;
+      const summary=(usesLoad?String(lastLoad).replace('.',',')+' kg · ':'')+refs.join('/')+' reps';
+      const heavy=done.some(row=>row.rir==='heavy'||(row.rir!==''&&row.rir!=null&&Number(row.rir)===0));
+      const allTop=complete&&refs.every(r=>r>=max)&&(!usesLoad||weights.every(w=>w===lastLoad))&&!heavy;
+      const below=refs.some(r=>r<min);
+      const kind=allTop?'increase':below?'recover':'reps';
+      const title=kind==='increase'?(usesLoad?'Pode considerar subir a carga':'Pode avançar a dificuldade'):kind==='recover'?'Consolide a execução':'Busque mais uma repetição';
+      const detail=kind==='increase'?(usesLoad?'Todas as séries chegaram ao topo. Considere o menor incremento disponível, se a técnica estiver boa.':'Chegou ao topo com controle. Considere uma variação um pouco mais difícil.')
+        :kind==='recover'?'Algumas séries ficaram abaixo da faixa. Mantenha ou ajuste a carga e priorize a técnica.'
+        :'Mantenha a carga e tente +1 repetição em uma série, sem perder a técnica.';
+      return {kind,title,detail,summary,source:'Última sessão comparável'};
+    }
+    return null;
+  }
+  function renderNextGoal(box,ex,hint){
+    if(box.querySelector('.simple-next-goal'))return;
+    const goal=nextGoal(ex,sessions());
+    if(!goal)return;
+    const card=document.createElement('section');
+    card.className='simple-next-goal';
+    card.dataset.goal=goal.kind;
+    card.setAttribute('aria-label','Meta sugerida pela última sessão');
+    card.innerHTML='<span>PRÓXIMA META · SUGESTÃO</span><b>'+esc(goal.title)+'</b><small>'+esc(goal.source+' · '+goal.summary)+'</small><p>'+esc(goal.detail)+'</p>';
+    hint.insertAdjacentElement('afterend',card);
+  }
   function session(){
     const main=q('.perf-session');
     if(!main)return;
@@ -210,6 +270,7 @@
     hint.textContent='Meta: '+plan+advice+'. Priorize a execução.';
     const inputs=box.querySelector('.perf-inputs');
     if(inputs)inputs.insertAdjacentElement('beforebegin',hint);else box.prepend(hint);
+    renderNextGoal(box,ex,hint);
     suggestLastLoad(box,ex);
   }
   function openProgram(){
@@ -240,7 +301,7 @@
     const main=q('.perf-settings');
     if(!main)return;
     const about=main.querySelector('.traco-about-card small');
-    if(about)about.textContent='treino · evolução · constância · versão 2.32.2';
+    if(about)about.textContent='treino · evolução · constância · versão 2.33.0';
     const theme=main.querySelector('.traco-theme-copy small');
     if(theme)theme.textContent='visual claro ou escuro · mesma identidade verde-lima';
     const card=main.querySelector('.traco-about-card b');
@@ -282,7 +343,7 @@
   if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:false});
   window.addEventListener('pageshow',schedule);
   applyVShapePhase();
-  window.TracoSimple={version:VERSION,programStatus,getProgram,openProgram,applyVShapePhase};
+  window.TracoSimple={version:VERSION,programStatus,getProgram,openProgram,applyVShapePhase,nextGoal};
   document.documentElement.dataset.tracoSimple=VERSION;
   // The existing shell was rendered before this last layer was loaded.
   // Redraw once when a running program changes its next-session prescription.

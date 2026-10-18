@@ -3,7 +3,7 @@ test.use({serviceWorkers:'block',viewport:{width:390,height:844}});
 const url='http://127.0.0.1:4173/';
 async function ready(page){
   await page.goto(url,{waitUntil:'load'});
-  await page.waitForFunction(()=>window.TracoSimple?.version==='1.3.0');
+  await page.waitForFunction(()=>window.TracoSimple?.version==='1.4.0');
   await expect(page.locator('.perf-home .simple-home')).toBeVisible();
 }
 test('one-tap navigation and V-Shape program stay local and preserve data',async({page})=>{
@@ -142,7 +142,7 @@ test('three-tab navigation reaches all core routes with one coherent brand and b
   await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
   await page.locator('.simple-progress [data-simple-go="settings"]').click();
   await expect(page.locator('.perf-settings')).toBeVisible();
-  await expect(page.locator('.traco-about-card small')).toContainText('2.32.2');
+  await expect(page.locator('.traco-about-card small')).toContainText('2.33.0');
   await expect(page.locator('.traco-theme-copy small')).toContainText('verde-lima');
   await page.locator('[data-traco-theme="light"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','light');
@@ -196,4 +196,61 @@ test('visible A–E prescriptions match plan, core dose and phase targets',async
   await expect(page.locator('#simpleProgramSheet')).toContainText('45–60 min');
   await expect(page.locator('#simpleProgramSheet')).toContainText('Cardio é opcional e separado');
   await page.locator('#simpleProgramSheet [data-simple-close]').first().click();
+});
+
+
+test('double-progression advice respects reps, real set completion and exercise variation',async({page})=>{
+  await ready(page);
+  const result=await page.evaluate(()=>{
+    const ex=workoutPlan[0].exercises[0],max=Number(ex.max),min=Number(ex.min);
+    const sample=(reps,opts={})=>({
+      id:'fake-'+String(reps)+'-'+(opts.label||'baseline'),workoutId:workoutPlan[0].id,
+      startedAt:Date.now()-120000,finishedAt:Date.now()-100000,
+      excludeFromVolume:opts.excluded||false,
+      exercises:[{...ex,name:opts.name||ex.name,equipment:opts.equipment||ex.equipment,
+        sets:reps.map((r,i)=>({n:i+1,weight:24,reps:r,done:opts.incomplete&&i===2?false:true,skipped:false,rir:opts.rir||''}))}]
+    });
+    const unchangedFixture=sample([max,max,max]);
+    const before=JSON.stringify(unchangedFixture);
+    const increase=TracoSimple.nextGoal(ex,[sample([max,max,max])]);
+    const reps=TracoSimple.nextGoal(ex,[sample([max,max-1,max-2])]);
+    const recover=TracoSimple.nextGoal(ex,[sample([min-1,min,min])]);
+    const partial=TracoSimple.nextGoal(ex,[sample([max,max,max],{incomplete:true})]);
+    const variant=TracoSimple.nextGoal(ex,[sample([max,max,max],{equipment:'outra máquina'})]);
+    const reported=TracoSimple.nextGoal(ex,[sample([max,max,max],{excluded:true})]);
+    const heavy=TracoSimple.nextGoal(ex,[sample([max,max,max],{rir:'heavy'})]);
+    const noHistory=TracoSimple.nextGoal(ex,[]);
+    const after=JSON.stringify(unchangedFixture);
+    return {increase:increase?.kind,reps:reps?.kind,recover:recover?.kind,
+      partial:partial?.kind,variant,reported,heavy:heavy?.kind,noHistory,
+      unchanged:before===after};
+  });
+  expect(result).toMatchObject({
+    increase:'increase',reps:'reps',recover:'recover',partial:'reps',
+    variant:null,reported:null,heavy:'reps',noHistory:null,unchanged:true
+  });
+});
+test('gym displays a short next goal without changing planned sets or completed history',async({page})=>{
+  await ready(page);
+  const before=await page.evaluate(()=>{
+    const w=workoutPlan[0],ex=w.exercises[0];
+    const past={id:'next-goal-fixture',workoutId:w.id,
+      startedAt:Date.now()-600000,finishedAt:Date.now()-400000,
+      exercises:[{...ex,sets:Array.from({length:3},(_,i)=>({n:i+1,weight:24,reps:ex.max,done:true,skipped:false}))}]};
+    localStorage.setItem('v60_sessions',JSON.stringify([past]));
+    return {serialized:JSON.stringify([past]),id:ex.id};
+  });
+  await page.locator('.simple-bottom-nav [data-nav="workouts"]').click();
+  await page.locator('.workout-select[data-workout="qua"]').click();
+  await expect(page.locator('.selected-blue h3')).toContainText('A ·');
+  await page.locator('#startSelected').click();
+  await expect(page.locator('.perf-session .simple-next-goal')).toBeVisible();
+  await expect(page.locator('.simple-next-goal')).toContainText('Pode considerar subir a carga');
+  await expect(page.locator('.simple-next-goal')).toContainText('24 kg');
+  await expect(page.locator('.simple-next-goal')).toContainText('12/12/12');
+  expect(await page.evaluate(()=>localStorage.getItem('v60_sessions'))).toBe(before.serialized);
+  const sets=await page.evaluate(()=>state.activeSession.exercises[0].sets);
+  expect(sets.length).toBe(3);
+  expect(sets.every(x=>!x.done)).toBe(true);
+  expect(await page.locator('.simple-next-goal button').count()).toBe(0);
 });
