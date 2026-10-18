@@ -123,7 +123,7 @@ test('legacy in-progress workout is not rewritten after the new V-Shape plan is 
     localStorage.setItem('v60_draft',JSON.stringify(old));
     const started=startSession(w.id);
     const saved=JSON.parse(localStorage.getItem('v60_draft'));
-    return {id:saved.id,workoutId:saved.workoutId,ids:saved.exercises.map(e=>e.id),load:saved.exercises[0].sets[0].weight,reps:saved.exercises[0].sets[0].reps,active:!!started};
+    return {id:saved.id,workoutId:saved.workoutId,ids:saved.exercises.map(e=>e.id),load:saved.exercises[0].sets[0].weight,reps:saved.exercises[0].sets[0].reps,active:!!state.activeSession};
   });
   expect(result).toMatchObject({active:true,id:'old-stored-session',load:27.5,reps:11,ids:['puxada-aberta','old-accessory']});
 });
