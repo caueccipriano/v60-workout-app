@@ -5,7 +5,7 @@ test.use({serviceWorkers:'block'});
 const url='http://127.0.0.1:4173/';
 async function settings(page){
  await page.goto(url,{waitUntil:'load'});
- await page.waitForFunction(()=>window.TracoRuntime?.build==='374');
+ await page.waitForFunction(()=>window.TracoRuntime?.build==='375');
  await page.waitForTimeout(120); // Allow the runtime's initial 25ms boot.
  await page.evaluate(()=>{state.page='settings';render();});
  await expect(page.locator('#importData')).toHaveCount(1);
