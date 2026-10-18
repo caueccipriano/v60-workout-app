@@ -3,7 +3,7 @@ test.use({serviceWorkers:'block',viewport:{width:390,height:844}});
 const url='http://127.0.0.1:4173/';
 async function ready(page){
   await page.goto(url,{waitUntil:'load'});
-  await page.waitForFunction(()=>window.TracoSimple?.version==='1.2.0');
+  await page.waitForFunction(()=>window.TracoSimple?.version==='1.3.0');
   await expect(page.locator('.perf-home .simple-home')).toBeVisible();
 }
 test('one-tap navigation and V-Shape program stay local and preserve data',async({page})=>{
@@ -126,4 +126,41 @@ test('legacy in-progress workout is not rewritten after the new V-Shape plan is 
     return {id:saved.id,workoutId:saved.workoutId,ids:saved.exercises.map(e=>e.id),load:saved.exercises[0].sets[0].weight,reps:saved.exercises[0].sets[0].reps,active:!!state.activeSession};
   });
   expect(result).toMatchObject({active:true,id:'old-stored-session',load:27.5,reps:11,ids:['puxada-aberta','old-accessory']});
+});
+
+
+test('three-tab navigation reaches all core routes with one coherent brand and both themes',async({page})=>{
+  await ready(page);
+  await expect(page.locator('.simple-bottom-nav .nav-btn')).toHaveCount(3);
+  await expect(page.locator('.perf-workout-hero')).toBeVisible();
+  await page.locator('.simple-bottom-nav [data-nav="workouts"]').click();
+  await expect(page.locator('.perf-workouts .workout-select')).toHaveCount(5);
+  await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
+  await expect(page.locator('.simple-progress')).toBeVisible();
+  await page.locator('.simple-progress [data-simple-go="food"]').click();
+  await expect(page.locator('.perf-food')).toBeVisible();
+  await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
+  await page.locator('.simple-progress [data-simple-go="settings"]').click();
+  await expect(page.locator('.perf-settings')).toBeVisible();
+  await expect(page.locator('.traco-about-card small')).toContainText('2.32.1');
+  await expect(page.locator('.traco-theme-copy small')).toContainText('verde-lima');
+  await page.locator('[data-traco-theme="light"]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme','light');
+  await page.locator('.simple-bottom-nav [data-nav="home"]').click();
+  await expect(page.locator('.simple-home')).toBeVisible();
+  const light=await page.evaluate(()=>({
+    background:getComputedStyle(document.body).backgroundColor,
+    card:getComputedStyle(document.querySelector('.simple-program')).backgroundColor,
+    nav:getComputedStyle(document.querySelector('.simple-bottom-nav')).backgroundColor
+  }));
+  expect(light.background).toBe('rgb(246, 248, 242)');
+  expect(light.card).toBe('rgb(233, 239, 230)');
+  expect(light.nav).toBe('rgb(240, 244, 237)');
+  await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
+  await page.locator('.simple-progress [data-simple-go="settings"]').click();
+  await page.locator('[data-traco-theme="dark"]').click();
+  await page.locator('.simple-bottom-nav [data-nav="home"]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+  const dark=await page.evaluate(()=>getComputedStyle(document.body).backgroundColor);
+  expect(dark).toBe('rgb(9, 11, 11)');
 });

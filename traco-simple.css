@@ -208,3 +208,117 @@ html[data-design="performance"] :is(.perf-workout-hero,.simple-program,.perf-res
 .simple-split>div{display:grid;gap:5px;padding:10px 0;border-top:1px solid #354135}
 .simple-split>div b{font-size:13px;color:#F1F7EF}
 .simple-split>div small{font-size:11px;line-height:1.65;color:#B7C7B3}
+
+
+/* v2.32.1 — ONE product language, across all screens. */
+/* Tokens control all primary interactive color; yellow is reserved for records/achievements. */
+html[data-design="performance"]{
+  --traco-action:#C8E65B;
+  --traco-action-pressed:#B4D047;
+  --perf-orange:#C8E65B;
+  --lime:#C8E65B;
+  --traco-accent:#C8E65B;
+  --traco-corner:16px;
+  --traco-tap:46px;
+}
+html[data-design="performance"] :is(.cta-lime,.perf-complete-set,.perf-start-cta,.traco-menu-build,.traco-menu-home-card button){
+  background:#C8E65B!important;
+  border-color:#C8E65B!important;
+  color:#10190F!important;
+  border-radius:13px;
+}
+html[data-design="performance"] :is(.cta-lime,.perf-complete-set,.perf-start-cta,.traco-menu-build,.traco-menu-home-card button) :is(b,span,i,svg){color:#10190F!important}
+html[data-design="performance"] :is(.perf-start-cta,.perf-complete-set,.cta-lime,.simple-home-actions button,.simple-links button,.settings-row,.workout-select,.nav-btn){
+  min-height:46px;
+}
+html[data-design="performance"] :is(.perf-workouts .workout-select.active,.workouts-page .workout-select.active){
+  border-color:#8CAD43!important;
+  box-shadow:inset 4px 0 0 #C8E65B!important;
+}
+html[data-design="performance"] .perf-workouts .workout-select .workout-num,
+html[data-design="performance"] .workouts-page .workout-select .workout-num,
+html[data-design="performance"] :is(.traco-food-head .page-kicker,.page-kicker,.traco-menu-home-card span){
+  color:#B4D948!important;
+}
+html[data-design="performance"] :is(.perf-session .perf-inputs input,.measure-form input,.settings-page input){
+  font-variant-numeric:tabular-nums;
+}
+html[data-design="performance"] .traco-menu-home-card{
+  background:linear-gradient(135deg,#1E2C1F,#151B16)!important;
+  border-color:#3E5940!important;
+}
+html[data-design="performance"] .perf-food .traco-menu-planner>header{
+  background:linear-gradient(135deg,#203021,#161E18)!important;
+  border-color:#436145!important;
+}
+html[data-design="performance"] .perf-food .traco-menu-builder{border-color:#466448!important}
+html[data-design="performance"] :is(.traco-about-card,.traco-theme-card,.body-blue,.progress-blue,.form-card,.selected-block,.traco-menu-planner){
+  box-shadow:none;
+}
+html[data-design="performance"] :is(.settings-page,.history-page,.body-page,.workouts-page,.progress-page,.food-page){
+  padding-bottom:calc(105px + env(safe-area-inset-bottom));
+}
+html[data-design="performance"] :is(button,[role="button"],summary,a){-webkit-tap-highlight-color:rgba(200,230,91,.15)}
+html[data-design="performance"] :is(button,summary,a,input,select,textarea):focus-visible{
+  outline:2px solid #C8E65B!important;outline-offset:2px!important;
+}
+
+/* Light mode isn't a different brand: use the same lime accent and softer neutrals. */
+html[data-design="performance"][data-theme="light"]{
+  --bg-app:#F6F8F2;--surface:#F6F8F2;--surface-soft:#E9EFE6;
+  --text:#172218;--muted:#576457;--line:#CAD5C8;
+  --perf-black:#F6F8F2;--perf-panel:#E9EFE6;--perf-panel-2:#E1E9DF;
+  color-scheme:light;
+}
+html[data-design="performance"][data-theme="light"] body{
+  background:#F6F8F2!important;color:#172218!important;
+}
+html[data-design="performance"][data-theme="light"] .main-card{
+  background:#F6F8F2!important;color:#172218;
+}
+html[data-design="performance"][data-theme="light"] .simple-home h1,
+html[data-design="performance"][data-theme="light"] .simple-progress-intro h3{
+  color:#172218!important;
+}
+html[data-design="performance"][data-theme="light"] :is(.simple-home p,.simple-progress-intro p,.simple-progress-foot){
+  color:#586459!important;
+}
+html[data-design="performance"][data-theme="light"] :is(.simple-program,.simple-stat,.simple-links button,.simple-home-actions button,.simple-sheet-panel){
+  background:#E9EFE6!important;border-color:#C8D5C4!important;color:#172218!important;
+}
+html[data-design="performance"][data-theme="light"] :is(.simple-program-top strong,.simple-stat b,.simple-links button,.simple-home-actions button,.simple-phase-list li b,.simple-sheet-head h2){
+  color:#172218!important;
+}
+html[data-design="performance"][data-theme="light"] :is(.simple-program p,.simple-program-foot small,.simple-stat span,.simple-home-actions button span,.simple-phase-list li p,.simple-sheet-note){
+  color:#4F5E50!important;
+}
+html[data-design="performance"][data-theme="light"] .simple-program-meter{background:#C5D1C3}
+html[data-design="performance"][data-theme="light"] .simple-quiet-button{
+  background:#DAE6D5;color:#213122;border-color:#B5C7B0;
+}
+html[data-design="performance"][data-theme="light"] .simple-bottom-nav{
+  background:#F0F4ED!important;border-color:#C6D0C4!important;
+}
+html[data-design="performance"][data-theme="light"] .simple-bottom-nav .nav-btn:not(.active){color:#4D5B4D}
+html[data-design="performance"][data-theme="light"] .simple-workout-caption{color:#5D6B5E}
+html[data-design="performance"][data-theme="light"] .simple-sheet{background:rgba(12,19,13,.55)}
+html[data-design="performance"][data-theme="light"] .simple-phase-list li{
+  background:#F5F8F2;border-color:#CCD8C8;
+}
+html[data-design="performance"][data-theme="light"] .simple-sheet-head button,
+html[data-design="performance"][data-theme="light"] .simple-sheet-actions button:not(.simple-primary){
+  background:#DFE8DB;color:#243125;border-color:#BBCDB6;
+}
+html[data-design="performance"][data-theme="light"] .traco-menu-home-card,
+html[data-design="performance"][data-theme="light"] .perf-food .traco-menu-planner>header{
+  background:#E4EDDF!important;border-color:#C1D2B8!important;
+}
+html[data-design="performance"][data-theme="light"] .traco-menu-home-card :is(b,small){color:#233322}
+html[data-design="performance"][data-theme="light"] .simple-previous-load{
+  background:#E5F0DF!important;border-color:#B6CEA9!important;color:#203020!important;
+}
+html[data-design="performance"][data-theme="light"] .simple-previous-load b{color:#203020}
+html[data-design="performance"][data-theme="light"] .simple-previous-load span{color:#50753B}
+html[data-design="performance"][data-theme="light"] .simple-previous-load small{color:#4B7137}
+/* All overlays work above the safe area on iOS and allow their content to scroll. */
+html[data-design="performance"] .simple-sheet-panel{overscroll-behavior:contain}
