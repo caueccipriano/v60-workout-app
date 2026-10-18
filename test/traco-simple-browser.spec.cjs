@@ -142,7 +142,7 @@ test('three-tab navigation reaches all core routes with one coherent brand and b
   await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
   await page.locator('.simple-progress [data-simple-go="settings"]').click();
   await expect(page.locator('.perf-settings')).toBeVisible();
-  await expect(page.locator('.traco-about-card small')).toContainText('2.32.2');
+  await expect(page.locator('.traco-about-card small')).toContainText('2.33.0');
   await expect(page.locator('.traco-theme-copy small')).toContainText('verde-lima');
   await page.locator('[data-traco-theme="light"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','light');
