@@ -162,13 +162,22 @@
     });
   }
   function lastSetSuggestion(ex){
-    if(!ex||typeof lastExercisePerf!=='function')return null;
+    if(!ex)return null;
     try{
       const key=typeof tracoExerciseProgressionKey==='function'?tracoExerciseProgressionKey(ex):ex.id;
-      const previous=lastExercisePerf(key);
-      const sets=Array.isArray(previous?.sets)?previous.sets.slice().reverse():[];
-      return sets.find(row=>row?.done&&!row.skipped&&Number(row.reps)>0&&Number.isFinite(Number(row.weight))&&Number(row.weight)>0)||null;
-    }catch{return null;}
+      const norm=x=>String(x||'').trim().toLocaleLowerCase('pt-BR');
+      const ordered=sessions().filter(s=>s?.finishedAt&&!s.excludeFromVolume)
+        .sort((a,b)=>Number(b.finishedAt||b.startedAt)-Number(a.finishedAt||a.startedAt));
+      for(const row of ordered){
+        const previous=(row.exercises||[]).find(item=>
+          (typeof tracoExerciseProgressionKey==='function'?tracoExerciseProgressionKey(item):item.id)===key&&
+          norm(item.name)===norm(ex.name)&&norm(item.equipment)===norm(ex.equipment));
+        const set=(previous?.sets||[]).slice().reverse().find(item=>item?.done&&!item.skipped&&!item.reported&&
+          Number(item.reps)>0&&Number.isFinite(Number(item.weight))&&Number(item.weight)>0);
+        if(set)return set;
+      }
+    }catch{}
+    return null;
   }
   function suggestLastLoad(box,ex){
     const set=ex?.sets?.[typeof currentSetIndex==='function'?currentSetIndex(ex):0];
