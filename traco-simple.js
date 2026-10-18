@@ -6,7 +6,7 @@
 (function(){
   'use strict';
   const KEY='traco_vshape_90_v1';
-  const VERSION='1.3.0';
+  const VERSION='1.4.0';
   const phases=[
     {label:'Base',range:'Semanas 1–4',detail:'Aprenda os movimentos, registre suas cargas e mantenha cerca de 2–3 repetições em reserva. Priorize constância e amplitude confortável.'},
     {label:'Progressão',range:'Semanas 5–8',detail:'Tente evoluir repetições ou carga aos poucos, sem sacrificar a técnica. Em geral, termine com 1–2 repetições em reserva.'},
@@ -194,6 +194,57 @@
       }
     });
   }
+  // Read-only double progression inspired by minimal open-source gym loggers.
+  // A previous performance is comparable only if it was really recorded for
+  // this exercise and variation. Never changes loads or a live workout.
+  function nextGoal(ex,history){
+    if(!ex||!Array.isArray(history))return null;
+    const key=typeof tracoExerciseProgressionKey==='function'?tracoExerciseProgressionKey(ex):ex.id;
+    const label=x=>String(x||'').trim().toLocaleLowerCase('pt-BR');
+    const matches=history.filter(s=>s&&s.finishedAt&&!s.excludeFromVolume&&s.id!==state?.activeSession?.id)
+      .sort((a,b)=>Number(b.finishedAt||b.startedAt)-Number(a.finishedAt||a.startedAt));
+    for(const past of matches){
+      const previous=(past.exercises||[]).find(row=>{
+        if((typeof tracoExerciseProgressionKey==='function'?tracoExerciseProgressionKey(row):row.id)!==key)return false;
+        // A Smart Swap retains the exercise ID, so name/equipment must match.
+        if(label(row.name)!==label(ex.name)||label(row.equipment)!==label(ex.equipment))return false;
+        return true;
+      });
+      if(!previous)continue;
+      const all=Array.isArray(previous.sets)?previous.sets:[];
+      const done=all.filter(row=>row&&row.done&&!row.skipped&&!row.reported&&row.repsKnown!==false&&Number.isFinite(Number(row.reps))&&Number(row.reps)>0);
+      if(!done.length)continue;
+      const usesLoad=typeof tracoExerciseUsesLoad==='function'?tracoExerciseUsesLoad(ex):ex.usesLoad!==false;
+      const weights=done.map(row=>Number(row.weight));
+      if(usesLoad&&!weights.every(w=>Number.isFinite(w)&&w>0))continue;
+      const refs=done.map(row=>Number(row.reps));
+      const complete=all.length>0&&all.every(row=>row?.done&&!row.skipped&&!row.reported)&&done.length>=Math.min(2,Number(ex.sets?.length||ex.sets)||1);
+      const max=Number(ex.max)||12,min=Number(ex.min)||8;
+      const lastLoad=usesLoad?weights[weights.length-1]:null;
+      const summary=(usesLoad?String(lastLoad).replace('.',',')+' kg · ':'')+refs.join('/')+' reps';
+      const heavy=done.some(row=>row.rir==='heavy'||Number(row.rir)===0);
+      const allTop=complete&&refs.every(r=>r>=max)&&(!usesLoad||weights.every(w=>w===lastLoad))&&!heavy;
+      const below=refs.some(r=>r<min);
+      const kind=allTop?'increase':below?'recover':'reps';
+      const title=kind==='increase'?(usesLoad?'Pode considerar subir a carga':'Pode avançar a dificuldade'):kind==='recover'?'Consolide a execução':'Busque mais uma repetição';
+      const detail=kind==='increase'?(usesLoad?'Todas as séries chegaram ao topo. Considere o menor incremento disponível, se a técnica estiver boa.':'Chegou ao topo com controle. Considere uma variação um pouco mais difícil.')
+        :kind==='recover'?'Algumas séries ficaram abaixo da faixa. Mantenha ou ajuste a carga e priorize a técnica.'
+        :'Mantenha a carga e tente +1 repetição em uma série, sem perder a técnica.';
+      return {kind,title,detail,summary,source:'Última sessão comparável'};
+    }
+    return null;
+  }
+  function renderNextGoal(box,ex,hint){
+    if(box.querySelector('.simple-next-goal'))return;
+    const goal=nextGoal(ex,sessions());
+    if(!goal)return;
+    const card=document.createElement('section');
+    card.className='simple-next-goal';
+    card.dataset.goal=goal.kind;
+    card.setAttribute('aria-label','Meta sugerida pela última sessão');
+    card.innerHTML='<span>PRÓXIMA META · SUGESTÃO</span><b>'+esc(goal.title)+'</b><small>'+esc(goal.source+' · '+goal.summary)+'</small><p>'+esc(goal.detail)+'</p>';
+    hint.insertAdjacentElement('afterend',card);
+  }
   function session(){
     const main=q('.perf-session');
     if(!main)return;
@@ -210,6 +261,7 @@
     hint.textContent='Meta: '+plan+advice+'. Priorize a execução.';
     const inputs=box.querySelector('.perf-inputs');
     if(inputs)inputs.insertAdjacentElement('beforebegin',hint);else box.prepend(hint);
+    renderNextGoal(box,ex,hint);
     suggestLastLoad(box,ex);
   }
   function openProgram(){
@@ -282,7 +334,7 @@
   if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:false});
   window.addEventListener('pageshow',schedule);
   applyVShapePhase();
-  window.TracoSimple={version:VERSION,programStatus,getProgram,openProgram,applyVShapePhase};
+  window.TracoSimple={version:VERSION,programStatus,getProgram,openProgram,applyVShapePhase,nextGoal};
   document.documentElement.dataset.tracoSimple=VERSION;
   // The existing shell was rendered before this last layer was loaded.
   // Redraw once when a running program changes its next-session prescription.
