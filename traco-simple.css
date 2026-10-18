@@ -201,3 +201,10 @@ html[data-design="performance"] :is(.perf-workout-hero,.simple-program,.perf-res
  html[data-design="performance"] .perf-home.traco-simple-home > .perf-workout-hero{min-height:197px!important}
  html[data-design="performance"] .perf-home.traco-simple-home .simple-lead h1{font-size:25px}
 }
+
+/* V-Shape workout prescription list */
+.simple-split{display:grid;gap:10px;margin:14px 0;padding:13px;background:#151B17;border:1px solid #43513F;border-radius:15px}
+.simple-split .simple-kicker{margin-bottom:4px}
+.simple-split>div{display:grid;gap:5px;padding:10px 0;border-top:1px solid #354135}
+.simple-split>div b{font-size:13px;color:#F1F7EF}
+.simple-split>div small{font-size:11px;line-height:1.65;color:#B7C7B3}
