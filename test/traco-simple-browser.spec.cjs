@@ -413,12 +413,12 @@ test('Evolução displays six-week volume without history mutations or horizonta
   await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
   await expect(page.locator('.simple-volume')).toBeVisible();
   await expect(page.locator('.simple-volume-row')).toHaveCount(3);
-  await expect(page.locator('.simple-volume-row').first()).toContainText('1 séries');
+  await expect(page.locator('.simple-volume-row').first()).toContainText('1 série');
   await expect(page.locator('.simple-volume-bars').first().locator('.simple-volume-bar')).toHaveCount(6);
   expect(await page.locator('#app').evaluate(el=>el.scrollWidth<=window.innerWidth+8)).toBe(true);
   expect(await page.evaluate(()=>localStorage.getItem('v60_sessions'))).toBe(before);
   await page.reload({waitUntil:'load'});
   await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
-  await expect(page.locator('.simple-volume-row').first()).toContainText('1 séries');
+  await expect(page.locator('.simple-volume-row').first()).toContainText('1 série');
   expect(await page.evaluate(()=>localStorage.getItem('v60_sessions'))).toBe(before);
 });
