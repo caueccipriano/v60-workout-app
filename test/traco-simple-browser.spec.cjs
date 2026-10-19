@@ -3,7 +3,7 @@ test.use({serviceWorkers:'block',viewport:{width:390,height:844}});
 const url='http://127.0.0.1:4173/';
 async function ready(page){
   await page.goto(url,{waitUntil:'load'});
-  await page.waitForFunction(()=>window.TracoSimple?.version==='1.7.0');
+  await page.waitForFunction(()=>window.TracoSimple?.version==='1.8.0');
   await expect(page.locator('.perf-home .simple-home')).toBeVisible();
 }
 test('one-tap navigation and V-Shape program stay local and preserve data',async({page})=>{
@@ -26,6 +26,8 @@ test('one-tap navigation and V-Shape program stay local and preserve data',async
 test('gym session keeps native set recorder and clean target guidance',async({page})=>{
   await ready(page);
   await page.locator('#startToday').click();
+  await expect(page.locator('#simpleWorkoutMode')).toBeVisible();
+  await page.locator('[data-simple-start-mode="full"]').click();
   await expect(page.locator('.perf-session')).toBeVisible();
   await expect(page.locator('.perf-session .simple-target')).toBeVisible();
   await expect(page.locator('#repsInput')).toHaveCount(1);
@@ -41,6 +43,8 @@ test('start action is visible immediately and a draft resumes without overwrite'
   expect(coords.top).toBeLessThan(590);
   expect(coords.height).toBeGreaterThan(110);
   await page.locator('#startToday').click();
+  await expect(page.locator('#simpleWorkoutMode')).toBeVisible();
+  await page.locator('[data-simple-start-mode="full"]').click();
   await expect(page.locator('.perf-session')).toBeVisible();
   const id=await page.evaluate(()=>JSON.parse(localStorage.getItem('v60_draft'))?.id);
   expect(id).toBeTruthy();
@@ -63,6 +67,7 @@ test('previous valid workout can prefill blank inputs only after explicit tap',a
   });
   await page.evaluate(()=>{state.selectedWorkout=JSON.parse(localStorage.getItem('v60_sessions')).at(-1).workoutId;state.page='workouts';render();});
   await page.locator('#startSelected').click();
+  await page.locator('[data-simple-start-mode="full"]').click();
   await expect(page.locator('.perf-session')).toBeVisible();
   // Older V60 versions prefilled last performance automatically. Clearing
   // the first set mimics a user who wants to explicitly reuse a reference.
@@ -142,7 +147,7 @@ test('three-tab navigation reaches all core routes with one coherent brand and b
   await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
   await page.locator('.simple-progress [data-simple-go="settings"]').click();
   await expect(page.locator('.perf-settings')).toBeVisible();
-  await expect(page.locator('.traco-about-card small')).toContainText('2.36.0');
+  await expect(page.locator('.traco-about-card small')).toContainText('2.37.0');
   await expect(page.locator('.traco-theme-copy small')).toContainText('verde-lima');
   await page.locator('[data-traco-theme="light"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','light');
@@ -361,7 +366,7 @@ test('recovery only changes future prescription during opt-in weeks 4 8 and 12',
   expect(active.curl).toBe(1);
   expect(active.draft).toBe(initial);
   await page.reload({waitUntil:'load'});
-  await page.waitForFunction(()=>window.TracoSimple?.version==='1.7.0');
+  await page.waitForFunction(()=>window.TracoSimple?.version==='1.8.0');
   expect(await page.evaluate(()=>workoutPlan[0].exercises.find(ex=>ex.id==='puxada-aberta').sets)).toBe(2);
   expect(await page.evaluate(()=>localStorage.getItem('v60_draft'))).toBe(initial);
   await page.locator('.simple-home [data-simple-action="program"]').click();
@@ -462,4 +467,127 @@ test('quick-start help explains three steps and does not alter the saved workout
   expect(await page.evaluate(()=>localStorage.getItem('traco_help_sentinel'))).toBe('preserved');
   await expect(page.locator('#startToday')).toBeVisible();
   expect(await page.locator('#app').evaluate(el=>el.scrollWidth<=window.innerWidth+8)).toBe(true);
+});
+
+test('30-minute mode offers a clear opt-in choice, preserves the full plan and resumes its exact draft',async({page})=>{
+  await ready(page);
+  const before=await page.evaluate(()=>({
+    plan:JSON.stringify(workoutPlan),
+    sessions:localStorage.getItem('v60_sessions'),
+    body:localStorage.getItem('v60_body')
+  }));
+  await page.locator('#startToday').click();
+  const modal=page.locator('#simpleWorkoutMode');
+  await expect(modal).toBeVisible();
+  await expect(modal.locator('[data-simple-start-mode="quick30"]')).toContainText('Rápido · ~30 min');
+  await expect(modal.locator('[data-simple-start-mode="full"]')).toContainText('Completo · 45–60 min');
+  await expect(modal).toContainText('descansos permanecem adequados');
+  await modal.locator('[data-simple-start-mode="quick30"]').click();
+  await expect(modal).toHaveCount(0);
+  await expect(page.locator('.perf-session')).toBeVisible();
+  await expect(page.locator('.simple-quick-session')).toContainText('MODO RÁPIDO');
+  const chosen=await page.evaluate(()=>({
+    session:JSON.parse(localStorage.getItem('v60_draft')),
+    live:state.activeSession,plan:JSON.stringify(workoutPlan),
+    sessions:localStorage.getItem('v60_sessions'),
+    body:localStorage.getItem('v60_body')
+  }));
+  expect(chosen.session.trainingMode).toBe('quick30');
+  expect(chosen.session.targetMinutes).toBe(30);
+  expect(chosen.session.exercises.length).toBe(4);
+  const qty=chosen.session.exercises.reduce((n,e)=>n+e.sets.length,0);
+  expect(qty).toBeGreaterThanOrEqual(7);
+  expect(qty).toBeLessThanOrEqual(10);
+  expect(chosen.plan).toBe(before.plan);
+  expect(chosen.sessions).toBe(before.sessions);
+  expect(chosen.body).toBe(before.body);
+  const draft=JSON.stringify(chosen.session);
+  await page.reload({waitUntil:'load'});
+  await page.waitForFunction(()=>window.TracoSimple?.version==='1.8.0');
+  await expect(page.locator('#resumeWorkout')).toBeVisible();
+  await page.locator('#resumeWorkout').click();
+  await expect(page.locator('.perf-session')).toBeVisible();
+  await expect(page.locator('.simple-quick-session')).toBeVisible();
+  expect(await page.evaluate(()=>JSON.stringify(JSON.parse(localStorage.getItem('v60_draft'))))).toBe(draft);
+});
+test('all five quick workouts select priorities with shorter volume, respecting existing phase and core',async({page})=>{
+  await ready(page);
+  const result=await page.evaluate(()=>{
+    const baseline=JSON.stringify(workoutPlan);
+    const rows=[];
+    for(const w of workoutPlan){
+      localStorage.removeItem('v60_draft'); // Test fixture only: isolate each mode.
+      const expected=tracoQuick30Prescription(w);
+      const opened=startSession(w.id,'quick30');
+      rows.push({id:w.id,planCount:w.exercises.length,planSets:w.exercises.reduce((n,x)=>n+x.sets,0),
+        ex:opened.exercises.map(e=>({id:e.id,sets:e.sets.length,rest:e.rest})),
+        expect:expected?.map(e=>({id:e.id,sets:e.sets,rest:e.rest})),
+        mode:opened.trainingMode,target:opened.targetMinutes,
+        stored:JSON.parse(localStorage.getItem('v60_draft')).trainingMode});
+    }
+    localStorage.removeItem('v60_draft'); // Test fixture only.
+    return {rows,unchanged:baseline===JSON.stringify(workoutPlan)};
+  });
+  expect(result.unchanged).toBe(true);
+  expect(result.rows.map(r=>r.id)).toEqual(['qua','seg','ter','qui','sex']);
+  for(const row of result.rows){
+    expect(row.ex.length).toBe(4);
+    expect(row.ex).toEqual(row.expect);
+    expect(row.ex.every(x=>x.rest>=45)).toBe(true);
+    expect(row.ex.reduce((a,e)=>a+e.sets,0)).toBeLessThan(row.planSets);
+    expect(row.mode).toBe('quick30');
+    expect(row.target).toBe(30);
+    expect(row.stored).toBe('quick30');
+  }
+  expect(result.rows[2].ex.map(e=>e.id)).toContain('core-reverse-ter');
+  expect(result.rows[3].ex.map(e=>e.id)).toContain('core-pallof-qui');
+});
+test('complete mode stays identical and closing choice never creates or replaces a draft',async({page})=>{
+  await ready(page);
+  const original=await page.evaluate(()=>JSON.stringify(workoutPlan));
+  await page.locator('#startToday').click();
+  await page.locator('[data-simple-close]').last().click();
+  await expect(page.locator('#simpleWorkoutMode')).toHaveCount(0);
+  expect(await page.evaluate(()=>localStorage.getItem('v60_draft'))).toBe(null);
+  await page.locator('#startToday').click();
+  await page.locator('[data-simple-start-mode="full"]').click();
+  const result=await page.evaluate(()=>({
+    saved:JSON.parse(localStorage.getItem('v60_draft')),
+    plan:JSON.stringify(workoutPlan)
+  }));
+  const plan=JSON.parse(original).find(w=>w.id===result.saved.workoutId);
+  expect(result.saved.trainingMode).toBeUndefined();
+  expect(result.saved.exercises.map(e=>e.id)).toEqual(plan.exercises.map(e=>e.id));
+  expect(result.saved.exercises.map(e=>e.sets.length)).toEqual(plan.exercises.map(e=>e.sets));
+  expect(result.plan).toBe(original);
+  await expect(page.locator('.simple-quick-session')).toHaveCount(0);
+});
+test('short sessions record real sets and survive phase changes without inflating history',async({page})=>{
+  await ready(page);
+  const snapshot=await page.evaluate(()=>{
+    const ex=workoutPlan[0].exercises[0];
+    const data=JSON.stringify([{id:'historic-long',workoutId:'qua',startedAt:Date.now()-10000000,
+      finishedAt:Date.now()-9950000,exercises:[{...ex,sets:[{n:1,weight:28,reps:9,done:true}]}]}]);
+    localStorage.setItem('v60_sessions',data);
+    return data;
+  });
+  await page.locator('#startToday').click();
+  await page.locator('[data-simple-start-mode="quick30"]').click();
+  await page.locator('#weightInput').fill('30');
+  await page.locator('#repsInput').fill('10');
+  await page.locator('#completeSet').click();
+  const selected=await page.evaluate(()=>{
+    const current=JSON.parse(localStorage.getItem('v60_draft'));
+    const saved=JSON.stringify(current),exercises=current.exercises.map(x=>({id:x.id,count:x.sets.length}));
+    const d=new Date();d.setDate(d.getDate()-35);
+    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    localStorage.setItem('traco_vshape_90_v1',JSON.stringify({start:key}));
+    TracoSimple.applyVShapePhase();
+    return {saved,exercises,currentPlan:workoutPlan[0].exercises.map(x=>x.sets),
+      unchangedDraft:localStorage.getItem('v60_draft')===saved};
+  });
+  expect(selected.unchangedDraft).toBe(true);
+  expect(selected.saved).toContain('"trainingMode":"quick30"');
+  expect(JSON.parse(selected.saved).exercises.some(ex=>ex.sets.some(set=>set.done&&Number(set.weight)===30&&Number(set.reps)===10))).toBe(true);
+  expect(await page.evaluate(()=>localStorage.getItem('v60_sessions'))).toBe(snapshot);
 });
