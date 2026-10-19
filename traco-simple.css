@@ -518,3 +518,47 @@ html[data-design="performance"][data-theme="light"] .simple-home .simple-help-li
 html[data-design="performance"] .simple-home .simple-help-link:focus-visible{
   outline:2px solid #C8E65B;outline-offset:2px;
 }
+
+
+/* v2.37 · an explicit choice, one touch, before saving a new workout */
+html[data-design="performance"] .simple-mode-intro{
+  color:#D0DDCB;font-size:12px;line-height:1.55;margin:12px 0 14px;
+}
+html[data-design="performance"] .simple-mode-list{display:grid;gap:10px}
+html[data-design="performance"] .simple-mode-card{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  min-height:82px;width:100%;padding:14px;border:1px solid #536450;
+  border-radius:14px;background:#202B22;color:#F4F7EF;text-align:left;
+}
+html[data-design="performance"] .simple-mode-card>div{display:grid;gap:6px}
+html[data-design="performance"] .simple-mode-card strong{font-size:15px;font-weight:800}
+html[data-design="performance"] .simple-mode-card span{font-size:11px;color:#BECDB9;line-height:1.45}
+html[data-design="performance"] .simple-mode-card>b{font-size:20px;font-weight:600}
+html[data-design="performance"] .simple-mode-card.is-quick{
+  background:#C8E65B;color:#142017;border-color:#C8E65B;
+}
+html[data-design="performance"] .simple-mode-card.is-quick span{color:#334824}
+html[data-design="performance"] .simple-mode-foot{
+  color:#BECCB8;font-size:11px;line-height:1.6;margin:14px 0;
+}
+html[data-design="performance"] .simple-mode-cancel{
+  color:#DEE7D9;background:transparent;border:0;
+  padding:11px;width:100%;min-height:44px;font-size:12px;
+}
+html[data-design="performance"] .simple-quick-session{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:5px 10px;
+  background:#213023;border:1px solid #59754E;color:#E7F2DF;
+  border-radius:11px;padding:10px 12px;margin:7px 0 12px;
+}
+html[data-design="performance"] .simple-quick-session b{
+  color:#C8E65B;font-size:10px;letter-spacing:.06em;
+}
+html[data-design="performance"] .simple-quick-session span{font-size:10px;color:#CEE0C5}
+html[data-design="performance"][data-theme="light"] .simple-quick-session{
+  background:#E3EFDB;color:#264023;border-color:#B2CCA1;
+}
+html[data-design="performance"][data-theme="light"] .simple-quick-session b{color:#4B732E}
+html[data-design="performance"][data-theme="light"] .simple-quick-session span{color:#506C48}
+html[data-design="performance"] :is(.simple-mode-card,.simple-mode-cancel):focus-visible{
+  outline:2px solid #C8E65B;outline-offset:3px;
+}
