@@ -456,18 +456,24 @@ const TRACO_SMART_SWAPS={
   'core-reverse-ter':[{name:'reverse crunch no banco',equipment:'Banco / colchonete',why:'mantém flexão da pelve com controle abdominal'}],
   'core-pallof-qui':[{name:'Pallof press com elástico',equipment:'Faixa elástica',why:'mantém trabalho anti-rotação sem depender da polia'}]
 };
-function tracoGymSkipToday(){
-  const session=state.activeSession,ex=session?.exercises?.[state.currentExercise];if(!session||!ex)return;
-  if((ex.sets||[]).some(s=>s.done)&&!confirm('você já registrou séries deste exercício. pular o restante hoje?'))return;
+function tracoGymSkipToday(confirmed=false){
+  const session=state.activeSession,ex=session?.exercises?.[state.currentExercise];if(!session||!ex)return false;
+  if(!confirmed&&!confirm('Pular '+ex.name+' só neste treino? As séries ainda não feitas ficarão registradas como puladas.'))return false;
   const previous=(ex.sets||[]).map(s=>({...s}));
+  const previousSkip={today:ex.skippedToday,at:ex.skippedAt};
   (ex.sets||[]).forEach(s=>{if(!s.done){s.done=true;s.skipped=true;s.weight='';s.reps='';}});
   ex.skippedToday=true;ex.skippedAt=Date.now();
-  if(!save(K.draft,session)){ex.sets=previous;delete ex.skippedToday;delete ex.skippedAt;return toast('não consegui pular o exercício');}
-  if(typeof tracoGymSyncQueueCursor==='function')tracoGymSyncQueueCursor(session);
-  haptic();toast('pulado só hoje · sua ficha continua igual');
-  const allDone=session.exercises.every(item=>(item.sets||[]).every(s=>s.done));
-  if(allDone){renderSession();return;}
+  if(!save(K.draft,session)){
+    ex.sets=previous;
+    if(previousSkip.today===undefined)delete ex.skippedToday;else ex.skippedToday=previousSkip.today;
+    if(previousSkip.at===undefined)delete ex.skippedAt;else ex.skippedAt=previousSkip.at;
+    toast('não consegui pular o exercício · seus registros foram preservados');
+    return false;
+  }
+  tracoGymSyncQueueCursor(session);
+  haptic();toast('pulado só hoje · sua ficha não mudou');
   renderSession();
+  return true;
 }
 function tracoGymOpenExerciseActions(){
   const session=state.activeSession,ex=session?.exercises?.[state.currentExercise];if(!session||!ex)return;
@@ -477,7 +483,7 @@ function tracoGymOpenExerciseActions(){
   $('#tracoExerciseActionsClose').onclick=close;$('#tracoExerciseActions').onclick=e=>{if(e.target.id==='tracoExerciseActions')close();};
   $('#tracoActionLater').onclick=()=>{close();tracoGymDeferCurrentExercise();};
   $('#tracoActionSwap').onclick=()=>{close();tracoGymOpenSmartSwap();};
-  $('#tracoActionSkip').onclick=()=>{if(!confirm('Pular '+ex.name+' só neste treino? Suas séries ainda não concluídas ficarão marcadas como puladas.'))return;close();tracoGymSkipToday();};
+  $('#tracoActionSkip').onclick=()=>{if(!confirm('Pular '+ex.name+' só neste treino? Suas séries ainda não concluídas ficarão marcadas como puladas.'))return;close();tracoGymSkipToday(true);};
 }
 function tracoGymOpenSmartSwap(){
   const session=state.activeSession,ex=session?.exercises?.[state.currentExercise];if(!session||!ex)return;
@@ -502,10 +508,11 @@ function tracoGymOpenExercisePicker(){
       <div class="traco-exercise-picker-list">
         ${session.exercises.map((ex,i)=>{
           const st=tracoGymExerciseStatus(session,ex);
+          const stateLabel=ex.skippedToday?'pulado hoje':st.complete?'concluído':null;
           const active=ex.id===current?.id;
           return `<button type="button" class="traco-exercise-choice ${active?'is-current':''} ${st.complete?'is-complete':''}" data-pick-exercise="${tracoGymEsc(ex.id)}" ${st.complete?'disabled':''}>
             <span class="traco-exercise-choice-index">${String(i+1).padStart(2,'0')}</span>
-            <span class="traco-exercise-choice-copy"><b>${tracoGymEsc(ex.name)}</b><small>${st.complete?'concluído':`${st.remaining} de ${st.total} séries restantes`}</small></span>
+            <span class="traco-exercise-choice-copy"><b>${tracoGymEsc(ex.name)}</b><small>${stateLabel||`${st.remaining} de ${st.total} séries restantes`}</small></span>
             <span class="traco-exercise-choice-state">${st.complete?'✓':active?'agora':'→'}</span>
           </button>`;
         }).join('')}
@@ -554,6 +561,16 @@ function tracoGymDecorateSession(){
   main.setAttribute('data-traco-gym-version','2.4.1');
   const session=state.activeSession;
   const ex=session.exercises[state.currentExercise];
+  // When every set has been completed or intentionally skipped, finishing
+  // still requires a deliberate tap; never recast a skipped set as a valid PR.
+  if(session.exercises.every(item=>(item.sets||[]).every(set=>set.done))){
+    const finish=$('#completeSet');
+    if(finish){
+      finish.innerHTML='<span>Finalizar treino</span><b>✓</b>';
+      finish.setAttribute('aria-label','Finalizar treino agora');
+      finish.onclick=()=>{if(confirm('Finalizar e salvar este treino?'))finishSession();};
+    }
+  }
   const busy=$('#skipExercise');
   if(busy){
     busy.textContent='Pular por agora';
