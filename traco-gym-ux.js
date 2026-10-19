@@ -398,6 +398,36 @@ function tracoGymMoveExerciseNext(session,exerciseId){
   tracoGymSyncQueueCursor(session);
   return true;
 }
+// "Pular por agora" is not "skip the exercise permanently". Move only
+// unfinished sets of the current exercise after all other unfinished sets.
+// The original set values/done flags remain untouched and the queue survives
+// reloading the PWA. A failed persistence restores the exact old order.
+function tracoGymDeferCurrentExercise(){
+  const session=state.activeSession,ex=session?.exercises?.[state.currentExercise];
+  if(!session||!ex)return false;
+  const initial=Array.isArray(session.tracoSetQueue)?session.tracoSetQueue.slice():null;
+  const queue=tracoGymEnsureSessionQueue(session).slice();
+  const finished=queue.filter(token=>tracoGymSetForToken(session,token).set?.done);
+  const waiting=queue.filter(token=>!tracoGymSetForToken(session,token).set?.done);
+  const current=waiting.filter(token=>tracoGymQueueParts(token).exerciseId===ex.id);
+  const other=waiting.filter(token=>tracoGymQueueParts(token).exerciseId!==ex.id);
+  if(!current.length||!other.length){
+    if(initial)session.tracoSetQueue=initial;else delete session.tracoSetQueue;
+    toast('não há outro exercício pendente · finalize ou escolha as opções');
+    return false;
+  }
+  session.tracoSetQueue=[...finished,...other,...current];
+  if(!save(K.draft,session)){
+    if(initial)session.tracoSetQueue=initial;else delete session.tracoSetQueue;
+    toast('não consegui salvar a troca · nada foi perdido');
+    return false;
+  }
+  tracoGymSyncQueueCursor(session);
+  haptic();
+  toast('deixei este para depois · suas séries estão salvas');
+  renderSession();
+  return true;
+}
 function tracoGymCloseExercisePicker(){
   $('#tracoExercisePicker')?.remove();
   document.body.classList.remove('traco-exercise-picker-open');
@@ -445,9 +475,9 @@ function tracoGymOpenExerciseActions(){
   document.body.insertAdjacentHTML('beforeend',`<div class="traco-exercise-picker-backdrop" id="tracoExerciseActions"><section class="traco-exercise-picker-sheet traco-exercise-actions" role="dialog" aria-modal="true"><header class="traco-exercise-picker-head"><div><span>EXERCÍCIO ATUAL</span><h3>${tracoGymEsc(ex.name)}</h3><small>o que você quer fazer?</small></div><button id="tracoExerciseActionsClose" type="button">×</button></header><button class="traco-swap-choice" id="tracoActionLater"><span>↪</span><div><b>fazer outro agora</b><small>mantém este exercício pendente para depois</small></div><em>abrir</em></button><button class="traco-swap-choice" id="tracoActionSwap"><span>⇄</span><div><b>trocar exercício</b><small>usar uma alternativa equivalente só neste treino</small></div><em>trocar</em></button><button class="traco-swap-choice" id="tracoActionSkip"><span>—</span><div><b>pular hoje</b><small>não altera sua ficha nem a progressão futura</small></div><em>pular</em></button></section></div>`);
   const close=()=>$('#tracoExerciseActions')?.remove();
   $('#tracoExerciseActionsClose').onclick=close;$('#tracoExerciseActions').onclick=e=>{if(e.target.id==='tracoExerciseActions')close();};
-  $('#tracoActionLater').onclick=()=>{close();tracoGymOpenExercisePicker();};
+  $('#tracoActionLater').onclick=()=>{close();tracoGymDeferCurrentExercise();};
   $('#tracoActionSwap').onclick=()=>{close();tracoGymOpenSmartSwap();};
-  $('#tracoActionSkip').onclick=()=>{if(!confirm('pular '+ex.name+' só no treino de hoje?'))return;close();tracoGymSkipToday();};
+  $('#tracoActionSkip').onclick=()=>{if(!confirm('Pular '+ex.name+' só neste treino? Suas séries ainda não concluídas ficarão marcadas como puladas.'))return;close();tracoGymSkipToday();};
 }
 function tracoGymOpenSmartSwap(){
   const session=state.activeSession,ex=session?.exercises?.[state.currentExercise];if(!session||!ex)return;
@@ -526,9 +556,16 @@ function tracoGymDecorateSession(){
   const ex=session.exercises[state.currentExercise];
   const busy=$('#skipExercise');
   if(busy){
-    busy.textContent='alterar / pular exercício';
-    busy.setAttribute('aria-label','alterar, fazer outro agora ou pular este exercício');
-    busy.onclick=()=>tracoGymOpenExerciseActions();
+    busy.textContent='Pular por agora';
+    busy.setAttribute('aria-label','Pular por agora e continuar no próximo exercício sem perder as séries');
+    busy.onclick=tracoGymDeferCurrentExercise;
+    const options=$('#exerciseMore');
+    if(options){
+      options.setAttribute('aria-label','Opções deste exercício: trocar aparelho ou pular só hoje');
+      options.setAttribute('title','Opções do exercício');
+      options.textContent='•••';
+      options.onclick=tracoGymOpenExerciseActions;
+    }
   }
   const media=main.querySelector('.perf-media-block');
   if(media){
