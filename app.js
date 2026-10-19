@@ -174,14 +174,44 @@ function hydrateDraft(raw){
   });
   return raw;
 }
-function startSession(workoutId){
+// Only an explicitly chosen new session uses the quick prescription.
+// No change to workoutPlan, saved full sessions, draft recovery or progression.
+const TRACO_QUICK30={
+  qua:[['puxada-aberta',3],['remada-baixa',2],['crucifixo-inverso',2],['crunch',2]],
+  seg:[['supino-inclinado',3],['elevacao-lateral',3],['desenvolvimento',2],['triceps-pushdown',2]],
+  ter:[['agachamento-smith',3],['leg-press',2],['flexora',2],['core-reverse-ter',2]],
+  qui:[['remada-unilateral',3],['puxada-neutra',2],['elevacao-lateral-2',2],['core-pallof-qui',2]],
+  sex:[['rdl',3],['flexora-2',2],['supino-reto',2],['elevacao-lateral-3',2]]
+};
+function tracoQuick30Prescription(workout){
+  if(!workout||!Array.isArray(workout.exercises))return null;
+  const priority=TRACO_QUICK30[workout.id];
+  if(!priority)return null;
+  const index=new Map(workout.exercises.map(ex=>[ex.id,ex]));
+  // A legacy install without the extra core module can still offer a safe,
+  // honest quick plan with the present exercises rather than adding fake ones.
+  const picked=priority.map(([id,count])=>{
+    const ex=index.get(id);
+    if(!ex)return null;
+    const sets=Math.min(Math.max(1,Number(ex.sets)||1),count);
+    return {...ex,sets};
+  }).filter(Boolean);
+  return picked.length>=3?picked:null;
+}
+function startSession(workoutId,mode='full'){
+
   const w=workoutPlan.find(x=>x.id===workoutId);if(!w){toast('treino não encontrado');return null;}
   const draft=load(K.draft,null);
   if(draft&&draft.workoutId===workoutId&&!draft.finishedAt){
     state.activeSession=hydrateDraft(draft);
   }else{
     if(draft&&!draft.finishedAt&&!confirm('tem outro treino em andamento. começar este e substituir o rascunho?'))return null;
-    const next={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),planVersion:TRACO_VSHAPE_PLAN_VERSION,workoutId,wName:w.name,startedAt:Date.now(),exercises:w.exercises.map(ex=>({...ex,sets:Array.from({length:ex.sets},(_,i)=>({n:i+1,weight:'',reps:'',done:false}))}))};
+    const quick=mode==='quick30'?tracoQuick30Prescription(w):null;
+    if(mode==='quick30'&&!quick){toast('modo rápido indisponível nesta ficha · escolha o treino completo');return null;}
+    const planned=quick||w.exercises;
+    const next={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),planVersion:TRACO_VSHAPE_PLAN_VERSION,workoutId,wName:w.name,startedAt:Date.now(),
+      ...(quick?{trainingMode:'quick30',targetMinutes:30}:{}),
+      exercises:planned.map(ex=>({...ex,sets:Array.from({length:ex.sets},(_,i)=>({n:i+1,weight:'',reps:'',done:false}))}))};
     // Never replace an existing recoverable draft in memory/UI unless the new
     // workout was persisted successfully.
     if(!save(K.draft,next)){toast('não consegui iniciar · seu treino anterior foi preservado');return null;}
