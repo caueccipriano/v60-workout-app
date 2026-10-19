@@ -439,9 +439,9 @@ test('new Traço lime icon is usable for iPhone launch and installed PWA',async(
   expect(manifest.name).toContain('Traço');
   expect(manifest.icons.some(icon=>icon.src==='./assets/traco-icon-192-v3.png'&&icon.purpose==='any')).toBe(true);
   expect(manifest.icons.some(icon=>icon.src==='./assets/traco-icon-512-v3.png'&&icon.purpose==='any')).toBe(true);
-  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href','./assets/traco-icon-180-v3.png?v=379');
-  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href','./assets/icon.svg?v=379');
-  const svg=await (await page.request.get(url+'assets/icon.svg?v=379')).text();
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href','./assets/traco-icon-180-v3.png?v=380');
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href','./assets/icon.svg?v=380');
+  const svg=await (await page.request.get(url+'assets/icon.svg?v=380')).text();
   expect(svg).toContain('#CDFF4C');
   expect(svg).toContain('costas em V');
   expect(svg).not.toContain('#FF3B30');
