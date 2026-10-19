@@ -618,9 +618,10 @@
 
   /* SESSION WRAPPERS */
   const baseStartSession=startSession;
-  startSession=function(workoutId){
-    baseStartSession(workoutId);
-    if(state.activeSession){applyAdaptiveToSession();renderSession();}
+  startSession=function(workoutId,mode='full'){
+    const result=baseStartSession(workoutId,mode);
+    if(result&&state.activeSession){applyAdaptiveToSession();renderSession();}
+    return result;
   };
   const baseComplete=completeCurrentSet;
   completeCurrentSet=function(){
