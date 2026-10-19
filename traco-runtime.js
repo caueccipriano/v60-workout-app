@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.7.0';
-  const BUILD='weekly-vshape-v376';
-  const BUILD_NUMBER='376';
+  const BUILD='recovery-volume-v377';
+  const BUILD_NUMBER='377';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
