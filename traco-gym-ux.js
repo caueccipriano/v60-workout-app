@@ -19,7 +19,7 @@ const TRACO_LEGACY_WORKOUT_ORDER_KEY='traco_workout_order_v1';
 function tracoGymRepairOverlayState(){
   const hasPre=Boolean(document.querySelector('#tracoPreStart'));
   const hasOrder=Boolean(document.querySelector('#tracoOrderEditor'));
-  const hasPicker=Boolean(document.querySelector('#tracoExercisePicker'));
+  const hasPicker=Boolean(document.querySelector('#tracoExercisePicker,#tracoExerciseActions,#tracoSmartSwap'));
   const hasGuide=Boolean(document.querySelector('#v60GuideSheet')||document.querySelector('#v60GuideBackdrop'));
   const hasEditor=Boolean(document.querySelector('#tracoSessionEditor')||document.querySelector('#tracoBodyEditor'));
   document.body.classList.toggle('traco-prestart-open',hasPre);
@@ -41,6 +41,8 @@ function tracoGymClearTransientOverlays(){
   document.querySelector('#tracoPreStart')?.remove();
   document.querySelector('#tracoOrderEditor')?.remove();
   document.querySelector('#tracoExercisePicker')?.remove();
+  document.querySelector('#tracoExerciseActions')?.remove();
+  document.querySelector('#tracoSmartSwap')?.remove();
   document.body.classList.remove('traco-prestart-open','traco-order-open','traco-exercise-picker-open');
   if(!document.querySelector('#v60GuideSheet')&&!document.querySelector('#v60GuideBackdrop'))document.body.classList.remove('v60-guide-open');
   if(!document.querySelector('#tracoSessionEditor')&&!document.querySelector('#tracoBodyEditor'))document.body.classList.remove('traco-editor-open');
@@ -486,7 +488,8 @@ function tracoGymOpenExerciseActions(){
   const session=state.activeSession,ex=session?.exercises?.[state.currentExercise];if(!session||!ex)return;
   $('#tracoExerciseActions')?.remove();
   document.body.insertAdjacentHTML('beforeend',`<div class="traco-exercise-picker-backdrop" id="tracoExerciseActions"><section class="traco-exercise-picker-sheet traco-exercise-actions" role="dialog" aria-modal="true"><header class="traco-exercise-picker-head"><div><span>EXERCÍCIO ATUAL</span><h3>${tracoGymEsc(ex.name)}</h3><small>o que você quer fazer?</small></div><button id="tracoExerciseActionsClose" type="button">×</button></header><button class="traco-swap-choice" id="tracoActionLater"><span>↪</span><div><b>fazer outro agora</b><small>mantém este exercício pendente para depois</small></div><em>abrir</em></button><button class="traco-swap-choice" id="tracoActionSwap"><span>⇄</span><div><b>trocar exercício</b><small>usar uma alternativa equivalente só neste treino</small></div><em>trocar</em></button><button class="traco-swap-choice" id="tracoActionSkip"><span>—</span><div><b>pular hoje</b><small>não altera sua ficha nem a progressão futura</small></div><em>pular</em></button></section></div>`);
-  const close=()=>$('#tracoExerciseActions')?.remove();
+  document.body.classList.add('traco-exercise-picker-open');
+  const close=()=>{$('#tracoExerciseActions')?.remove();tracoGymRepairOverlayState();};
   $('#tracoExerciseActionsClose').onclick=close;$('#tracoExerciseActions').onclick=e=>{if(e.target.id==='tracoExerciseActions')close();};
   $('#tracoActionLater').onclick=()=>{close();tracoGymDeferCurrentExercise();};
   $('#tracoActionSwap').onclick=()=>{close();tracoGymOpenSmartSwap();};
@@ -498,7 +501,8 @@ function tracoGymOpenSmartSwap(){
   if(!options.length){toast('sem troca equivalente cadastrada para este exercício');return tracoGymOpenExercisePicker();}
   $('#tracoSmartSwap')?.remove();
   document.body.insertAdjacentHTML('beforeend',`<div class="traco-exercise-picker-backdrop" id="tracoSmartSwap"><section class="traco-exercise-picker-sheet traco-smart-swap" role="dialog" aria-modal="true"><header class="traco-exercise-picker-head"><div><span>✦ TRAÇO+ · SMART SWAP</span><h3>aparelho ocupado?</h3><small>troque sem apagar o que você já fez</small></div><button id="tracoSmartSwapClose" type="button">×</button></header><div class="traco-smart-original"><span>agora</span><b>${tracoGymEsc(ex.name)}</b><small>${tracoGymEsc(ex.equipment)}</small></div>${options.map((o,i)=>`<button class="traco-swap-choice" data-smart-swap="${i}"><span>⇄</span><div><b>${tracoGymEsc(o.name)}</b><small>${tracoGymEsc(o.equipment)} · ${tracoGymEsc(o.why)}</small></div><em>usar</em></button>`).join('')}<button class="traco-exercise-picker-queue" id="tracoSwapJustReorder">só fazer outro exercício agora →</button></section></div>`);
-  const close=()=>$('#tracoSmartSwap')?.remove();$('#tracoSmartSwapClose').onclick=close;$('#tracoSmartSwap').onclick=e=>{if(e.target.id==='tracoSmartSwap')close();};$('#tracoSwapJustReorder').onclick=()=>{close();tracoGymOpenExercisePicker();};
+  document.body.classList.add('traco-exercise-picker-open');
+  const close=()=>{$('#tracoSmartSwap')?.remove();tracoGymRepairOverlayState();};$('#tracoSmartSwapClose').onclick=close;$('#tracoSmartSwap').onclick=e=>{if(e.target.id==='tracoSmartSwap')close();};$('#tracoSwapJustReorder').onclick=()=>{close();tracoGymOpenExercisePicker();};
   document.querySelectorAll('[data-smart-swap]').forEach(btn=>btn.onclick=()=>{const o=options[Number(btn.dataset.smartSwap)],previous={name:ex.name,equipment:ex.equipment,performedVariation:ex.performedVariation,substitutionReason:ex.substitutionReason};ex.name=o.name;ex.equipment=o.equipment;ex.performedVariation=o.name;ex.substitutionReason='Smart Swap · aparelho ocupado';if(!save(K.draft,session)){Object.assign(ex,previous);return toast('não consegui salvar a troca');}close();toast('Smart Swap aplicado · progresso preservado');haptic();renderSession();});
 }
 function tracoGymOpenExercisePicker(){
