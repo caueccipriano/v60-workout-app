@@ -251,7 +251,10 @@ test('gym displays a short next goal without changing planned sets or completed 
   await page.locator('#startSelected').click();
   await page.locator('[data-simple-start-mode="full"]').click();
   await expect(page.locator('.perf-session .simple-next-goal')).toBeVisible();
-  await expect(page.locator('.simple-next-goal')).toContainText('Pode considerar subir a carga');
+  // The legacy evolution coach can add a working set to a full session.
+  // Therefore 3/3 previous top-rep sets are not enough to recommend a
+  // weight increase for the now 4-set prescription.
+  await expect(page.locator('.simple-next-goal')).toContainText('Busque mais uma repetição');
   await expect(page.locator('.simple-next-goal')).toContainText('24 kg');
   await expect(page.locator('.simple-next-goal')).toContainText('12/12/12');
   expect(await page.evaluate(()=>localStorage.getItem('v60_sessions'))).toBe(before.serialized);
