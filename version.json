@@ -1,7 +1,7 @@
 {
-  "version": "2.35.0",
+  "version": "2.36.0",
   "legacyVersion": "3.7.1",
   "name": "Traço",
-  "design": "vshape-recovery-volume-signals",
-  "build": "recovery-volume-v377"
+  "design": "lime-vback-icon-quickguide",
+  "build": "new-icon-quickguide-v378"
 }
