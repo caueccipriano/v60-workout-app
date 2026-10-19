@@ -1,7 +1,7 @@
 {
-  "version": "2.37.0",
+  "version": "2.38.0",
   "legacyVersion": "3.7.1",
   "name": "Traço",
-  "design": "vshape-fast-full-workout",
-  "build": "quick30-training-v379"
+  "design": "compact-session-skip-options",
+  "build": "skip-swap-fixes-v380"
 }

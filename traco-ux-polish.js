@@ -233,7 +233,7 @@
       details=document.createElement('details');
       details.className='ux-session-more';
       details.innerHTML='<summary><div><b>detalhes do exercício</b><small>técnica · lista · coach</small></div><span>+</span></summary><div class="ux-session-more-body"></div>';
-      (consoleEl.querySelector('.perf-skip-exercise')||consoleEl).insertAdjacentElement('afterend',details);
+      (consoleEl.querySelector('.perf-exercise-actions')||consoleEl).insertAdjacentElement('afterend',details);
     }
     const target=details.querySelector('.ux-session-more-body');
     [main.querySelector('.evo-session-intelligence'),main.querySelector('.lab-session-tools'),main.querySelector('.perf-native-exercise-list'),main.querySelector('.perf-media-block')].forEach(node=>move(node,target));

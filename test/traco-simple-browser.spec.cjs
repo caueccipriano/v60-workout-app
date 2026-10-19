@@ -3,7 +3,7 @@ test.use({serviceWorkers:'block',viewport:{width:390,height:844}});
 const url='http://127.0.0.1:4173/';
 async function ready(page){
   await page.goto(url,{waitUntil:'load'});
-  await page.waitForFunction(()=>window.TracoSimple?.version==='1.8.0');
+  await page.waitForFunction(()=>window.TracoSimple?.version==='1.9.0');
   await expect(page.locator('.perf-home .simple-home')).toBeVisible();
 }
 test('one-tap navigation and V-Shape program stay local and preserve data',async({page})=>{
@@ -147,7 +147,7 @@ test('three-tab navigation reaches all core routes with one coherent brand and b
   await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
   await page.locator('.simple-progress [data-simple-go="settings"]').click();
   await expect(page.locator('.perf-settings')).toBeVisible();
-  await expect(page.locator('.traco-about-card small')).toContainText('2.37.0');
+  await expect(page.locator('.traco-about-card small')).toContainText('2.38.0');
   await expect(page.locator('.traco-theme-copy small')).toContainText('verde-lima');
   await page.locator('[data-traco-theme="light"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','light');
@@ -371,7 +371,7 @@ test('recovery only changes future prescription during opt-in weeks 4 8 and 12',
   expect(active.curl).toBe(1);
   expect(active.draft).toBe(initial);
   await page.reload({waitUntil:'load'});
-  await page.waitForFunction(()=>window.TracoSimple?.version==='1.8.0');
+  await page.waitForFunction(()=>window.TracoSimple?.version==='1.9.0');
   expect(await page.evaluate(()=>workoutPlan[0].exercises.find(ex=>ex.id==='puxada-aberta').sets)).toBe(2);
   expect(await page.evaluate(()=>localStorage.getItem('v60_draft'))).toBe(initial);
   await page.locator('.simple-home [data-simple-action="program"]').click();
@@ -439,9 +439,9 @@ test('new Traço lime icon is usable for iPhone launch and installed PWA',async(
   expect(manifest.name).toContain('Traço');
   expect(manifest.icons.some(icon=>icon.src==='./assets/traco-icon-192-v3.png'&&icon.purpose==='any')).toBe(true);
   expect(manifest.icons.some(icon=>icon.src==='./assets/traco-icon-512-v3.png'&&icon.purpose==='any')).toBe(true);
-  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href','./assets/traco-icon-180-v3.png?v=379');
-  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href','./assets/icon.svg?v=379');
-  const svg=await (await page.request.get(url+'assets/icon.svg?v=379')).text();
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href','./assets/traco-icon-180-v3.png?v=380');
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href','./assets/icon.svg?v=380');
+  const svg=await (await page.request.get(url+'assets/icon.svg?v=380')).text();
   expect(svg).toContain('#CDFF4C');
   expect(svg).toContain('costas em V');
   expect(svg).not.toContain('#FF3B30');
@@ -508,7 +508,7 @@ test('30-minute mode offers a clear opt-in choice, preserves the full plan and r
   expect(chosen.body).toBe(before.body);
   const draft=JSON.stringify(chosen.session);
   await page.reload({waitUntil:'load'});
-  await page.waitForFunction(()=>window.TracoSimple?.version==='1.8.0');
+  await page.waitForFunction(()=>window.TracoSimple?.version==='1.9.0');
   await expect(page.locator('#resumeWorkout')).toBeVisible();
   await page.locator('#resumeWorkout').click();
   await expect(page.locator('.perf-session')).toBeVisible();
@@ -599,4 +599,164 @@ test('short sessions record real sets and survive phase changes without inflatin
   expect(selected.saved).toContain('"trainingMode":"quick30"');
   expect(JSON.parse(selected.saved).exercises.some(ex=>ex.sets.some(set=>set.done&&Number(set.weight)===30&&Number(set.reps)===10))).toBe(true);
   expect(await page.evaluate(()=>localStorage.getItem('v60_sessions'))).toBe(snapshot);
+});
+
+
+test('Pular por agora is compact, advances to another exercise, and keeps unsent sets after reload',async({page})=>{
+  await ready(page);
+  await page.locator('#startToday').click();
+  await page.locator('[data-simple-start-mode="quick30"]').click();
+  await expect(page.locator('.perf-session')).toBeVisible();
+  await expect(page.locator('#skipExercise')).toHaveText('Pular por agora');
+  await expect(page.locator('#exerciseMore')).toBeVisible();
+  const geometry=await page.evaluate(()=>{
+    const b=document.querySelector('#skipExercise').getBoundingClientRect();
+    const n=document.querySelector('#exerciseMore').getBoundingClientRect();
+    return {width:b.width,height:b.height,more:n.width,visible:getComputedStyle(document.querySelector('#exerciseMore')).display!=='none'};
+  });
+  expect(geometry.width).toBeLessThanOrEqual(245);
+  expect(geometry.height).toBeGreaterThanOrEqual(40);
+  expect(geometry.height).toBeLessThanOrEqual(48);
+  expect(geometry.more).toBeGreaterThanOrEqual(44);
+  expect(geometry.visible).toBe(true);
+  await page.locator('#weightInput').fill('26');
+  await page.locator('#repsInput').fill('11');
+  const before=await page.evaluate(()=>{
+    const draft=JSON.parse(localStorage.getItem('v60_draft'));
+    return {id:draft.id,exId:draft.exercises[0].id,mode:draft.trainingMode,sets:draft.exercises[0].sets};
+  });
+  await page.locator('#skipExercise').click();
+  await expect(page.locator('.perf-session')).toBeVisible();
+  const moved=await page.evaluate(()=>{
+    const d=JSON.parse(localStorage.getItem('v60_draft'));
+    return {id:d.id,exerciseId:state.activeSession.exercises[state.currentExercise].id,
+      queue:d.tracoSetQueue,first:d.exercises[0],mode:d.trainingMode};
+  });
+  expect(moved.id).toBe(before.id);
+  expect(moved.exerciseId).not.toBe(before.exId);
+  expect(moved.mode).toBe('quick30');
+  expect(moved.first.sets[0]).toMatchObject({weight:'26',reps:'11',done:false});
+  expect(moved.first.sets.every(x=>!x.skipped&&!x.done)).toBe(true);
+  const pending=moved.queue.filter(token=>token.startsWith(before.exId+'::'));
+  expect(moved.queue.slice(-pending.length)).toEqual(pending);
+  await page.reload({waitUntil:'load'});
+  await page.waitForFunction(()=>window.TracoSimple?.version==='1.9.0');
+  await page.locator('#resumeWorkout').click();
+  await expect(page.locator('.perf-session')).toBeVisible();
+  expect(await page.evaluate(()=>state.activeSession.exercises[state.currentExercise].id)).toBe(moved.exerciseId);
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('v60_draft')).exercises[0].sets[0].weight)).toBe('26');
+  expect(await page.locator('#app').evaluate(el=>el.scrollWidth<=window.innerWidth+8)).toBe(true);
+});
+test('three-dot options swap an occupied machine while preserving saved set values',async({page})=>{
+  await ready(page);
+  await page.evaluate(()=>{state.selectedWorkout='qua';state.page='workouts';render();});
+  await page.locator('#startSelected').click();
+  await page.locator('[data-simple-start-mode="full"]').click();
+  await expect(page.locator('.perf-session')).toBeVisible();
+  await page.locator('#weightInput').fill('31');
+  await page.locator('#repsInput').fill('10');
+  const original=await page.evaluate(()=>JSON.stringify(workoutPlan));
+  await page.locator('#exerciseMore').click();
+  await expect(page.locator('#tracoExerciseActions')).toBeVisible();
+  await page.locator('#tracoActionSwap').click();
+  await expect(page.locator('#tracoSmartSwap')).toBeVisible();
+  await expect(page.locator('[data-smart-swap]')).toHaveCount(1);
+  await page.locator('[data-smart-swap="0"]').click();
+  await expect(page.locator('#tracoSmartSwap')).toHaveCount(0);
+  await expect(page.locator('.perf-session')).toContainText('puxada neutra');
+  const actual=await page.evaluate(()=>{
+    const d=JSON.parse(localStorage.getItem('v60_draft'));
+    return {ex:d.exercises[0],plan:JSON.stringify(workoutPlan)};
+  });
+  expect(actual.ex).toMatchObject({id:'puxada-aberta',name:'puxada neutra',performedVariation:'puxada neutra'});
+  expect(actual.ex.sets[0]).toMatchObject({weight:'31',reps:'10',done:false});
+  expect(actual.plan).toBe(original);
+});
+test('pular só hoje skips only unfinished sets, does not log false PRs or double-confirm',async({page})=>{
+  await ready(page);
+  await page.evaluate(()=>{state.selectedWorkout='qua';state.page='workouts';render();});
+  await page.locator('#startSelected').click();
+  await page.locator('[data-simple-start-mode="quick30"]').click();
+  await page.locator('#weightInput').fill('34');
+  await page.locator('#repsInput').fill('9');
+  await page.locator('#completeSet').click();
+  await page.evaluate(()=>{if(typeof stopRest==='function')stopRest();});
+  await expect(page.locator('.perf-session')).toBeVisible();
+  let confirmations=0;
+  page.on('dialog',async dialog=>{confirmations++;await dialog.accept();});
+  const before=await page.evaluate(()=>({
+    plan:JSON.stringify(workoutPlan),
+    history:localStorage.getItem('v60_sessions')
+  }));
+  await page.locator('#exerciseMore').click();
+  await page.locator('#tracoActionSkip').click();
+  await expect(page.locator('#tracoExerciseActions')).toHaveCount(0);
+  expect(confirmations).toBe(1);
+  const report=await page.evaluate(()=>{
+    const d=JSON.parse(localStorage.getItem('v60_draft'));
+    return {first:d.exercises[0],current:state.activeSession.exercises[state.currentExercise].id,
+      plan:JSON.stringify(workoutPlan),history:localStorage.getItem('v60_sessions')};
+  });
+  expect(report.first.skippedToday).toBe(true);
+  expect(report.first.sets[0]).toMatchObject({weight:'34',reps:'9',done:true,skipped:false});
+  expect(report.first.sets.slice(1).every(set=>set.done&&set.skipped&&set.weight===''&&set.reps==='')).toBe(true);
+  expect(report.current).not.toBe(report.first.id);
+  expect(report.plan).toBe(before.plan);
+  expect(report.history).toBe(before.history);
+  await page.locator('#exerciseMore').click();
+  await page.locator('#tracoActionLater').click();
+  await expect(page.locator('.perf-session')).toBeVisible();
+  await expect(page.locator('#tracoExerciseActions')).toHaveCount(0);
+});
+test('Pular por agora rejects unsafe storage failures without silently changing exercise',async({page})=>{
+  await ready(page);
+  await page.locator('#startToday').click();
+  await page.locator('[data-simple-start-mode="quick30"]').click();
+  await page.locator('#repsInput').fill('10');
+  const result=await page.evaluate(()=>{
+    const before=localStorage.getItem('v60_draft');
+    const current=state.currentExercise;
+    const queue=JSON.stringify(state.activeSession.tracoSetQueue||[]);
+    const original=Storage.prototype.setItem;
+    Storage.prototype.setItem=function(key,value){
+      if(key==='v60_draft')throw new DOMException('Out of space','QuotaExceededError');
+      return original.call(this,key,value);
+    };
+    try{
+      document.querySelector('#skipExercise').click();
+      return {before,after:localStorage.getItem('v60_draft'),
+        cursor:state.currentExercise,oldCursor:current,
+        oldQueue:queue,newQueue:JSON.stringify(state.activeSession.tracoSetQueue||[])};
+    }finally{Storage.prototype.setItem=original;}
+  });
+  expect(result.after).toBe(result.before);
+  expect(result.cursor).toBe(result.oldCursor);
+  expect(result.newQueue).toBe(result.oldQueue);
+});
+
+
+test('legacy exercise picker and order sheet actually open with escaped labels and never delete draft',async({page})=>{
+  await ready(page);
+  await page.evaluate(()=>{state.selectedWorkout='qua';state.page='workouts';render();});
+  await page.locator('#startSelected').click();
+  await page.locator('[data-simple-start-mode="quick30"]').click();
+  await expect(page.locator('.perf-session')).toBeVisible();
+  const prior=await page.evaluate(()=>JSON.parse(localStorage.getItem('v60_draft')));
+  await page.evaluate(()=>tracoGymOpenExercisePicker());
+  await expect(page.locator('#tracoExercisePicker')).toBeVisible();
+  await expect(page.locator('[data-pick-exercise]')).toHaveCount(4);
+  const next=await page.locator('[data-pick-exercise]:not([disabled])').nth(1).getAttribute('data-pick-exercise');
+  await page.locator('[data-pick-exercise="'+next+'"]').click();
+  await expect(page.locator('#tracoExercisePicker')).toHaveCount(0);
+  expect(await page.evaluate(()=>state.activeSession.exercises[state.currentExercise].id)).toBe(next);
+  await page.evaluate(()=>tracoGymOpenExercisePicker());
+  await page.locator('#tracoExercisePickerQueue').click();
+  await expect(page.locator('#tracoOrderEditor')).toBeVisible();
+  await page.locator('#tracoOrderEditor').getByRole('button',{name:/fechar|voltar/i}).first().click();
+  await expect(page.locator('#tracoOrderEditor')).toHaveCount(0);
+  const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('v60_draft')));
+  expect(after.id).toBe(prior.id);
+  expect(after.trainingMode).toBe('quick30');
+  expect(after.exercises.map(ex=>ex.id)).toEqual(prior.exercises.map(ex=>ex.id));
+  expect(after.exercises.every(ex=>ex.sets.every(set=>!set.done&&!set.skipped))).toBe(true);
 });
