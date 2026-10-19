@@ -325,11 +325,11 @@ function tracoGymOpenPreStart(workoutId){
 }
 
 const tracoGymBaseStartSession=startSession;
-function tracoGymDirectStart(workoutId){
+function tracoGymDirectStart(workoutId,mode='full'){
   try{
     tracoGymClearTransientOverlays();
     tracoGymPreStartWorkoutId=null;
-    return tracoGymBaseStartSession(workoutId);
+    return tracoGymBaseStartSession(workoutId,mode);
   }catch(error){
     console.error('Traço workout start failed',error);
     // The base start can create/render the session before a secondary enhancement throws.
