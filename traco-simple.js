@@ -6,7 +6,7 @@
 (function(){
   'use strict';
   const KEY='traco_vshape_90_v1';
-  const VERSION='1.8.0';
+  const VERSION='1.9.0';
   const phases=[
     {label:'Base',range:'Semanas 1–4',detail:'Aprenda os movimentos, registre suas cargas e mantenha cerca de 2–3 repetições em reserva. Priorize constância e amplitude confortável.'},
     {label:'Progressão',range:'Semanas 5–8',detail:'Tente evoluir repetições ou carga aos poucos, sem sacrificar a técnica. Em geral, termine com 1–2 repetições em reserva.'},
@@ -601,7 +601,7 @@
     const main=q('.perf-settings');
     if(!main)return;
     const about=main.querySelector('.traco-about-card small');
-    if(about)about.textContent='treino · evolução · constância · versão 2.37.0';
+    if(about)about.textContent='treino · evolução · constância · versão 2.38.0';
     const theme=main.querySelector('.traco-theme-copy small');
     if(theme)theme.textContent='visual claro ou escuro · mesma identidade verde-lima';
     const card=main.querySelector('.traco-about-card b');
