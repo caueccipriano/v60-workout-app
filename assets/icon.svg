@@ -1,10 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Traço">
-  <rect width="512" height="512" rx="112" fill="#090909"/>
-  <g fill="#FF3B30">
-    <rect x="79" y="178" width="38" height="76" rx="15"/>
-    <rect x="135" y="150" width="42" height="132" rx="16"/>
-    <rect x="232" y="224" width="52" height="142" rx="17"/>
-    <rect x="395" y="178" width="38" height="76" rx="15"/>
-  </g>
-  <path d="M166 205H258c13 0 25-4 36-11l67-45v109" fill="none" stroke="#FF3B30" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Traço: costas em V">
+  <defs>
+    <radialGradient id="bg"><stop stop-color="#242524"/><stop offset=".72" stop-color="#171817"/><stop offset="1" stop-color="#101110"/></radialGradient>
+    <linearGradient id="lime" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#CDFF4C"/><stop offset="1" stop-color="#B9FA28"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <path fill="url(#lime)" fill-rule="evenodd" d="M82,252 L136,303 L244,426 L254,432 L265,428 L384,293 L429,252 L405,262 L361,286 L256,379 L250,378 L147,284 L110,264 Z M262,69 L241,71 L234,74 L223,83 L220,89 L219,106 L213,112 L217,134 L219,137 L223,132 L224,133 L223,146 L216,156 L173,180 L158,184 L143,185 L126,191 L119,196 L110,207 L104,225 L104,245 L109,254 L113,245 L122,236 L140,226 L153,215 L154,222 L152,235 L155,248 L167,262 L185,277 L208,318 L234,343 L242,294 L255,162 L258,173 L269,294 L277,337 L310,307 L325,278 L354,251 L358,241 L357,214 L368,224 L389,236 L397,244 L402,254 L407,245 L407,227 L404,213 L399,204 L389,194 L376,187 L338,180 L324,171 L302,161 L292,153 L288,146 L287,133 L288,132 L292,137 L297,123 L297,110 L292,106 L291,89 L281,76 Z M342,189 L342,191 L318,195 L306,204 L293,231 L281,247 L274,263 L273,257 L275,249 L285,230 L295,202 L300,195 L315,186 L326,185 Z M169,189 L177,186 L196,186 L205,190 L214,199 L226,230 L235,247 L238,257 L237,264 L230,247 L218,231 L205,204 L195,196 L182,192 L169,191 Z"/>
 </svg>

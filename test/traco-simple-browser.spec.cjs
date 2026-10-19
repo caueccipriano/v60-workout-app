@@ -3,7 +3,7 @@ test.use({serviceWorkers:'block',viewport:{width:390,height:844}});
 const url='http://127.0.0.1:4173/';
 async function ready(page){
   await page.goto(url,{waitUntil:'load'});
-  await page.waitForFunction(()=>window.TracoSimple?.version==='1.6.0');
+  await page.waitForFunction(()=>window.TracoSimple?.version==='1.7.0');
   await expect(page.locator('.perf-home .simple-home')).toBeVisible();
 }
 test('one-tap navigation and V-Shape program stay local and preserve data',async({page})=>{
@@ -142,7 +142,7 @@ test('three-tab navigation reaches all core routes with one coherent brand and b
   await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
   await page.locator('.simple-progress [data-simple-go="settings"]').click();
   await expect(page.locator('.perf-settings')).toBeVisible();
-  await expect(page.locator('.traco-about-card small')).toContainText('2.35.0');
+  await expect(page.locator('.traco-about-card small')).toContainText('2.36.0');
   await expect(page.locator('.traco-theme-copy small')).toContainText('verde-lima');
   await page.locator('[data-traco-theme="light"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','light');
@@ -361,7 +361,7 @@ test('recovery only changes future prescription during opt-in weeks 4 8 and 12',
   expect(active.curl).toBe(1);
   expect(active.draft).toBe(initial);
   await page.reload({waitUntil:'load'});
-  await page.waitForFunction(()=>window.TracoSimple?.version==='1.6.0');
+  await page.waitForFunction(()=>window.TracoSimple?.version==='1.7.0');
   expect(await page.evaluate(()=>workoutPlan[0].exercises.find(ex=>ex.id==='puxada-aberta').sets)).toBe(2);
   expect(await page.evaluate(()=>localStorage.getItem('v60_draft'))).toBe(initial);
   await page.locator('.simple-home [data-simple-action="program"]').click();
@@ -421,4 +421,45 @@ test('Evolução displays six-week volume without history mutations or horizonta
   await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
   await expect(page.locator('.simple-volume-row').first()).toContainText('1 série');
   expect(await page.evaluate(()=>localStorage.getItem('v60_sessions'))).toBe(before);
+});
+
+test('new Traço lime icon is usable for iPhone launch and installed PWA',async({page})=>{
+  await ready(page);
+  const manifest=await (await page.request.get(url+'manifest.json?v=378')).json();
+  expect(manifest.name).toContain('Traço');
+  expect(manifest.icons.some(icon=>icon.src==='./assets/traco-icon-192-v3.png'&&icon.purpose==='any')).toBe(true);
+  expect(manifest.icons.some(icon=>icon.src==='./assets/traco-icon-512-v3.png'&&icon.purpose==='any')).toBe(true);
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href','./assets/traco-icon-180-v3.png?v=378');
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href','./assets/icon.svg?v=378');
+  const svg=await (await page.request.get(url+'assets/icon.svg?v=378')).text();
+  expect(svg).toContain('#CDFF4C');
+  expect(svg).toContain('costas em V');
+  expect(svg).not.toContain('#FF3B30');
+  for(const size of [180,192,512]){
+    const result=await page.request.get(url+'assets/traco-icon-'+size+'-v3.png');
+    expect(result.ok()).toBe(true);
+    expect(result.headers()['content-type']).toContain('image/png');
+    const png=await result.body();
+    expect(png.subarray(0,8).toString('hex')).toBe('89504e470d0a1a0a');
+    expect(png.readUInt32BE(16)).toBe(size);
+    expect(png.readUInt32BE(20)).toBe(size);
+  }
+});
+test('quick-start help explains three steps and does not alter the saved workouts',async({page})=>{
+  await ready(page);
+  await page.evaluate(()=>localStorage.setItem('traco_help_sentinel','preserved'));
+  await expect(page.locator('#startToday')).toBeVisible();
+  await page.locator('[data-simple-action="help"]').click();
+  const guide=page.locator('#simpleQuickGuide');
+  await expect(guide).toBeVisible();
+  await expect(guide.locator('.simple-guide-list li')).toHaveCount(3);
+  await expect(guide).toContainText('Comece o treino');
+  await expect(guide).toContainText('Registre cada série');
+  await expect(guide).toContainText('Entenda sua evolução');
+  await expect(guide).toContainText('exporte uma cópia regularmente');
+  await guide.getByRole('button',{name:'Entendi, bora treinar!'}).click();
+  await expect(guide).toHaveCount(0);
+  expect(await page.evaluate(()=>localStorage.getItem('traco_help_sentinel'))).toBe('preserved');
+  await expect(page.locator('#startToday')).toBeVisible();
+  expect(await page.locator('#app').evaluate(el=>el.scrollWidth<=window.innerWidth+8)).toBe(true);
 });

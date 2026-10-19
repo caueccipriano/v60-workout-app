@@ -6,7 +6,7 @@
 (function(){
   'use strict';
   const KEY='traco_vshape_90_v1';
-  const VERSION='1.6.0';
+  const VERSION='1.7.0';
   const phases=[
     {label:'Base',range:'Semanas 1–4',detail:'Aprenda os movimentos, registre suas cargas e mantenha cerca de 2–3 repetições em reserva. Priorize constância e amplitude confortável.'},
     {label:'Progressão',range:'Semanas 5–8',detail:'Tente evoluir repetições ou carga aos poucos, sem sacrificar a técnica. Em geral, termine com 1–2 repetições em reserva.'},
@@ -333,12 +333,14 @@
     p.innerHTML='<header class="simple-lead"><span class="simple-kicker">SEU TREINO, SEM DISTRAÇÕES</span><h1>Seu ritmo.</h1><p>'+esc('Olá'+(name?', '+first.toLowerCase():''))+'! Sua evolução acontece treino após treino.</p></header>'+
       phaseCard()+
       '<div class="simple-workout-caption">ATALHOS'+(w?' · '+esc(w.short):'')+'</div>'+
-      '<div class="simple-home-actions"><button data-simple-go="workouts">Ver ficha completa<span>Treinos A–E</span></button><button data-simple-go="body">Registrar medidas<span>Cintura e peso</span></button></div>';
+      '<div class="simple-home-actions"><button data-simple-go="workouts">Ver ficha completa<span>Treinos A–E</span></button><button data-simple-go="body">Registrar medidas<span>Cintura e peso</span></button></div>'+
+      '<button type="button" class="simple-help-link" data-simple-action="help">Como usar o Traço? <span>Guia em 3 passos →</span></button>';
     const hero=main.querySelector('.perf-workout-hero');
     if(hero)hero.insertAdjacentElement('afterend',p);
     else (main.querySelector('.perf-topbar')||main).insertAdjacentElement('afterend',p);
     main.querySelectorAll('[data-simple-go]').forEach(btn=>btn.addEventListener('click',()=>go(btn.dataset.simpleGo)));
     main.querySelectorAll('[data-simple-action="program"]').forEach(btn=>btn.addEventListener('click',openProgram));
+    main.querySelector('[data-simple-action="help"]')?.addEventListener('click',openQuickGuide);
     if(hero){
       hero.setAttribute('aria-label','Iniciar próximo treino: '+(w?.short||''));
       const cta=hero.querySelector('.perf-start-cta b');
@@ -483,6 +485,31 @@
     renderNextGoal(box,ex,hint);
     suggestLastLoad(box,ex);
   }
+  function openQuickGuide(){
+    q('#simpleQuickGuide')?.remove();
+    const modal=document.createElement('div');
+    modal.className='simple-sheet';modal.id='simpleQuickGuide';
+    modal.setAttribute('role','dialog');
+    modal.setAttribute('aria-modal','true');
+    modal.setAttribute('aria-label','Como usar o Traço');
+    modal.innerHTML='<div class="simple-sheet-panel"><header class="simple-sheet-head"><div>'+
+      '<span class="simple-kicker">TRAÇO · GUIA RÁPIDO</span><h2>Treinar é simples.</h2></div>'+
+      '<button type="button" data-simple-close aria-label="Fechar guia">×</button></header>'+
+      '<ol class="simple-guide-list">'+
+      '<li><b>1 · Comece o treino</b><p>Na aba Hoje, toque em Iniciar treino. O Traço sugere a próxima ficha A–E.</p></li>'+
+      '<li><b>2 · Registre cada série</b><p>Preencha a carga e as repetições feitas. Toque em Concluir série; você pode consultar a última carga sem alterar seus dados.</p></li>'+
+      '<li><b>3 · Entenda sua evolução</b><p>Na aba Evolução, veja o volume de treino, seu desempenho e as medidas que você registrar. Sem números inventados.</p></li>'+
+      '</ol>'+
+      '<p class="simple-guide-warning">Seus dados ficam neste dispositivo. Em Evolução → Ajustes e backups, exporte uma cópia regularmente, principalmente antes de remover o app da tela inicial.</p>'+
+      '<div class="simple-sheet-actions"><button type="button" class="simple-primary" data-simple-close>Entendi, bora treinar!</button></div></div>';
+    const close=()=>{modal.remove();document.removeEventListener('keydown',onKey);};
+    const onKey=event=>{if(event.key==='Escape')close();};
+    modal.addEventListener('click',event=>{if(event.target===modal)close();});
+    modal.querySelectorAll('[data-simple-close]').forEach(button=>button.addEventListener('click',close));
+    document.body.appendChild(modal);
+    document.addEventListener('keydown',onKey);
+    modal.querySelector('[data-simple-close]')?.focus();
+  }
   function openProgram(){
     q('#simpleProgramSheet')?.remove();
     const p=programStatus(),modal=document.createElement('div');
@@ -517,7 +544,7 @@
     const main=q('.perf-settings');
     if(!main)return;
     const about=main.querySelector('.traco-about-card small');
-    if(about)about.textContent='treino · evolução · constância · versão 2.35.0';
+    if(about)about.textContent='treino · evolução · constância · versão 2.36.0';
     const theme=main.querySelector('.traco-theme-copy small');
     if(theme)theme.textContent='visual claro ou escuro · mesma identidade verde-lima';
     const card=main.querySelector('.traco-about-card b');

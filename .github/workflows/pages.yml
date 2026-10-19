@@ -23,6 +23,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Set up Python for deterministic launch icons
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate PNG icons for iPhone and PWA
+        run: |
+          python -m pip install --quiet cairosvg==2.7.1
+          python scripts/render-traco-icons.py
       - name: Validate JavaScript syntax
         run: |
           node --check app.js
@@ -57,7 +65,7 @@ jobs:
           if(manifest.short_name!=='Traço') throw new Error('Manifest brand mismatch');
           if(version.name!=='Traço'||!/^2\./.test(version.version)) throw new Error('Version brand mismatch');
           if(!index.includes('<title>Traço</title>')) throw new Error('Document title mismatch');
-          for(const file of ['assets/icon.svg','assets/traco-icon-180-v2.png','assets/traco-icon-192-v2.png','assets/traco-icon-512-v2.png','traco-brand.js','traco-brand.css','traco-theme.css','traco-performance.js','traco-performance.css','traco-gym-ux.js','traco-gym-ux.css','privacy.html','terms.html','support.html','DESIGN_SYSTEM.md']){
+          for(const file of ['assets/icon.svg','assets/traco-icon-180-v2.png','assets/traco-icon-192-v2.png','assets/traco-icon-512-v2.png','assets/traco-icon-180-v3.png','assets/traco-icon-192-v3.png','assets/traco-icon-512-v3.png','scripts/render-traco-icons.py','traco-brand.js','traco-brand.css','traco-theme.css','traco-performance.js','traco-performance.css','traco-gym-ux.js','traco-gym-ux.css','privacy.html','terms.html','support.html','DESIGN_SYSTEM.md']){
             if(!fs.existsSync(file)) throw new Error(`Missing brand asset: ${file}`);
           }
           console.log('Traço brand OK');
