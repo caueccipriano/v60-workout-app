@@ -1,4 +1,4 @@
-const CACHE = 'traco-v110';
+const CACHE = 'traco-v111';
 const ASSETS = [
   './','./index.html','./manifest.json',
   './styles.css','./exercise-guides.css','./exercise-guides-v4.css','./exercise-videos.css',
@@ -7,7 +7,7 @@ const ASSETS = [
   './traco-backup-guard.js','./app.js','./exercise-guides.js','./exercise-guides-v4.js','./exercise-videos.js',
   './v60-personal-progress.js','./v60-aesthetic-core.js','./v60-smart-sequence.js',
   './traco-brand.js','./traco-performance.js','./traco-gym-ux.js','./eu-bridge.js','./traco-coach.js','./traco-body-coach.js','./traco-phase-progress.js','./traco-lab.js','./traco-evolution.js','./traco-rest-background.js','./traco-runtime.js','./traco-ux-polish.js','./traco-menu-planner.js','./traco-final-ui.js','./traco-simple.js',
-  './privacy.html','./terms.html','./support.html','./assets/icon.svg','./assets/traco-icon-180-v2.png','./assets/traco-icon-192-v2.png','./assets/traco-icon-512-v2.png'
+  './privacy.html','./terms.html','./support.html','./assets/icon.svg','./assets/traco-icon-180-v3.png','./assets/traco-icon-192-v3.png','./assets/traco-icon-512-v3.png'
 ];
 
 async function cacheFallback(request){
