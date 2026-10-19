@@ -3,7 +3,7 @@ test.use({serviceWorkers:'block',viewport:{width:390,height:844}});
 const url='http://127.0.0.1:4173/';
 async function ready(page){
   await page.goto(url,{waitUntil:'load'});
-  await page.waitForFunction(()=>window.TracoSimple?.version==='1.5.0');
+  await page.waitForFunction(()=>window.TracoSimple?.version==='1.6.0');
   await expect(page.locator('.perf-home .simple-home')).toBeVisible();
 }
 test('one-tap navigation and V-Shape program stay local and preserve data',async({page})=>{
@@ -142,7 +142,7 @@ test('three-tab navigation reaches all core routes with one coherent brand and b
   await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
   await page.locator('.simple-progress [data-simple-go="settings"]').click();
   await expect(page.locator('.perf-settings')).toBeVisible();
-  await expect(page.locator('.traco-about-card small')).toContainText('2.34.0');
+  await expect(page.locator('.traco-about-card small')).toContainText('2.35.0');
   await expect(page.locator('.traco-theme-copy small')).toContainText('verde-lima');
   await page.locator('[data-traco-theme="light"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','light');
@@ -305,7 +305,7 @@ test('Evolução shows three compact weekly regions without touching user histor
   await ready(page);
   const before=await page.evaluate(()=>{
     const ex=workoutPlan[0].exercises.find(row=>row.id==='puxada-aberta');
-    const monday=new Date();monday.setHours(12,0,0,0);monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
+    const monday=new Date();monday.setHours(0,0,0,0);monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
     const lastWeek=new Date(monday);lastWeek.setDate(lastWeek.getDate()-7);
     const session=(id,date,reps)=>({id,workoutId:'qua',startedAt:date.getTime(),finishedAt:date.getTime()+1000,
       exercises:[{...ex,sets:[{n:1,weight:30,reps,done:true,skipped:false}]}]});
@@ -325,5 +325,100 @@ test('Evolução shows three compact weekly regions without touching user histor
   await page.reload({waitUntil:'load'});
   await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
   await expect(page.locator('[data-muscle="dorsais"]')).toContainText('Sinal de progresso');
+  expect(await page.evaluate(()=>localStorage.getItem('v60_sessions'))).toBe(before);
+});
+
+
+test('recovery only changes future prescription during opt-in weeks 4 8 and 12',async({page})=>{
+  await ready(page);
+  const initial=await page.evaluate(()=>{
+    const d=new Date();d.setDate(d.getDate()-21);
+    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    localStorage.setItem('traco_vshape_90_v1',JSON.stringify({start:key,schema:1}));
+    const w=workoutPlan[0],ex=w.exercises[0];
+    const draft={id:'recovery-safe-draft',startedAt:Date.now()-3600000,
+      workoutId:w.id,exercises:[{...ex,sets:[{n:1,done:true,weight:30,reps:10},{n:2,done:false,weight:'',reps:''}]}]};
+    localStorage.setItem('v60_draft',JSON.stringify(draft));
+    TracoSimple.applyVShapePhase();
+    state.page='home';render();
+    return JSON.stringify(draft);
+  });
+  expect(await page.evaluate(()=>TracoSimple.programStatus())).toMatchObject({
+    week:4,recoveryDue:true,recoveryActive:false});
+  await expect(page.locator('.simple-home .simple-program')).toContainText('Pausa opcional');
+  await page.locator('.simple-home [data-simple-action="program"]').click();
+  await expect(page.locator('[data-simple-recovery="on"]')).toBeVisible();
+  await page.locator('[data-simple-recovery="on"]').click();
+  await expect(page.locator('[data-simple-recovery="off"]')).toBeVisible();
+  const active=await page.evaluate(()=>({
+    due:TracoSimple.programStatus(),
+    wide:workoutPlan[0].exercises.find(ex=>ex.id==='puxada-aberta').sets,
+    curl:workoutPlan[0].exercises.find(ex=>ex.id==='rosca-martelo').sets,
+    draft:localStorage.getItem('v60_draft')
+  }));
+  expect(active.due.recoveryActive).toBe(true);
+  expect(active.wide).toBe(2);
+  expect(active.curl).toBe(1);
+  expect(active.draft).toBe(initial);
+  await page.reload({waitUntil:'load'});
+  await page.waitForFunction(()=>window.TracoSimple?.version==='1.6.0');
+  expect(await page.evaluate(()=>workoutPlan[0].exercises.find(ex=>ex.id==='puxada-aberta').sets)).toBe(2);
+  expect(await page.evaluate(()=>localStorage.getItem('v60_draft'))).toBe(initial);
+  await page.locator('.simple-home [data-simple-action="program"]').click();
+  await page.locator('[data-simple-recovery="off"]').click();
+  expect(await page.evaluate(()=>TracoSimple.programStatus().recoveryActive)).toBe(false);
+  expect(await page.evaluate(()=>workoutPlan[0].exercises.find(ex=>ex.id==='puxada-aberta').sets)).toBe(3);
+  expect(await page.evaluate(()=>localStorage.getItem('v60_draft'))).toBe(initial);
+});
+test('six complete calendar weeks count trusted sets and flag only genuine comparable plateaus',async({page})=>{
+  await ready(page);
+  const result=await page.evaluate(()=>{
+    const reference=new Date(2026,9,18,18);
+    const monday=new Date(reference);monday.setHours(12,0,0,0);monday.setDate(monday.getDate()-6);
+    const day=n=>{const d=new Date(monday);d.setDate(d.getDate()-7*n);return d.getTime();};
+    const ex=workoutPlan[0].exercises.find(e=>e.id==='puxada-aberta');
+    const make=(n,reps,overrides={})=>({id:'signal-'+n+'-'+(overrides.tag||'regular'),startedAt:day(n),finishedAt:day(n)+1000,
+      manualConfirmed:Boolean(overrides.manual),excludeFromVolume:Boolean(overrides.exclude),
+      exercises:[{...ex,name:overrides.name||ex.name,equipment:overrides.equipment||ex.equipment,
+        sets:[{n:1,weight:30,reps,done:true,skipped:false,reported:Boolean(overrides.reported)}]}]});
+    const history=[make(3,10),make(2,10),make(1,10),make(2,100,{manual:true,tag:'manual'}),make(1,100,{reported:true,tag:'reported'})];
+    const before=JSON.stringify(history);
+    const stable=TracoSimple.trainingSignals(history,reference);
+    const improved=TracoSimple.trainingSignals([make(3,10),make(2,10),make(1,12)],reference);
+    const variant=TracoSimple.trainingSignals([make(3,10),make(2,10),make(1,10,{equipment:'Outro equipamento'})],reference);
+    const empty=TracoSimple.trainingSignals([],reference);
+    return {stable,improved,variant,empty,unmodified:JSON.stringify(history)===before};
+  });
+  const wide=result.stable.groups[0];
+  expect(wide.series).toEqual([0,0,0,1,1,1]);
+  expect(wide.total).toBe(3);
+  expect(result.stable.plateaus).toMatchObject([{id:'puxada-aberta',sessions:3,days:14}]);
+  expect(result.improved.plateaus).toEqual([]);
+  expect(result.variant.plateaus).toEqual([]);
+  expect(result.empty.groups.every(g=>g.total===0)).toBe(true);
+  expect(result.empty.plateaus).toEqual([]);
+  expect(result.unmodified).toBe(true);
+});
+test('Evolução displays six-week volume without history mutations or horizontal scrolling',async({page})=>{
+  await ready(page);
+  const before=await page.evaluate(()=>{
+    const ex=workoutPlan[0].exercises.find(e=>e.id==='puxada-aberta');
+    const today=new Date();today.setHours(12,0,0,0);today.setDate(today.getDate()-(today.getDay()+6)%7-7);
+    const data=JSON.stringify([{id:'volume-ui',startedAt:today.getTime(),
+      finishedAt:today.getTime()+1000,workoutId:'qua',
+      exercises:[{...ex,sets:[{n:1,weight:30,reps:10,done:true,skipped:false}]}]}]);
+    localStorage.setItem('v60_sessions',data);
+    return data;
+  });
+  await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
+  await expect(page.locator('.simple-volume')).toBeVisible();
+  await expect(page.locator('.simple-volume-row')).toHaveCount(3);
+  await expect(page.locator('.simple-volume-row').first()).toContainText('1 série');
+  await expect(page.locator('.simple-volume-bars').first().locator('.simple-volume-bar')).toHaveCount(6);
+  expect(await page.locator('#app').evaluate(el=>el.scrollWidth<=window.innerWidth+8)).toBe(true);
+  expect(await page.evaluate(()=>localStorage.getItem('v60_sessions'))).toBe(before);
+  await page.reload({waitUntil:'load'});
+  await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
+  await expect(page.locator('.simple-volume-row').first()).toContainText('1 série');
   expect(await page.evaluate(()=>localStorage.getItem('v60_sessions'))).toBe(before);
 });
