@@ -562,3 +562,64 @@ html[data-design="performance"][data-theme="light"] .simple-quick-session span{c
 html[data-design="performance"] :is(.simple-mode-card,.simple-mode-cancel):focus-visible{
   outline:2px solid #C8E65B;outline-offset:3px;
 }
+
+
+/* 2.38 — small, reliable secondary controls under the primary set action.
+   The essential Concluir série stays the only wide call to action. */
+html[data-design="performance"] .perf-session.traco-simple-session .perf-exercise-actions{
+  display:flex!important;
+  justify-content:flex-end!important;
+  align-items:center!important;
+  gap:8px!important;
+  margin:8px 0 0!important;
+  padding:0!important;
+  width:100%;
+  min-width:0;
+}
+html[data-design="performance"] .perf-session.traco-simple-session .perf-skip-exercise{
+  display:inline-flex!important;
+  flex:0 1 auto!important;
+  align-items:center;
+  justify-content:center;
+  width:auto!important;
+  max-width:min(65%,240px);
+  min-height:44px!important;
+  padding:8px 12px!important;
+  margin:0!important;
+  border:1px solid #52664D!important;
+  border-radius:11px!important;
+  background:#1D281F!important;
+  color:#DAEBD2!important;
+  font:700 11px/1.25 var(--traco-ui,sans-serif)!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  white-space:normal;
+  box-shadow:none!important;
+}
+html[data-design="performance"] .perf-session.traco-simple-session #exerciseMore{
+  display:inline-flex!important;
+  flex:0 0 44px!important;
+  align-items:center;
+  justify-content:center;
+  width:44px!important;
+  height:44px!important;
+  min-height:44px!important;
+  margin:0!important;
+  padding:0!important;
+  border-radius:11px!important;
+  border:1px solid #52664D!important;
+  background:#1D281F!important;
+  color:#DAEBD2!important;
+  font-size:15px!important;
+  letter-spacing:1px!important;
+  box-shadow:none!important;
+}
+html[data-design="performance"][data-theme="light"] .perf-session.traco-simple-session :is(.perf-skip-exercise,#exerciseMore){
+  background:#EAF0E6!important;
+  border-color:#BCCDB4!important;
+  color:#355333!important;
+}
+html[data-design="performance"] .perf-session.traco-simple-session :is(.perf-skip-exercise,#exerciseMore):focus-visible{
+  outline:2px solid #C8E65B!important;
+  outline-offset:2px;
+}
