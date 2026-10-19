@@ -733,3 +733,30 @@ test('Pular por agora rejects unsafe storage failures without silently changing 
   expect(result.cursor).toBe(result.oldCursor);
   expect(result.newQueue).toBe(result.oldQueue);
 });
+
+
+test('legacy exercise picker and order sheet actually open with escaped labels and never delete draft',async({page})=>{
+  await ready(page);
+  await page.evaluate(()=>{state.selectedWorkout='qua';state.page='workouts';render();});
+  await page.locator('#startSelected').click();
+  await page.locator('[data-simple-start-mode="quick30"]').click();
+  await expect(page.locator('.perf-session')).toBeVisible();
+  const prior=await page.evaluate(()=>JSON.parse(localStorage.getItem('v60_draft')));
+  await page.evaluate(()=>tracoGymOpenExercisePicker());
+  await expect(page.locator('#tracoExercisePicker')).toBeVisible();
+  await expect(page.locator('[data-pick-exercise]')).toHaveCount(4);
+  const next=await page.locator('[data-pick-exercise]:not([disabled])').nth(1).getAttribute('data-pick-exercise');
+  await page.locator('[data-pick-exercise="'+next+'"]').click();
+  await expect(page.locator('#tracoExercisePicker')).toHaveCount(0);
+  expect(await page.evaluate(()=>state.activeSession.exercises[state.currentExercise].id)).toBe(next);
+  await page.evaluate(()=>tracoGymOpenExercisePicker());
+  await page.locator('#tracoExercisePickerQueue').click();
+  await expect(page.locator('#tracoOrderEditor')).toBeVisible();
+  await page.locator('#tracoOrderEditor').getByRole('button',{name:/fechar|voltar/i}).first().click();
+  await expect(page.locator('#tracoOrderEditor')).toHaveCount(0);
+  const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('v60_draft')));
+  expect(after.id).toBe(prior.id);
+  expect(after.trainingMode).toBe('quick30');
+  expect(after.exercises.map(ex=>ex.id)).toEqual(prior.exercises.map(ex=>ex.id));
+  expect(after.exercises.every(ex=>ex.sets.every(set=>!set.done&&!set.skipped))).toBe(true);
+});
