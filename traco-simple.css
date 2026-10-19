@@ -405,3 +405,82 @@ html[data-design="performance"][data-theme="light"] .simple-muscle-heading b{col
 html[data-design="performance"][data-theme="light"] .simple-muscle-heading span{color:#50733D}
 html[data-design="performance"][data-theme="light"] .simple-muscle-card p{color:#4B5F4A}
 html[data-design="performance"][data-theme="light"] .simple-muscle-card>small{color:#657362}
+
+
+/* 2.35 · optional recovery week and honest rolling training signals */
+html[data-design="performance"] .simple-recovery{
+ display:grid;gap:10px;background:#1B261E;border:1px solid #587454;
+ border-radius:14px;padding:15px;margin:10px 0;
+}
+html[data-design="performance"] .simple-recovery-heading{
+ display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;justify-content:space-between;
+}
+html[data-design="performance"] .simple-recovery-heading strong{color:#F1F7ED;font-size:13px}
+html[data-design="performance"] .simple-recovery-heading span{color:#C8E65B;font-size:11px;font-weight:750}
+html[data-design="performance"] .simple-recovery p{
+ color:#D7E1D2;font-size:12px;line-height:1.6;margin:0;
+}
+html[data-design="performance"] .simple-recovery button{
+ min-height:44px;border:1px solid #C8E65B;background:#C8E65B;color:#192219;
+ border-radius:11px;font-size:12px;font-weight:800;
+}
+html[data-design="performance"] .simple-recovery>small{color:#B2C5B1;font-size:11px;line-height:1.5}
+html[data-design="performance"] .simple-volume{
+ display:grid;gap:13px;padding:15px;border:1px solid #3C4B3D;
+ border-radius:18px;background:#141B15;color:#ECF3E8;
+}
+html[data-design="performance"] .simple-volume>header{display:grid;gap:4px}
+html[data-design="performance"] .simple-volume h4{
+ margin:0;color:#F4F7EF;font-size:20px;letter-spacing:-.045em;
+}
+html[data-design="performance"] .simple-volume>header p,
+html[data-design="performance"] .simple-volume-foot,
+html[data-design="performance"] .simple-volume-empty{
+ color:#B4C2B0;font-size:11px;line-height:1.55;margin:0;
+}
+html[data-design="performance"] .simple-volume-list{display:grid;gap:14px}
+html[data-design="performance"] .simple-volume-row{display:grid;gap:6px}
+html[data-design="performance"] .simple-volume-name{
+ display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+}
+html[data-design="performance"] .simple-volume-name b{font-size:13px;color:#F2F6EC}
+html[data-design="performance"] .simple-volume-name small{font-size:10px;color:#AFC4AA}
+html[data-design="performance"] .simple-volume-bars{
+ display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;
+ align-items:end;height:40px;
+}
+html[data-design="performance"] .simple-volume-bar{
+ height:100%;min-width:0;display:flex;align-items:flex-end;
+ background:#252F26;border:1px solid #344333;border-radius:6px;overflow:hidden;
+}
+html[data-design="performance"] .simple-volume-bar i{
+ display:block;width:100%;background:#C8E65B;border-radius:4px 4px 0 0;
+}
+html[data-design="performance"] .simple-plateaus{
+ display:grid;gap:6px;border-top:1px solid #354536;padding-top:12px;
+}
+html[data-design="performance"] .simple-plateaus b{color:#D8E8BA;font-size:12px}
+html[data-design="performance"] .simple-plateaus p{
+ margin:0;font-size:11px;line-height:1.6;color:#C4D2BF;
+}
+html[data-design="performance"][data-theme="light"] .simple-volume{
+ background:#EDF3E9;color:#253925;border-color:#C3D1BD;
+}
+html[data-design="performance"][data-theme="light"] .simple-volume h4,
+html[data-design="performance"][data-theme="light"] .simple-volume-name b{color:#203222}
+html[data-design="performance"][data-theme="light"] .simple-volume>header p,
+html[data-design="performance"][data-theme="light"] .simple-volume-foot,
+html[data-design="performance"][data-theme="light"] .simple-volume-empty,
+html[data-design="performance"][data-theme="light"] .simple-volume-name small{color:#516750}
+html[data-design="performance"][data-theme="light"] .simple-volume-bar{
+ background:#D9E5D6;border-color:#BED0B8;
+}
+html[data-design="performance"][data-theme="light"] .simple-volume-bar i{background:#83AB47}
+html[data-design="performance"][data-theme="light"] .simple-plateaus{
+ border-color:#C6D3BF;
+}
+html[data-design="performance"][data-theme="light"] .simple-plateaus b{color:#3D642C}
+html[data-design="performance"][data-theme="light"] .simple-plateaus p{color:#4F654E}
+html[data-design="performance"] :is(.simple-recovery button):focus-visible{
+ outline:2px solid #C8E65B;outline-offset:3px;
+}
