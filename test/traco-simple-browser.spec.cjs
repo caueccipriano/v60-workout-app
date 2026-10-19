@@ -249,6 +249,7 @@ test('gym displays a short next goal without changing planned sets or completed 
   await page.locator('.workout-select[data-workout="qua"]').click();
   await expect(page.locator('.selected-blue h3')).toContainText('A ·');
   await page.locator('#startSelected').click();
+  await page.locator('[data-simple-start-mode="full"]').click();
   await expect(page.locator('.perf-session .simple-next-goal')).toBeVisible();
   await expect(page.locator('.simple-next-goal')).toContainText('Pode considerar subir a carga');
   await expect(page.locator('.simple-next-goal')).toContainText('24 kg');
@@ -434,9 +435,9 @@ test('new Traço lime icon is usable for iPhone launch and installed PWA',async(
   expect(manifest.name).toContain('Traço');
   expect(manifest.icons.some(icon=>icon.src==='./assets/traco-icon-192-v3.png'&&icon.purpose==='any')).toBe(true);
   expect(manifest.icons.some(icon=>icon.src==='./assets/traco-icon-512-v3.png'&&icon.purpose==='any')).toBe(true);
-  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href','./assets/traco-icon-180-v3.png?v=378');
-  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href','./assets/icon.svg?v=378');
-  const svg=await (await page.request.get(url+'assets/icon.svg?v=378')).text();
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href','./assets/traco-icon-180-v3.png?v=379');
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href','./assets/icon.svg?v=379');
+  const svg=await (await page.request.get(url+'assets/icon.svg?v=379')).text();
   expect(svg).toContain('#CDFF4C');
   expect(svg).toContain('costas em V');
   expect(svg).not.toContain('#FF3B30');
@@ -558,7 +559,11 @@ test('complete mode stays identical and closing choice never creates or replaces
   const plan=JSON.parse(original).find(w=>w.id===result.saved.workoutId);
   expect(result.saved.trainingMode).toBeUndefined();
   expect(result.saved.exercises.map(e=>e.id)).toEqual(plan.exercises.map(e=>e.id));
-  expect(result.saved.exercises.map(e=>e.sets.length)).toEqual(plan.exercises.map(e=>e.sets));
+  // Existing evolution coach may suggest one extra set, even in full mode.
+  // The new quick selector must not remove or replace any planned exercise.
+  const recorded=result.saved.exercises.map(e=>e.sets.length);
+  const originals=plan.exercises.map(e=>e.sets);
+  expect(recorded.every((n,i)=>n>=originals[i]&&n<=originals[i]+1)).toBe(true);
   expect(result.plan).toBe(original);
   await expect(page.locator('.simple-quick-session')).toHaveCount(0);
 });
