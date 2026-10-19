@@ -6,7 +6,7 @@
 (function(){
   'use strict';
   const KEY='traco_vshape_90_v1';
-  const VERSION='1.5.0';
+  const VERSION='1.6.0';
   const phases=[
     {label:'Base',range:'Semanas 1–4',detail:'Aprenda os movimentos, registre suas cargas e mantenha cerca de 2–3 repetições em reserva. Priorize constância e amplitude confortável.'},
     {label:'Progressão',range:'Semanas 5–8',detail:'Tente evoluir repetições ou carga aos poucos, sem sacrificar a técnica. Em geral, termine com 1–2 repetições em reserva.'},
@@ -19,17 +19,17 @@
   function getProgram(){
     try {
       const p=JSON.parse(localStorage.getItem(KEY)||'null');
-      return p&&dayNumber(p.start)!==null?{start:p.start}:null;
+      return p&&dayNumber(p.start)!==null?{start:p.start,recoveryWeek:Number(p.recoveryWeek)||0}:null;
     }catch{return null;}
   }
   function programStatus(now=new Date()){
     const p=getProgram();
-    if(!p)return {started:false,week:0,phase:0,pct:0,done:false};
+    if(!p)return {started:false,week:0,phase:0,pct:0,done:false,recoveryDue:false,recoveryActive:false};
     const diff=Math.floor(dayNumber(isoLocal(now))-dayNumber(p.start));
     const elapsed=Math.max(0,diff);
     const done=elapsed>=84;
     const week=Math.min(12,Math.floor(elapsed/7)+1);
-    return {started:true,start:p.start,week,phase:Math.min(2,Math.floor((week-1)/4)),pct:Math.min(100,Math.round(elapsed/84*100)),done};
+    return {started:true,start:p.start,week,phase:Math.min(2,Math.floor((week-1)/4)),pct:Math.min(100,Math.round(elapsed/84*100)),done,recoveryDue:!done&&[4,8,12].includes(week),recoveryActive:!done&&[4,8,12].includes(week)&&p.recoveryWeek===week};
   }
 
   // Base prescription is captured after the aesthetic-core installer has added
@@ -47,7 +47,9 @@
         // Months 2 and 3 add one working set to the V-shape priority lift,
         // rather than increasing all exercise volumes at once.
         const intense=p.started&&!p.done&&p.phase>=1;
-        ex.sets=base.sets+(intense&&VSHAPE_PROGRESSIVE_IDS.has(ex.id)?1:0);
+        const planned=base.sets+(intense&&VSHAPE_PROGRESSIVE_IDS.has(ex.id)?1:0);
+        // Optional recovery only affects new prescriptions, not active drafts.
+        ex.sets=p.recoveryActive?Math.max(1,Math.round(planned*.65)):planned;
         ex.min=base.min;
         ex.max=base.max;
         ex.rest=base.rest;
@@ -67,6 +69,32 @@
       if(typeof toast==='function')toast('não foi possível salvar o programa');
       return false;
     }
+  }
+
+  // Recovery is always opt-in and scoped to the exact program start + week.
+  function setRecovery(active){
+    const status=programStatus();
+    if(!status.recoveryDue)return false;
+    try{
+      const stored=JSON.parse(localStorage.getItem(KEY)||'null');
+      if(!stored||stored.start!==status.start)return false;
+      localStorage.setItem(KEY,JSON.stringify({...stored,recoveryWeek:active?status.week:0}));
+      return true;
+    }catch{
+      if(typeof toast==='function')toast('não foi possível salvar a semana leve');
+      return false;
+    }
+  }
+  function recoveryMarkup(){
+    const p=programStatus();
+    if(!p.recoveryDue)return '';
+    return '<section class="simple-recovery" aria-label="Recuperação planejada">'+
+      '<div class="simple-recovery-heading"><strong>Semana '+p.week+' · recuperação opcional</strong><span>'+(p.recoveryActive?'Ativada':'Disponível')+'</span></div>'+
+      '<p>'+(p.recoveryActive?
+        'Nas próximas sessões, aproximadamente 35% menos séries. Preserve a técnica e não treine até a falha. Nenhuma carga é alterada automaticamente.':
+        'Se estiver acumulando fadiga, você pode fazer uma semana mais leve. A opção reduz cerca de 35% das séries apenas dos próximos treinos.')+
+      '</p><button type="button" data-simple-recovery="'+(p.recoveryActive?'off':'on')+'">'+(p.recoveryActive?'Desativar semana leve':'Ativar semana leve')+'</button>'+
+      '<small>Não altera rascunhos nem sessões concluídas. O plano volta ao normal na semana seguinte.</small></section>';
   }
   function go(page){
     if(typeof state==='undefined'||typeof render!=='function')return;
@@ -197,7 +225,7 @@
       return '<section class="simple-program"><div class="simple-program-top"><strong>Seu V-Shape</strong><span>12 semanas</span></div><p>Uma jornada em três fases, usando seus treinos A–E. Comece quando quiser; seus registros atuais continuam intactos.</p><div class="simple-program-foot"><small>Sem contagem iniciada</small><button class="simple-quiet-button" data-simple-action="program">ver programa →</button></div></section>';
     }
     const ph=phases[p.phase];
-    return '<section class="simple-program"><div class="simple-program-top"><strong>'+esc(p.done?'12 semanas completas':'Semana '+p.week+' de 12')+'</strong><span>'+esc(ph.label)+'</span></div><p>'+esc(p.done?'O período de 12 semanas terminou. Confira os treinos registrados antes de iniciar outro ciclo.':ph.detail)+'</p><div class="simple-program-meter" aria-label="'+p.pct+'% do período"><i style="width:'+p.pct+'%"></i></div><div class="simple-program-foot"><small>'+programWorkoutCount()+' sessões registradas no período</small><button class="simple-quiet-button" data-simple-action="program">ver fases →</button></div></section>';
+    return '<section class="simple-program"><div class="simple-program-top"><strong>'+esc(p.done?'12 semanas completas':'Semana '+p.week+' de 12')+'</strong><span>'+esc(p.recoveryActive?'Semana leve':p.recoveryDue?'Pausa opcional':ph.label)+'</span></div><p>'+esc(p.done?'O período de 12 semanas terminou. Confira os treinos registrados antes de iniciar outro ciclo.':p.recoveryActive?'Semana leve ativada: volume menor nos próximos treinos.':p.recoveryDue?'Semana de recuperação opcional: abra o programa se quiser reduzir o volume.':ph.detail)+'</p><div class="simple-program-meter" aria-label="'+p.pct+'% do período"><i style="width:'+p.pct+'%"></i></div><div class="simple-program-foot"><small>'+programWorkoutCount()+' sessões registradas no período</small><button class="simple-quiet-button" data-simple-action="program">ver fases →</button></div></section>';
   }
   function home(){
     const main=q('.perf-home');
@@ -354,7 +382,7 @@
     if(!ex)return;
     const phase=programStatus();
     const plan=(Number(ex.min)||8)+'–'+(Number(ex.max)||12)+' repetições por série';
-    const advice=phase.started&&!phase.done?' · '+(phase.phase===0?'2–3 reps em reserva':'1–2 reps em reserva'):'';
+    const advice=phase.started&&!phase.done?' · '+(phase.recoveryActive?'semana leve · 3–4 reps em reserva':phase.phase===0?'2–3 reps em reserva':'1–2 reps em reserva'):'';
     const hint=document.createElement('p');
     hint.className='simple-target';
     hint.textContent='Meta: '+plan+advice+'. Priorize a execução.';
@@ -373,11 +401,17 @@
       '<ol class="simple-phase-list">'+phases.map(ph=>'<li><b>'+esc(ph.range+' · '+ph.label)+'</b><p>'+esc(ph.detail)+'</p></li>').join('')+'</ol>'+
       '<section class="simple-split"><span class="simple-kicker">A FICHA QUE VOCÊ VAI FAZER</span>'+workoutPlan.map((w,i)=>'<div><b>'+String.fromCharCode(65+i)+' · '+esc(w.short)+'</b><small>'+w.exercises.map(ex=>esc(ex.name)+' ('+ex.sets+'×'+ex.min+'–'+ex.max+')').join(' · ')+'</small></div>').join('')+'</section>'+
       '<p class="simple-sheet-note">A sessão de musculação pode levar aproximadamente 45–60 min, conforme descanso e lotação. Cardio é opcional e separado. Progrida ao atingir o topo das repetições com boa técnica; preserve recuperação e ajuste cargas conforme seu nível.</p>'+
+      recoveryMarkup()+
       '<div class="simple-sheet-actions">'+(!p.started?'<button type="button" class="simple-primary" data-simple-start>Começar meu programa hoje</button>':p.done?'<button type="button" data-simple-restart>Iniciar um novo ciclo</button>':'<button type="button" data-simple-restart>Recomeçar ciclo do zero</button>')+'<button type="button" data-simple-close>Voltar ao app</button></div></div>';
     const close=()=>{modal.remove();document.removeEventListener('keydown',onKey);};
     const onKey=e=>{if(e.key==='Escape')close();};
     modal.addEventListener('click',e=>{if(e.target===modal)close();});
     modal.querySelectorAll('[data-simple-close]').forEach(btn=>btn.addEventListener('click',close));
+    modal.querySelector('[data-simple-recovery]')?.addEventListener('click',event=>{
+      const active=event.currentTarget.dataset.simpleRecovery==='on';
+      if(!setRecovery(active))return;
+      applyVShapePhase();close();render();openProgram();
+    });
     modal.querySelector('[data-simple-start]')?.addEventListener('click',()=>{if(setProgram()){applyVShapePhase();close();render();}});
     modal.querySelector('[data-simple-restart]')?.addEventListener('click',()=>{
       if(!confirm('Recomeçar a contagem de 12 semanas? Seus treinos, fotos e medidas não serão apagados.'))return;
@@ -391,7 +425,7 @@
     const main=q('.perf-settings');
     if(!main)return;
     const about=main.querySelector('.traco-about-card small');
-    if(about)about.textContent='treino · evolução · constância · versão 2.34.0';
+    if(about)about.textContent='treino · evolução · constância · versão 2.35.0';
     const theme=main.querySelector('.traco-theme-copy small');
     if(theme)theme.textContent='visual claro ou escuro · mesma identidade verde-lima';
     const card=main.querySelector('.traco-about-card b');
@@ -433,7 +467,7 @@
   if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:false});
   window.addEventListener('pageshow',schedule);
   applyVShapePhase();
-  window.TracoSimple={version:VERSION,programStatus,getProgram,openProgram,applyVShapePhase,nextGoal,weeklyVshapeSummary};
+  window.TracoSimple={version:VERSION,programStatus,getProgram,openProgram,applyVShapePhase,nextGoal,weeklyVshapeSummary,setRecovery};
   document.documentElement.dataset.tracoSimple=VERSION;
   // The existing shell was rendered before this last layer was loaded.
   // Redraw once when a running program changes its next-session prescription.
