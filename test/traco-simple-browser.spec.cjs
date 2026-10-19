@@ -305,7 +305,7 @@ test('Evolução shows three compact weekly regions without touching user histor
   await ready(page);
   const before=await page.evaluate(()=>{
     const ex=workoutPlan[0].exercises.find(row=>row.id==='puxada-aberta');
-    const monday=new Date();monday.setHours(12,0,0,0);monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
+    const monday=new Date();monday.setHours(0,0,0,0);monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
     const lastWeek=new Date(monday);lastWeek.setDate(lastWeek.getDate()-7);
     const session=(id,date,reps)=>({id,workoutId:'qua',startedAt:date.getTime(),finishedAt:date.getTime()+1000,
       exercises:[{...ex,sets:[{n:1,weight:30,reps,done:true,skipped:false}]}]});
