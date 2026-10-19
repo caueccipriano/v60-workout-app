@@ -218,6 +218,97 @@
       '<p>Compara a melhor série de cada exercício na mesma variação. Usa uma estimativa baseada em carga e repetições; não mede crescimento muscular. Uma semana isolada não define tendência.</p>'+
     '</section>';
   }
+
+  // Historical set volume is descriptive, not a measure of muscle gain.
+  // Current (partial) week is omitted from six-week volume.
+  function trainingSignals(history,reference=new Date()){
+    const now=new Date(reference);
+    if(!Number.isFinite(now.getTime()))return null;
+    const monday=new Date(now);monday.setHours(0,0,0,0);
+    monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
+    const weeks=Array.from({length:6},(_,i)=>{
+      const d=new Date(monday);d.setDate(d.getDate()-(6-i)*7);
+      return {start:d.getTime(),label:fmtDateWeek(d)};
+    });
+    const old=new Date(monday);old.setDate(old.getDate()-42);
+    const volume=Object.fromEntries(MUSCLE_GROUPS.map(g=>[g.id,Array(6).fill(0)]));
+    const exposures=new Map(),seen=new Set();
+    for(const session of Array.isArray(history)?history:[]){
+      if(!session?.finishedAt||session.excludeFromVolume||session.manualConfirmed)continue;
+      const started=Number(session.startedAt),finished=Number(session.finishedAt);
+      if(!Number.isFinite(started)||!Number.isFinite(finished)||started<=0||finished<started||finished>now.getTime()||started<old.getTime())continue;
+      if(session.id!=null){const id=String(session.id);if(seen.has(id))continue;seen.add(id);}
+      const week=weeks.findIndex((w,i)=>started>=w.start&&started<(weeks[i+1]?.start??monday.getTime()));
+      for(const ex of Array.isArray(session.exercises)?session.exercises:[]){
+        const group=MUSCLE_IDS.get(ex?.id);
+        if(!group)continue;
+        const key=[ex.id,normVariation(ex.name),normVariation(ex.equipment)].join('|');
+        let valid=0,best=0;
+        for(const set of Array.isArray(ex.sets)?ex.sets:[]){
+          if(!set?.done||set.skipped||set.reported||set.repsKnown===false)continue;
+          const reps=Number(set.reps),weight=Number(set.weight);
+          if(!Number.isFinite(reps)||reps<=0||!Number.isFinite(weight)||weight<=0)continue;
+          valid++;
+          if(reps>=4&&reps<=20)best=Math.max(best,weight*(1+reps/30));
+        }
+        if(week>=0)volume[group][week]+=valid;
+        if(best>0){
+          const rows=exposures.get(key)||[];
+          rows.push({when:started,sessionId:String(session.id??started),score:best,
+            id:ex.id,name:String(ex.name||'exercício'),group});
+          exposures.set(key,rows);
+        }
+      }
+    }
+    const plateaus=[];
+    for(const rows of exposures.values()){
+      const bySession=new Map();
+      for(const row of rows){
+        const before=bySession.get(row.sessionId);
+        if(!before||row.score>before.score)bySession.set(row.sessionId,row);
+      }
+      const last=[...bySession.values()].sort((a,b)=>b.when-a.when).slice(0,3);
+      if(last.length!==3||last[0].when-last[2].when<14*86400000)continue;
+      const scores=last.map(x=>x.score),high=Math.max(...scores),low=Math.min(...scores);
+      // Only flag three valid comparable sessions within a narrow 2% band.
+      // Missing, noisy, swapped or clearly worsening logs remain unflagged.
+      if(high/low>1.02)continue;
+      plateaus.push({id:last[0].id,name:last[0].name,group:last[0].group,sessions:3,
+        days:Math.round((last[0].when-last[2].when)/86400000)});
+    }
+    const priority=['puxada-aberta','remada-unilateral','elevacao-lateral','elevacao-lateral-3','supino-inclinado'];
+    plateaus.sort((a,b)=>{
+      const rank=id=>{const n=priority.indexOf(id);return n<0?999:n;};
+      return rank(a.id)-rank(b.id)||a.name.localeCompare(b.name,'pt-BR');
+    });
+    return {weeks:weeks.map(w=>w.label),groups:MUSCLE_GROUPS.map(g=>({
+      id:g.id,name:g.name,series:volume[g.id],total:volume[g.id].reduce((a,b)=>a+b,0)
+    })),plateaus:plateaus.slice(0,2)};
+  }
+  function trainingSignalsMarkup(){
+    const report=trainingSignals(sessions());
+    if(!report)return '';
+    const hasVolume=report.groups.some(g=>g.total>0);
+    const bars=report.groups.map(g=>{
+      const max=Math.max(1,...g.series);
+      const strip=g.series.map((count,i)=>
+        '<span class="simple-volume-bar" title="'+esc(report.weeks[i]+': '+count+' séries')+'">'+
+        '<i style="height:'+(count?Math.max(6,Math.round(100*count/max)):0)+'%"></i></span>').join('');
+      return '<div class="simple-volume-row"><div class="simple-volume-name"><b>'+esc(g.name)+'</b><small>'+g.total+' séries · 6 semanas</small></div>'+
+        '<div class="simple-volume-bars" role="img" aria-label="'+esc(g.name+': '+g.series.join(', ')+' séries, da mais antiga à recente')+'">'+strip+'</div></div>';
+    }).join('');
+    return '<section class="simple-volume" aria-label="Volume das seis semanas completas">'+
+      '<header><span class="simple-kicker">VISÃO DE 6 SEMANAS</span><h4>Volume de treino.</h4>'+
+        '<p>Semanas completas · de '+esc(report.weeks[0])+' a '+esc(report.weeks[5])+'</p></header>'+
+      (hasVolume?'<div class="simple-volume-list">'+bars+'</div>':
+        '<p class="simple-volume-empty">Ainda não há séries válidas nessas seis semanas. O gráfico aparece quando houver registros.</p>')+
+      '<p class="simple-volume-foot">Conta séries realmente concluídas com carga e repetições. Não mede crescimento muscular nem inclui a semana atual incompleta.</p>'+
+      (report.plateaus.length?
+        '<div class="simple-plateaus"><b>Possível estagnação · vale observar</b>'+
+        report.plateaus.map(x=>'<p>'+esc(x.name)+' · '+x.sessions+' sessões comparáveis em '+x.days+' dias, sem evolução expressiva. Confira recuperação e execução antes de mudar a ficha.</p>').join('')+
+        '</div>':'')+
+      '</section>';
+  }
   function stat(label,value){return '<article class="simple-stat"><b>'+esc(value)+'</b><span>'+esc(label)+'</span></article>';}
   function phaseCard(){
     const p=programStatus();
@@ -268,6 +359,7 @@
     panel.innerHTML='<header class="simple-progress-intro"><span class="simple-kicker">SEU CAMINHO</span><h3>Evolução de verdade.</h3><p>O que você registrou, sem números inventados. Acompanhe força, medidas e regularidade.</p></header>'+
       '<div class="simple-stat-grid">'+stat('Treinos · últimos 28 dias',count)+stat('Programa V-Shape',p.started?(p.done?'12/12':p.week+'/12'):'Não iniciado')+stat('Último peso',weight)+stat('Última cintura',waist)+'</div>'+
       weeklySummaryMarkup()+
+      trainingSignalsMarkup()+
       '<div class="simple-links"><button data-simple-go="history"><span>Histórico e cargas</span><span>→</span></button><button data-simple-go="body"><span>Medidas do corpo</span><span>→</span></button><button data-simple-go="photos"><span>Fotos de evolução</span><span>→</span></button><button data-simple-go="food"><span>Cardápios e alimentação</span><span>→</span></button><button data-simple-go="settings"><span>Ajustes e backups</span><span>→</span></button><button data-simple-action="details"><span>Ver análises avançadas</span><span>→</span></button></div>'+
       '<p class="simple-progress-foot">Sem sincronização automática entre aparelhos: seu histórico continua salvo neste dispositivo. Exporte o backup em Ajustes.</p>';
     const head=main.querySelector('.page-head');
@@ -467,7 +559,7 @@
   if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:false});
   window.addEventListener('pageshow',schedule);
   applyVShapePhase();
-  window.TracoSimple={version:VERSION,programStatus,getProgram,openProgram,applyVShapePhase,nextGoal,weeklyVshapeSummary,setRecovery};
+  window.TracoSimple={version:VERSION,programStatus,getProgram,openProgram,applyVShapePhase,nextGoal,weeklyVshapeSummary,setRecovery,trainingSignals};
   document.documentElement.dataset.tracoSimple=VERSION;
   // The existing shell was rendered before this last layer was loaded.
   // Redraw once when a running program changes its next-session prescription.
