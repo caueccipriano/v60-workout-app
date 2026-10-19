@@ -294,7 +294,7 @@
       const strip=g.series.map((count,i)=>
         '<span class="simple-volume-bar" title="'+esc(report.weeks[i]+': '+count+' séries')+'">'+
         '<i style="height:'+(count?Math.max(6,Math.round(100*count/max)):0)+'%"></i></span>').join('');
-      return '<div class="simple-volume-row"><div class="simple-volume-name"><b>'+esc(g.name)+'</b><small>'+g.total+' séries · 6 semanas</small></div>'+
+      return '<div class="simple-volume-row"><div class="simple-volume-name"><b>'+esc(g.name)+'</b><small>'+g.total+' '+(g.total===1?'série':'séries')+' · 6 semanas</small></div>'+
         '<div class="simple-volume-bars" role="img" aria-label="'+esc(g.name+': '+g.series.join(', ')+' séries, da mais antiga à recente')+'">'+strip+'</div></div>';
     }).join('');
     return '<section class="simple-volume" aria-label="Volume das seis semanas completas">'+
