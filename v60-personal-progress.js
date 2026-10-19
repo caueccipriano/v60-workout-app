@@ -37,11 +37,12 @@ function v60SeedActiveSession(){
 }
 
 const v60BaseStartSession=startSession;
-startSession=function(workoutId){
-  v60BaseStartSession(workoutId);
-  if(!state.activeSession)return;
+startSession=function(workoutId,mode='full'){
+  const result=v60BaseStartSession(workoutId,mode);
+  if(!result||!state.activeSession)return result;
   v60SeedActiveSession();
   renderSession();
+  return state.activeSession;
 };
 
 const v60BaseCompleteCurrentSet=completeCurrentSet;
