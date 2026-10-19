@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.7.0';
-  const BUILD='quick30-training-v379';
-  const BUILD_NUMBER='379';
+  const BUILD='skip-swap-fixes-v380';
+  const BUILD_NUMBER='380';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
