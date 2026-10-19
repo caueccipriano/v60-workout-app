@@ -6,7 +6,7 @@
 (function(){
   'use strict';
   const KEY='traco_vshape_90_v1';
-  const VERSION='1.7.0';
+  const VERSION='1.8.0';
   const phases=[
     {label:'Base',range:'Semanas 1–4',detail:'Aprenda os movimentos, registre suas cargas e mantenha cerca de 2–3 repetições em reserva. Priorize constância e amplitude confortável.'},
     {label:'Progressão',range:'Semanas 5–8',detail:'Tente evoluir repetições ou carga aos poucos, sem sacrificar a técnica. Em geral, termine com 1–2 repetições em reserva.'},
@@ -104,6 +104,57 @@
   function recommendation(){
     try{return typeof v60RecommendedWorkout==='function'?v60RecommendedWorkout():todayWorkout();}
     catch{return typeof workoutPlan!=='undefined'?workoutPlan[0]:null;}
+  }
+
+  // A deliberate choice before beginning a *new* session. Existing saved
+  // drafts resume through the native flow without an interstitial.
+  function openWorkoutMode(workoutId){
+    const workout=workoutPlan.find(w=>w.id===workoutId);
+    if(!workout)return;
+    q('#simpleWorkoutMode')?.remove();
+    const quick=typeof tracoQuick30Prescription==='function'?tracoQuick30Prescription(workout):null;
+    const total=workout.exercises.reduce((sum,ex)=>sum+(Number(ex.sets)||0),0);
+    const shortSets=(quick||[]).reduce((sum,ex)=>sum+ex.sets,0);
+    const n=workoutPlan.findIndex(w=>w.id===workout.id);
+    const modal=document.createElement('div');
+    modal.className='simple-sheet';modal.id='simpleWorkoutMode';
+    modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');
+    modal.setAttribute('aria-label','Escolher duração do treino');
+    modal.innerHTML='<div class="simple-sheet-panel"><header class="simple-sheet-head"><div>'+
+      '<span class="simple-kicker">TRAÇO · SEU RITMO</span><h2>Como vai treinar hoje?</h2></div>'+
+      '<button type="button" data-simple-close aria-label="Fechar escolhas">×</button></header>'+
+      '<p class="simple-mode-intro">Treino '+String.fromCharCode(65+Math.max(0,n))+' · '+esc(workout.short)+
+      '. Escolha antes de começar. Seu plano A–E completo continua disponível.</p>'+
+      '<div class="simple-mode-list">'+
+      (quick?'<button type="button" data-simple-start-mode="quick30" class="simple-mode-card is-quick"><div><strong>Rápido · ~30 min</strong><span>4 exercícios prioritários · '+shortSets+' séries</span></div><b>→</b></button>':'')+
+      '<button type="button" data-simple-start-mode="full" class="simple-mode-card"><div><strong>Completo · 45–60 min</strong><span>'+
+      workout.exercises.length+' exercícios · '+total+' séries</span></div><b>→</b></button></div>'+
+      '<p class="simple-mode-foot">No modo rápido, reduzimos exercícios e séries; descansos permanecem adequados. Duração aproximada, sem aquecimento e cardio. Não acelere a execução para bater o relógio.</p>'+
+      '<button type="button" class="simple-mode-cancel" data-simple-close>Agora não</button></div>';
+    const close=()=>{modal.remove();document.removeEventListener('keydown',onKey);};
+    const onKey=ev=>{if(ev.key==='Escape')close();};
+    modal.querySelectorAll('[data-simple-close]').forEach(btn=>btn.addEventListener('click',close));
+    modal.querySelectorAll('[data-simple-start-mode]').forEach(btn=>btn.addEventListener('click',()=>{
+      const mode=btn.dataset.simpleStartMode;
+      close();
+      startSession(workoutId,mode);
+    }));
+    modal.addEventListener('click',ev=>{if(ev.target===modal)close();});
+    document.body.appendChild(modal);
+    document.addEventListener('keydown',onKey);
+    modal.querySelector('[data-simple-start-mode]')?.focus();
+  }
+  function captureNewWorkoutChoice(event){
+    const btn=event.target.closest?.('#startToday, #startSelected, #emptyStart');
+    if(!btn)return;
+    const workoutId=btn.id==='startSelected'
+      ?(state.selectedWorkout||todayWorkout().id)
+      :btn.id==='emptyStart'?todayWorkout().id:recommendation()?.id;
+    if(!workoutId)return;
+    const draft=load(K.draft,null);
+    if(draft&&!draft.finishedAt&&draft.workoutId===workoutId)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    openWorkoutMode(workoutId);
   }
   function latestMeasurements(){
     try{
@@ -470,6 +521,12 @@
     const main=q('.perf-session');
     if(!main)return;
     main.classList.add('traco-simple-session');
+    if(state?.activeSession?.trainingMode==='quick30'&&!main.querySelector('.simple-quick-session')){
+      const label=document.createElement('div');
+      label.className='simple-quick-session';
+      label.innerHTML='<b>MODO RÁPIDO · ~30 MIN</b><span>Exercícios essenciais · descansos normais</span>';
+      (main.querySelector('.perf-session-progress')||main.querySelector('.perf-session-bar'))?.insertAdjacentElement('afterend',label);
+    }
     const box=main.querySelector('.perf-exercise-console');
     if(!box||box.querySelector('.simple-target'))return;
     const ex=state?.activeSession?.exercises?.[state.currentExercise];
@@ -496,7 +553,7 @@
       '<span class="simple-kicker">TRAÇO · GUIA RÁPIDO</span><h2>Treinar é simples.</h2></div>'+
       '<button type="button" data-simple-close aria-label="Fechar guia">×</button></header>'+
       '<ol class="simple-guide-list">'+
-      '<li><b>1 · Comece o treino</b><p>Na aba Hoje, toque em Iniciar treino. O Traço sugere a próxima ficha A–E.</p></li>'+
+      '<li><b>1 · Comece o treino</b><p>Na aba Hoje, toque em Iniciar treino e escolha Rápido (~30 min) ou Completo (45–60 min).</p></li>'+
       '<li><b>2 · Registre cada série</b><p>Preencha a carga e as repetições feitas. Toque em Concluir série; você pode consultar a última carga sem alterar seus dados.</p></li>'+
       '<li><b>3 · Entenda sua evolução</b><p>Na aba Evolução, veja o volume de treino, seu desempenho e as medidas que você registrar. Sem números inventados.</p></li>'+
       '</ol>'+
@@ -544,7 +601,7 @@
     const main=q('.perf-settings');
     if(!main)return;
     const about=main.querySelector('.traco-about-card small');
-    if(about)about.textContent='treino · evolução · constância · versão 2.36.0';
+    if(about)about.textContent='treino · evolução · constância · versão 2.37.0';
     const theme=main.querySelector('.traco-theme-copy small');
     if(theme)theme.textContent='visual claro ou escuro · mesma identidade verde-lima';
     const card=main.querySelector('.traco-about-card b');
@@ -585,8 +642,9 @@
   const app=q('#app');
   if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:false});
   window.addEventListener('pageshow',schedule);
+  document.addEventListener('click',captureNewWorkoutChoice,true);
   applyVShapePhase();
-  window.TracoSimple={version:VERSION,programStatus,getProgram,openProgram,applyVShapePhase,nextGoal,weeklyVshapeSummary,setRecovery,trainingSignals};
+  window.TracoSimple={version:VERSION,programStatus,getProgram,openProgram,openWorkoutMode,applyVShapePhase,nextGoal,weeklyVshapeSummary,setRecovery,trainingSignals};
   document.documentElement.dataset.tracoSimple=VERSION;
   // The existing shell was rendered before this last layer was loaded.
   // Redraw once when a running program changes its next-session prescription.

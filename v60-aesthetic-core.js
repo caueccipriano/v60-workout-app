@@ -111,13 +111,14 @@ function v60SyncCoreSession(){
   save(K.draft,s);
 }
 const v60CoreBaseStartSession=startSession;
-startSession=function(workoutId){
-  v60CoreBaseStartSession(workoutId);
-  if(!state.activeSession)return;
+startSession=function(workoutId,mode='full'){
+  const result=v60CoreBaseStartSession(workoutId,mode);
+  if(!result||!state.activeSession)return result;
   v60SyncCoreSession();
   state.currentExercise=Math.max(0,state.activeSession.exercises.findIndex(ex=>ex.sets.some(s=>!s.done)));
   if(state.currentExercise<0)state.currentExercise=0;
   renderSession();
+  return state.activeSession;
 };
 
 v60ExtrasPanel=function(){
