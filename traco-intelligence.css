@@ -1,0 +1,11 @@
+.intelligence-panel{margin:10px 0 22px;display:grid;gap:10px}
+.intelligence-confidence,.intelligence-footnote{margin:0;font-size:11px;line-height:1.5;opacity:.72}
+.intelligence-insight{border:1px solid color-mix(in srgb,currentColor 15%,transparent);border-radius:12px;padding:12px}
+.intelligence-insight strong{font-size:13px;line-height:1.35}
+.intelligence-insight p{font-size:12px;line-height:1.5;margin:6px 0}
+.intelligence-insight small{font-size:10px;opacity:.72;line-height:1.4;display:block}
+.intelligence-tip{border:1px solid color-mix(in srgb,currentColor 14%,transparent);margin:8px 0 14px;padding:10px 12px;border-radius:12px}
+.intelligence-tip summary{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;list-style:none;font-size:12px;font-weight:700;min-height:30px}
+.intelligence-tip summary::-webkit-details-marker{display:none}
+.intelligence-tip p{font-size:12px;line-height:1.45;margin:9px 0}
+.intelligence-tip small{display:block;font-size:10px;opacity:.75;padding-bottom:4px}
