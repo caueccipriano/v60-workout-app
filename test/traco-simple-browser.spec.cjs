@@ -147,7 +147,7 @@ test('three-tab navigation reaches all core routes with one coherent brand and b
   await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
   await page.locator('.simple-progress [data-simple-go="settings"]').click();
   await expect(page.locator('.perf-settings')).toBeVisible();
-  await expect(page.locator('.traco-about-card small')).toContainText('2.40.0');
+  await expect(page.locator('.traco-about-card small')).toContainText('2.41.0');
   await expect(page.locator('.traco-theme-copy small')).toContainText('verde-lima');
   await page.locator('[data-traco-theme="light"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','light');
@@ -437,9 +437,9 @@ test('new Traço lime icon is usable for iPhone launch and installed PWA',async(
   expect(manifest.name).toContain('Traço');
   expect(manifest.icons.some(icon=>icon.src==='./assets/traco-icon-192-v3.png'&&icon.purpose==='any')).toBe(true);
   expect(manifest.icons.some(icon=>icon.src==='./assets/traco-icon-512-v3.png'&&icon.purpose==='any')).toBe(true);
-  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href','./assets/traco-icon-180-v3.png?v=382');
-  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href','./assets/icon.svg?v=382');
-  const svg=await (await page.request.get(url+'assets/icon.svg?v=382')).text();
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href','./assets/traco-icon-180-v3.png?v=383');
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href','./assets/icon.svg?v=383');
+  const svg=await (await page.request.get(url+'assets/icon.svg?v=383')).text();
   expect(svg).toContain('#CDFF4C');
   expect(svg).toContain('costas em V');
   expect(svg).not.toContain('#FF3B30');
@@ -819,4 +819,24 @@ test('read-only training intelligence appears in the plan and within a workout',
   await page.locator('[data-simple-start-mode="full"]').click();
   await expect(page.locator('.perf-session .intelligence-tip')).toBeVisible();
   await expect(page.locator('.perf-session .intelligence-tip')).toContainText('Coach');
+});
+
+test('pantry suggests meals from selected ingredients without inventing macros',async({page})=>{
+  await ready(page);
+  await page.evaluate(()=>{state.page='food';render();});
+  await expect(page.locator('.traco-pantry')).toBeVisible();
+  await expect.poll(()=>page.evaluate(()=>window.TracoPantry?.version)).toBe('1.0.0');
+  const before=await page.evaluate(()=>({sessions:localStorage.getItem('v60_sessions'),draft:localStorage.getItem('v60_draft')}));
+  await page.locator('[data-pantry-toggle]').click();
+  for(const id of ['arroz','feijao','ovo','tomate']){
+    await page.locator('[data-pantry-id="'+id+'"]').check();
+  }
+  await expect(page.locator('.pantry-meal-list')).toContainText('Omelete com arroz, feijão');
+  await expect(page.locator('.pantry-nutrient')).toContainText('fibra');
+  await expect(page.locator('.pantry-nutrient')).toContainText('ferro');
+  const after=await page.evaluate(()=>({sessions:localStorage.getItem('v60_sessions'),draft:localStorage.getItem('v60_draft')}));
+  expect(after).toEqual(before);
+  await page.reload();
+  await page.evaluate(()=>{state.page='food';render();});
+  await expect(page.locator('.pantry-toggle')).toContainText('4 ingredientes');
 });

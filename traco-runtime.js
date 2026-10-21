@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.7.0';
-  const BUILD='adaptive-coach-v382';
-  const BUILD_NUMBER='382';
+  const BUILD='pantry-nutrition-v383';
+  const BUILD_NUMBER='383';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);
