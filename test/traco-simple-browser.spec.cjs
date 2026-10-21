@@ -647,8 +647,13 @@ test('Pular por agora is compact, advances to another exercise, and keeps unsent
 });
 test('three-dot options swap an occupied machine while preserving saved set values',async({page})=>{
   await ready(page);
-  await page.evaluate(()=>{state.selectedWorkout='qua';state.page='workouts';render();});
+  // Use the real selection UI: the sequence manager intentionally resets
+  // direct state assignments unless the user selects a workout card.
+  await page.locator('.simple-bottom-nav [data-nav="workouts"]').click();
+  await page.locator('.workout-select[data-workout="qua"]').click();
+  await expect(page.locator('.selected-blue h3')).toContainText('A ·');
   await page.locator('#startSelected').click();
+  await expect(page.locator('#simpleWorkoutMode')).toContainText('Treino A');
   await page.locator('[data-simple-start-mode="full"]').click();
   await expect(page.locator('.perf-session')).toBeVisible();
   await page.locator('#weightInput').fill('31');
