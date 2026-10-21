@@ -760,3 +760,35 @@ test('legacy exercise picker and order sheet actually open with escaped labels a
   expect(after.exercises.map(ex=>ex.id)).toEqual(prior.exercises.map(ex=>ex.id));
   expect(after.exercises.every(ex=>ex.sets.every(set=>!set.done&&!set.skipped))).toBe(true);
 });
+
+
+test('science panel is usable on iPhone and never changes recorded sessions',async({page})=>{
+  await ready(page);
+  await expect(page.locator('.simple-home .science-entry')).toBeVisible();
+  const before=await page.evaluate(()=>({history:localStorage.getItem('v60_sessions'),draft:localStorage.getItem('v60_draft')}));
+  await page.locator('.science-entry [data-science-open]').click();
+  await expect(page.locator('#scienceSheet')).toBeVisible();
+  await expect(page.locator('.science-volume-row')).toHaveCount(10);
+  await page.locator('[data-science-workout="seg"]').click();
+  await expect(page.locator('.science-workout-name')).toContainText('peitoral superior');
+  await page.locator('.science-exercises details').first().locator('summary').click();
+  await expect(page.locator('.science-exercises details').first()).toContainText('Próximo passo');
+  await expect(page.locator('.science-sources a')).toHaveCount(4);
+  const after=await page.evaluate(()=>({history:localStorage.getItem('v60_sessions'),draft:localStorage.getItem('v60_draft')}));
+  expect(after).toEqual(before);
+  await page.locator('[data-science-close]').click();
+  await expect(page.locator('#scienceSheet')).toHaveCount(0);
+});
+
+test('new training sessions do not silently change the amount of sets',async({page})=>{
+  await ready(page);
+  const result=await page.evaluate(()=>{
+    const workout=workoutPlan[0];
+    const expected=workout.exercises.map(ex=>({id:ex.id,count:ex.sets}));
+    startSession(workout.id,'full');
+    const actual=state.activeSession.exercises.map(ex=>({id:ex.id,count:ex.sets.length}));
+    return {expected,actual,persisted:JSON.parse(localStorage.getItem('v60_draft')).exercises.map(ex=>({id:ex.id,count:ex.sets.length}))};
+  });
+  expect(result.actual).toEqual(result.expected);
+  expect(result.persisted).toEqual(result.expected);
+});
