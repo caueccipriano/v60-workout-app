@@ -147,7 +147,7 @@ test('three-tab navigation reaches all core routes with one coherent brand and b
   await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
   await page.locator('.simple-progress [data-simple-go="settings"]').click();
   await expect(page.locator('.perf-settings')).toBeVisible();
-  await expect(page.locator('.traco-about-card small')).toContainText('2.39.0');
+  await expect(page.locator('.traco-about-card small')).toContainText('2.40.0');
   await expect(page.locator('.traco-theme-copy small')).toContainText('verde-lima');
   await page.locator('[data-traco-theme="light"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','light');
@@ -437,9 +437,9 @@ test('new Traço lime icon is usable for iPhone launch and installed PWA',async(
   expect(manifest.name).toContain('Traço');
   expect(manifest.icons.some(icon=>icon.src==='./assets/traco-icon-192-v3.png'&&icon.purpose==='any')).toBe(true);
   expect(manifest.icons.some(icon=>icon.src==='./assets/traco-icon-512-v3.png'&&icon.purpose==='any')).toBe(true);
-  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href','./assets/traco-icon-180-v3.png?v=381');
-  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href','./assets/icon.svg?v=381');
-  const svg=await (await page.request.get(url+'assets/icon.svg?v=381')).text();
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href','./assets/traco-icon-180-v3.png?v=382');
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href','./assets/icon.svg?v=382');
+  const svg=await (await page.request.get(url+'assets/icon.svg?v=382')).text();
   expect(svg).toContain('#CDFF4C');
   expect(svg).toContain('costas em V');
   expect(svg).not.toContain('#FF3B30');
@@ -794,4 +794,29 @@ test('new training sessions do not silently change the amount of sets',async({pa
   });
   expect(result.actual).toEqual(result.expected);
   expect(result.persisted).toEqual(result.expected);
+});
+
+
+test('read-only training intelligence appears in the plan and within a workout',async({page})=>{
+  await ready(page);
+  await expect.poll(()=>page.evaluate(()=>window.TracoIntelligence?.version)).toBe('2.0.0');
+  await expect(page.locator('.science-entry')).toBeVisible();
+  const before=await page.evaluate(()=>({
+    sessions:localStorage.getItem('v60_sessions'),
+    draft:localStorage.getItem('v60_draft')
+  }));
+  await page.locator('.science-entry [data-science-open]').click();
+  await expect(page.locator('#scienceSheet .intelligence-panel')).toBeVisible();
+  await expect(page.locator('.intelligence-panel')).toContainText('confiança baixa');
+  await expect(page.locator('.intelligence-panel')).toContainText('Nenhum ajuste é aplicado automaticamente');
+  const after=await page.evaluate(()=>({
+    sessions:localStorage.getItem('v60_sessions'),
+    draft:localStorage.getItem('v60_draft')
+  }));
+  expect(after).toEqual(before);
+  await page.locator('#scienceSheet [data-science-close]').click();
+  await page.locator('#startToday').click();
+  await page.locator('[data-simple-start-mode="full"]').click();
+  await expect(page.locator('.perf-session .intelligence-tip')).toBeVisible();
+  await expect(page.locator('.perf-session .intelligence-tip')).toContainText('Coach');
 });
