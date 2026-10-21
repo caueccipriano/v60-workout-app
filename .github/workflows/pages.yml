@@ -55,7 +55,8 @@ jobs:
           node --check traco-final-ui.js
           node --check traco-simple.js
           node --check traco-science.js
-          node --test test/traco-science.test.cjs
+          node --check traco-intelligence.js
+          node --test test/traco-science.test.cjs test/traco-intelligence.test.cjs
           node --check eu-bridge.js
       - name: Validate Traço branding
         run: |
