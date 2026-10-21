@@ -148,7 +148,7 @@
     if(anchor)anchor.insertAdjacentElement('beforebegin',sec);else panel.appendChild(sec);
   }
   function mountSession(){
-    const hero=doc.querySelector('.session-page .exercise-hero');
+    const hero=doc.querySelector('.perf-session .perf-exercise-top')||doc.querySelector('.session-page .exercise-hero');
     if(!hero||doc.querySelector('.session-page .intelligence-tip'))return;
     const active=typeof state!=='undefined'?state.activeSession:null;
     const ex=active?.exercises?.[state.currentExercise];
