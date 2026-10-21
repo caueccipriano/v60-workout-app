@@ -130,7 +130,9 @@
     if(!card)return;
     const heading=card.querySelector('h3'),copy=card.querySelector('p');
     if(heading&&heading.textContent!=='Seu treino, mais inteligente.')heading.textContent='Seu treino, mais inteligente.';
-    const first=report().insights[0],summary=first.title+'. '+first.detail;
+    const result=report();
+    const first=(result.sampleCount>0?result.insights.find(x=>['increase','plateau','hold','review'].includes(x.kind)):null)||result.insights[0];
+    const summary=first.title+'. '+first.detail;
     if(copy&&copy.textContent!==summary)copy.textContent=summary;
   }
   function mountPanel(){
@@ -139,10 +141,10 @@
     const res=report(),sec=doc.createElement('section');
     sec.className='intelligence-panel';
     sec.innerHTML='<div class="science-section-label">O QUE SEUS REGISTROS INDICAM</div>'+
-      '<p class="intelligence-confidence">'+res.sampleCount+' sessões completas confiáveis nos últimos 28 dias · confiança '+escaped(res.confidence)+'</p>'+
+      '<p class="intelligence-confidence">'+res.sampleCount+' sessões com registros confiáveis nos últimos 28 dias · confiança '+escaped(res.confidence)+'</p>'+
       res.insights.map(insightMarkup).join('')+
       '<p class="intelligence-footnote">São regras de apoio baseadas nos seus registros, não IA clínica nem previsão de crescimento. Nenhum ajuste é aplicado automaticamente.</p>';
-    const anchor=panel.querySelector('.science-volume-list')||panel.querySelector('.science-section-label');
+    const anchor=panel.querySelector('.science-section-label');
     if(anchor)anchor.insertAdjacentElement('beforebegin',sec);else panel.appendChild(sec);
   }
   function mountSession(){
