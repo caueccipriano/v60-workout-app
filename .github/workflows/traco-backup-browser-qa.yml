@@ -8,6 +8,8 @@ on:
       - test/traco-backup-browser.spec.cjs
       - traco-simple.js
       - traco-simple.css
+      - traco-pantry.js
+      - traco-pantry.css
       - test/traco-simple-browser.spec.cjs
       - index.html
       - manifest.json
