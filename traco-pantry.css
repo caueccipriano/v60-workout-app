@@ -1,0 +1,25 @@
+.traco-pantry{border-radius:18px;background:var(--surface,#171917);border:1px solid color-mix(in srgb,currentColor 12%,transparent);padding:18px;margin:14px 0 18px;color:inherit}
+.traco-pantry header>span{font-size:10px;font-weight:800;letter-spacing:.12em;opacity:.7}
+.traco-pantry header h3{margin:6px 0;font-size:22px;line-height:1.2}
+.traco-pantry header p,.pantry-empty,.pantry-disclaimer,.pantry-safety{font-size:12px;line-height:1.55;opacity:.76;margin:7px 0 13px}
+.pantry-toggle{border:1px solid color-mix(in srgb,currentColor 20%,transparent);background:transparent;color:inherit;border-radius:11px;padding:13px;width:100%;text-align:left;display:flex;justify-content:space-between;align-items:center;font-size:13px;min-height:44px}
+.pantry-picker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:10px 0 18px;max-height:260px;overflow:auto}
+.pantry-food{display:flex;align-items:center;gap:7px;padding:8px 5px;font-size:12px;line-height:1.3;cursor:pointer}
+.pantry-food input{accent-color:#b1e630;width:17px;height:17px;flex:none}
+.pantry-nutrient{border-radius:12px;padding:12px;background:color-mix(in srgb,currentColor 5%,transparent);margin-top:13px}
+.pantry-nutrient h4{margin:0;font-size:13px}
+.pantry-chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.pantry-chips span{border:1px solid color-mix(in srgb,currentColor 13%,transparent);border-radius:30px;padding:7px 9px;font-size:11px;opacity:.5}
+.pantry-chips .is-found{background:#d7ff4c;color:#101410;opacity:1;border-color:transparent;font-weight:750}
+.pantry-micro{font-size:11px;line-height:1.6;opacity:.8;margin:9px 0 0}
+.pantry-slot{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:14px 0}
+.pantry-slot button{border:1px solid color-mix(in srgb,currentColor 14%,transparent);border-radius:10px;padding:10px 5px;background:transparent;color:inherit;font-size:11px;min-height:44px}
+.pantry-slot button.active{background:#d7ff4c;color:#101410;font-weight:700}
+.pantry-meal-list{display:grid;gap:8px}
+.pantry-meal{border:1px solid color-mix(in srgb,currentColor 13%,transparent);border-radius:12px;padding:13px;display:grid;gap:5px}
+.pantry-meal div{display:grid;gap:3px}
+.pantry-meal b{font-size:13px}
+.pantry-meal small{font-size:11px;line-height:1.45;opacity:.7}
+.pantry-meal p{margin:0;font-size:12px;line-height:1.45}
+.pantry-safety{border-top:1px solid color-mix(in srgb,currentColor 12%,transparent);padding-top:12px;margin-top:18px}
+@media(max-width:360px){.pantry-picker{grid-template-columns:1fr}}
