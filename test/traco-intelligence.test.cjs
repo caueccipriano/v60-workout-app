@@ -40,6 +40,6 @@ test('análise combina prontidão, sessões válidas e volume sem inventar',()=>
     plannedVolumes:()=>({peito:{direct:7,indirect:1}})};
   const result=ai.evaluate({plan:[{id:'seg',short:'ombros',exercises:[ex]}],history:[session(at)],now:at+100,science});
   assert.equal(result.sampleCount,1);
-  assert.ok(result.insights.some(x=>/Peitoral/.test(x.title)));
+  assert.ok(result.insights.some(x=>/peitoral/i.test(x.title)));
   assert.equal(result.readiness,null);
 });
