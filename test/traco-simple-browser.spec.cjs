@@ -795,3 +795,28 @@ test('new training sessions do not silently change the amount of sets',async({pa
   expect(result.actual).toEqual(result.expected);
   expect(result.persisted).toEqual(result.expected);
 });
+
+
+test('read-only training intelligence appears in the plan and within a workout',async({page})=>{
+  await ready(page);
+  await expect.poll(()=>page.evaluate(()=>window.TracoIntelligence?.version)).toBe('2.0.0');
+  await expect(page.locator('.science-entry')).toBeVisible();
+  const before=await page.evaluate(()=>({
+    sessions:localStorage.getItem('v60_sessions'),
+    draft:localStorage.getItem('v60_draft')
+  }));
+  await page.locator('.science-entry [data-science-open]').click();
+  await expect(page.locator('#scienceSheet .intelligence-panel')).toBeVisible();
+  await expect(page.locator('.intelligence-panel')).toContainText('confiança baixa');
+  await expect(page.locator('.intelligence-panel')).toContainText('Nenhum ajuste é aplicado automaticamente');
+  const after=await page.evaluate(()=>({
+    sessions:localStorage.getItem('v60_sessions'),
+    draft:localStorage.getItem('v60_draft')
+  }));
+  expect(after).toEqual(before);
+  await page.locator('#scienceSheet [data-science-close]').click();
+  await page.locator('#startToday').click();
+  await page.locator('[data-simple-start-mode="full"]').click();
+  await expect(page.locator('.perf-session .intelligence-tip')).toBeVisible();
+  await expect(page.locator('.perf-session .intelligence-tip')).toContainText('Coach');
+});
