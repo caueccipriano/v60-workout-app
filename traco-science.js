@@ -134,7 +134,7 @@
     return GROUPS.map(g=>({...g,direct:counts[g.id]?.direct||0,indirect:counts[g.id]?.indirect||0}));
   }
   function renderCard(){
-    const host=doc.querySelector('.perf-home .simple-home')||doc.querySelector('.perf-home');
+    const host=doc.querySelector('.perf-home .simple-home');
     if(!host||host.querySelector('.science-entry'))return;
     const card=doc.createElement('section');
     card.className='science-entry';
@@ -206,7 +206,7 @@
   }
   function schedule(){if(scheduled)return;scheduled=true;root.requestAnimationFrame(()=>root.requestAnimationFrame(mount));}
   const app=doc.querySelector('#app');
-  if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:false});
+  if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:true});
   root.addEventListener('pageshow',schedule);
   if(doc.readyState==='loading')doc.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
   root.TracoScience.open=open;
