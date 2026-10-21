@@ -251,16 +251,14 @@ test('gym displays a short next goal without changing planned sets or completed 
   await page.locator('#startSelected').click();
   await page.locator('[data-simple-start-mode="full"]').click();
   await expect(page.locator('.perf-session .simple-next-goal')).toBeVisible();
-  // The legacy evolution coach can add a working set to a full session.
-  // Therefore 3/3 previous top-rep sets are not enough to recommend a
-  // weight increase for the now 4-set prescription.
-  await expect(page.locator('.simple-next-goal')).toContainText('Busque mais uma repetição');
+  // A complete 3-set historical performance can justify a *suggestion*
+  // to increase load: the evolution layer no longer adds a set silently.
+  await expect(page.locator('.simple-next-goal')).toContainText('Pode considerar subir a carga');
   await expect(page.locator('.simple-next-goal')).toContainText('24 kg');
   await expect(page.locator('.simple-next-goal')).toContainText('12/12/12');
   expect(await page.evaluate(()=>localStorage.getItem('v60_sessions'))).toBe(before.serialized);
   const sets=await page.evaluate(()=>state.activeSession.exercises[0].sets);
-  expect(sets.length).toBeGreaterThanOrEqual(3);
-  expect(sets.length).toBeLessThanOrEqual(4); // Existing adaptive full-mode coach may add one set.
+  expect(sets.length).toBe(await page.evaluate(()=>workoutPlan[0].exercises[0].sets)); // No background modifications.
   expect(sets.every(x=>!x.done)).toBe(true);
   expect(await page.locator('.simple-next-goal button').count()).toBe(0);
 });
