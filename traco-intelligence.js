@@ -129,8 +129,9 @@
     const card=doc.querySelector('.science-entry');
     if(!card)return;
     const heading=card.querySelector('h3'),copy=card.querySelector('p');
-    if(heading)heading.textContent='Seu treino, mais inteligente.';
-    if(copy)copy.textContent=report().insights[0].title+'. '+report().insights[0].detail;
+    if(heading&&heading.textContent!=='Seu treino, mais inteligente.')heading.textContent='Seu treino, mais inteligente.';
+    const first=report().insights[0],summary=first.title+'. '+first.detail;
+    if(copy&&copy.textContent!==summary)copy.textContent=summary;
   }
   function mountPanel(){
     const panel=doc.querySelector('#scienceSheet .science-panel');
