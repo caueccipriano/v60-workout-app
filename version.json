@@ -1,7 +1,7 @@
 {
-  "version": "2.40.0",
+  "version": "2.41.0",
   "legacyVersion": "3.7.1",
   "name": "Traço",
-  "design": "adaptive-evidence-coaching",
-  "build": "adaptive-coach-v382"
+  "design": "home-pantry-nutrition",
+  "build": "pantry-nutrition-v383"
 }
