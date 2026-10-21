@@ -6,8 +6,8 @@
   'use strict';
 
   const VERSION='1.7.0';
-  const BUILD='skip-swap-fixes-v380';
-  const BUILD_NUMBER='380';
+  const BUILD='science-vshape-v381';
+  const BUILD_NUMBER='381';
   let reloading=false;
 
   const qs=s=>document.querySelector(s);

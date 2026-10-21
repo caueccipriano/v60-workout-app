@@ -199,7 +199,7 @@
   const TARGETS={peito:14,ombros:12,dorsal:14,costas:6,bíceps:9,tríceps:9,pernas:10,posterior:10,glúteos:4,panturrilha:4,core:8};
   function weeklyMuscleVolume(){
     const start=startOfWeek().getTime(),out={};
-    sessions().filter(s=>s.finishedAt&&s.startedAt>=start).forEach(s=>(s.exercises||[]).forEach(ex=>{
+    sessions().filter(s=>s.finishedAt&&!s.excludeFromVolume&&s.startedAt>=start).forEach(s=>(s.exercises||[]).forEach(ex=>{
       const sets=(ex.sets||[]).filter(z=>z.done&&!z.skipped).length;
       (EX_MUSCLES[ex.id]||[]).forEach(m=>out[m]=(out[m]||0)+sets);
     }));
@@ -220,22 +220,10 @@
     return {kind:'hold',text:'volume e recuperação estão compatíveis. mantenha o plano.'};
   }
   function applyAdaptiveToSession(){
-    const s=state.activeSession;
-    // The shorter prescription is the user's explicit choice. Do not
-    // re-add or remove sets behind their back, including after resume.
-    if(!s||s.trainingMode==='quick30'||s.evolutionAdjusted)return;
-    const r=window.TracoLab?.readiness?.()||{score:70},vol=weeklyMuscleVolume();
-    if(r.score<45){
-      s.exercises.forEach((ex,i)=>{if(i>=2&&ex.sets?.length>2)ex.sets=ex.sets.slice(0,-1).map((z,j)=>Object.assign({},z,{n:j+1}))});
-      s.evolutionAdjusted='recovery-down';
-    } else {
-      const priority=['dorsal','ombros','peito'].find(m=>(vol[m]||0)<(TARGETS[m]||0)*.65);
-      if(priority){
-        const ex=s.exercises.find(e=>(EX_MUSCLES[e.id]||[]).includes(priority));
-        if(ex&&ex.sets.length<5){ex.sets.push({n:ex.sets.length+1,weight:'',reps:'',done:false});s.evolutionAdjusted='volume-'+priority;}
-      }
-    }
-    save(K.draft,s);
+    // Science release: recommendations are read-only. Previous implementation
+    // changed session sets without consent (and could remove completed sets).
+    // Never mutate a stored draft, including quick30 and resumed workouts.
+    return false;
   }
 
   /* PRODUCTIVE SETS + TEMPO + CUES + SMART REST */

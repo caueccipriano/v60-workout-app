@@ -8,6 +8,9 @@ on:
       - sw.js
       - traco-backup-guard.js
       - traco-runtime.js
+      - traco-science.js
+      - traco-science.css
+      - test/traco-science.test.cjs
       - traco-brand.js
       - test/traco-backup-guard.test.cjs
       - .github/workflows/release-asset-qa.yml
@@ -21,9 +24,9 @@ jobs:
         with:
           node-version: '22'
       - name: Validate JavaScript
-        run: node --check app.js && node --check traco-phase-progress.js && node --check traco-backup-guard.js && node --check traco-runtime.js && node --check traco-brand.js
+        run: node --check app.js && node --check traco-phase-progress.js && node --check traco-backup-guard.js && node --check traco-runtime.js && node --check traco-brand.js && node --check traco-science.js
       - name: Verify backup import safety
-        run: node --test test/traco-backup-guard.test.cjs
+        run: node --test test/traco-backup-guard.test.cjs test/traco-science.test.cjs
       - name: Verify every local asset and service worker use release suffix
         run: |
           node <<'NODE'

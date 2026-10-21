@@ -1,0 +1,45 @@
+/* Traço Ciência — discreto, compatível com claro/escuro e iPhone */
+.science-entry{margin:16px 0 8px;border:1px solid var(--line,#4445);background:var(--card,#191a19);border-radius:18px;padding:18px;color:var(--text,inherit);display:grid;gap:12px}
+.science-entry span:first-child,.science-section-label,.science-sheet-header span{font-size:10px;letter-spacing:.12em;font-weight:800;opacity:.7}
+.science-entry h3{font-size:21px;line-height:1.15;margin:7px 0}
+.science-entry p{font-size:13px;opacity:.8;line-height:1.5;margin:0}
+.science-entry button{display:flex;align-items:center;justify-content:space-between;background:#d7ff4c;color:#141414;border:0;border-radius:12px;padding:12px 14px;min-height:44px;font-weight:750;cursor:pointer}
+.science-overlay{position:fixed;inset:0;z-index:100000;background:#000b;display:flex;align-items:flex-end;justify-content:center;padding:0}
+.science-panel{box-sizing:border-box;width:min(100%,650px);max-height:min(92dvh,950px);overflow:auto;overscroll-behavior:contain;background:var(--surface,#151715);color:var(--text,#f6f7f4);border-radius:24px 24px 0 0;padding:22px 18px max(24px,env(safe-area-inset-bottom));box-shadow:0 -8px 40px #0004}
+.science-sheet-header{display:flex;gap:16px;align-items:flex-start;justify-content:space-between}
+.science-sheet-header h2{font-size:30px;margin:6px 0;letter-spacing:-.04em}
+.science-sheet-header p,.science-disclaimer{font-size:12px;line-height:1.55;opacity:.76}
+.science-sheet-header button{border:1px solid currentColor;border-radius:50%;font-size:24px;width:44px;height:44px;background:transparent;color:inherit;flex:none}
+.science-section-label{padding:20px 0 9px}
+.science-volume-list{display:grid;gap:9px}
+.science-volume-row{border-radius:13px;background:color-mix(in srgb,currentColor 5%,transparent);padding:13px;display:grid;gap:6px}
+.science-volume-row>div:first-child{display:grid;gap:2px}
+.science-volume-row strong{font-size:14px}
+.science-volume-row small{font-size:11px;opacity:.72;line-height:1.4}
+.science-meter{height:5px;background:color-mix(in srgb,currentColor 13%,transparent);overflow:hidden;border-radius:10px}
+.science-meter i{height:100%;background:#b4e82b;display:block;border-radius:10px}
+.science-tabs{display:flex;gap:7px;margin:4px 0 12px}
+.science-tabs button{flex:1;border:1px solid color-mix(in srgb,currentColor 15%,transparent);background:transparent;color:inherit;padding:10px 6px;border-radius:10px;font-weight:800;min-height:44px}
+.science-tabs button.active{background:#d7ff4c;color:#141414;border-color:transparent}
+.science-workout-name{font-size:15px;margin:6px 0 12px}
+.science-exercises{display:grid;gap:8px}
+.science-exercises details{border:1px solid color-mix(in srgb,currentColor 12%,transparent);padding:12px;border-radius:12px}
+.science-exercises summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none}
+.science-exercises summary::-webkit-details-marker{display:none}
+.science-exercises summary span:first-child{display:grid;gap:4px}
+.science-exercises summary b{font-size:13px}
+.science-exercises summary small{font-size:11px;opacity:.72}
+.science-exercises details p{font-size:12px;line-height:1.5;margin:10px 0 0;opacity:.86}
+.science-principles{font-size:12px;line-height:1.55;padding-left:20px;display:grid;gap:9px}
+.science-sources{display:grid;gap:6px}
+.science-sources a{font-size:12px;line-height:1.4;color:inherit;text-decoration:underline;text-underline-offset:3px;padding:8px 0}
+@media(min-width:700px){.science-overlay{align-items:center;padding:20px}.science-panel{border-radius:24px;max-height:88dvh}}
+@media(prefers-reduced-motion:reduce){.science-overlay *{animation:none!important;transition:none!important}}
+
+/* Garantia de contraste e legibilidade nos dois temas. */
+html[data-theme="dark"] .science-entry{background:#1b231e;color:#f0f6ee;border-color:#3b4b40}
+html[data-theme="light"] .science-entry{background:#eff3e8;color:#162417;border-color:#d9e2d1}
+html[data-theme="dark"] .science-panel{background:#141916;color:#f5f7f1}
+html[data-theme="light"] .science-panel{background:#fff;color:#182319}
+html[data-design="performance"] .simple-home .science-entry p{color:inherit;opacity:.82}
+.science-entry button:focus-visible,.science-panel button:focus-visible,.science-panel a:focus-visible{outline:3px solid #a4d12a;outline-offset:3px}

@@ -147,7 +147,7 @@ test('three-tab navigation reaches all core routes with one coherent brand and b
   await page.locator('.simple-bottom-nav [data-nav="progress"]').click();
   await page.locator('.simple-progress [data-simple-go="settings"]').click();
   await expect(page.locator('.perf-settings')).toBeVisible();
-  await expect(page.locator('.traco-about-card small')).toContainText('2.38.0');
+  await expect(page.locator('.traco-about-card small')).toContainText('2.39.0');
   await expect(page.locator('.traco-theme-copy small')).toContainText('verde-lima');
   await page.locator('[data-traco-theme="light"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-theme','light');
@@ -251,16 +251,14 @@ test('gym displays a short next goal without changing planned sets or completed 
   await page.locator('#startSelected').click();
   await page.locator('[data-simple-start-mode="full"]').click();
   await expect(page.locator('.perf-session .simple-next-goal')).toBeVisible();
-  // The legacy evolution coach can add a working set to a full session.
-  // Therefore 3/3 previous top-rep sets are not enough to recommend a
-  // weight increase for the now 4-set prescription.
-  await expect(page.locator('.simple-next-goal')).toContainText('Busque mais uma repetição');
+  // A complete 3-set historical performance can justify a *suggestion*
+  // to increase load: the evolution layer no longer adds a set silently.
+  await expect(page.locator('.simple-next-goal')).toContainText('Pode considerar subir a carga');
   await expect(page.locator('.simple-next-goal')).toContainText('24 kg');
   await expect(page.locator('.simple-next-goal')).toContainText('12/12/12');
   expect(await page.evaluate(()=>localStorage.getItem('v60_sessions'))).toBe(before.serialized);
   const sets=await page.evaluate(()=>state.activeSession.exercises[0].sets);
-  expect(sets.length).toBeGreaterThanOrEqual(3);
-  expect(sets.length).toBeLessThanOrEqual(4); // Existing adaptive full-mode coach may add one set.
+  expect(sets.length).toBe(await page.evaluate(()=>workoutPlan[0].exercises[0].sets)); // No background modifications.
   expect(sets.every(x=>!x.done)).toBe(true);
   expect(await page.locator('.simple-next-goal button').count()).toBe(0);
 });
@@ -439,9 +437,9 @@ test('new Traço lime icon is usable for iPhone launch and installed PWA',async(
   expect(manifest.name).toContain('Traço');
   expect(manifest.icons.some(icon=>icon.src==='./assets/traco-icon-192-v3.png'&&icon.purpose==='any')).toBe(true);
   expect(manifest.icons.some(icon=>icon.src==='./assets/traco-icon-512-v3.png'&&icon.purpose==='any')).toBe(true);
-  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href','./assets/traco-icon-180-v3.png?v=380');
-  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href','./assets/icon.svg?v=380');
-  const svg=await (await page.request.get(url+'assets/icon.svg?v=380')).text();
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href','./assets/traco-icon-180-v3.png?v=381');
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href','./assets/icon.svg?v=381');
+  const svg=await (await page.request.get(url+'assets/icon.svg?v=381')).text();
   expect(svg).toContain('#CDFF4C');
   expect(svg).toContain('costas em V');
   expect(svg).not.toContain('#FF3B30');
@@ -649,8 +647,13 @@ test('Pular por agora is compact, advances to another exercise, and keeps unsent
 });
 test('three-dot options swap an occupied machine while preserving saved set values',async({page})=>{
   await ready(page);
-  await page.evaluate(()=>{state.selectedWorkout='qua';state.page='workouts';render();});
+  // Use the real selection UI: the sequence manager intentionally resets
+  // direct state assignments unless the user selects a workout card.
+  await page.locator('.simple-bottom-nav [data-nav="workouts"]').click();
+  await page.locator('.workout-select[data-workout="qua"]').click();
+  await expect(page.locator('.selected-blue h3')).toContainText('A ·');
   await page.locator('#startSelected').click();
+  await expect(page.locator('#simpleWorkoutMode')).toContainText('Treino A');
   await page.locator('[data-simple-start-mode="full"]').click();
   await expect(page.locator('.perf-session')).toBeVisible();
   await page.locator('#weightInput').fill('31');
@@ -759,4 +762,36 @@ test('legacy exercise picker and order sheet actually open with escaped labels a
   expect(after.trainingMode).toBe('quick30');
   expect(after.exercises.map(ex=>ex.id)).toEqual(prior.exercises.map(ex=>ex.id));
   expect(after.exercises.every(ex=>ex.sets.every(set=>!set.done&&!set.skipped))).toBe(true);
+});
+
+
+test('science panel is usable on iPhone and never changes recorded sessions',async({page})=>{
+  await ready(page);
+  await expect(page.locator('.simple-home .science-entry')).toBeVisible();
+  const before=await page.evaluate(()=>({history:localStorage.getItem('v60_sessions'),draft:localStorage.getItem('v60_draft')}));
+  await page.locator('.science-entry [data-science-open]').click();
+  await expect(page.locator('#scienceSheet')).toBeVisible();
+  await expect(page.locator('.science-volume-row')).toHaveCount(10);
+  await page.locator('[data-science-workout="seg"]').click();
+  await expect(page.locator('.science-workout-name')).toContainText('peitoral superior');
+  await page.locator('.science-exercises details').first().locator('summary').click();
+  await expect(page.locator('.science-exercises details').first()).toContainText('Próximo passo');
+  await expect(page.locator('.science-sources a')).toHaveCount(4);
+  const after=await page.evaluate(()=>({history:localStorage.getItem('v60_sessions'),draft:localStorage.getItem('v60_draft')}));
+  expect(after).toEqual(before);
+  await page.locator('[data-science-close]').click();
+  await expect(page.locator('#scienceSheet')).toHaveCount(0);
+});
+
+test('new training sessions do not silently change the amount of sets',async({page})=>{
+  await ready(page);
+  const result=await page.evaluate(()=>{
+    const workout=workoutPlan[0];
+    const expected=workout.exercises.map(ex=>({id:ex.id,count:ex.sets}));
+    startSession(workout.id,'full');
+    const actual=state.activeSession.exercises.map(ex=>({id:ex.id,count:ex.sets.length}));
+    return {expected,actual,persisted:JSON.parse(localStorage.getItem('v60_draft')).exercises.map(ex=>({id:ex.id,count:ex.sets.length}))};
+  });
+  expect(result.actual).toEqual(result.expected);
+  expect(result.persisted).toEqual(result.expected);
 });
